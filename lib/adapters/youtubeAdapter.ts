@@ -58,10 +58,10 @@ type YouTubeVideosResponse = {
       publishedAt?: string;
       liveBroadcastContent?: "none" | "live" | "upcoming";
       thumbnails?: {
-        maxres?: { url?: string };
-        high?: { url?: string };
-        medium?: { url?: string };
-        default?: { url?: string };
+        maxres?: { url?: string; width?: number; height?: number };
+        high?: { url?: string; width?: number; height?: number };
+        medium?: { url?: string; width?: number; height?: number };
+        default?: { url?: string; width?: number; height?: number };
       };
     };
     contentDetails?: {
@@ -301,6 +301,13 @@ async function getVideoDetails(videoIds: string[], apiKey: string, context?: Ada
           console.warn(`Failed to fetch transcript for video ${video.id}:`, err);
         }
 
+        const isShort = detectYouTubeShort(
+          snippet?.title ?? "",
+          snippet?.description ?? "",
+          snippet?.thumbnails,
+          durationSeconds
+        );
+
         return {
           platform: "youtube" as const,
           postUrl: `https://www.youtube.com/watch?v=${video.id}`,
@@ -313,7 +320,7 @@ async function getVideoDetails(videoIds: string[], apiKey: string, context?: Ada
             snippet?.thumbnails?.high?.url ??
             snippet?.thumbnails?.medium?.url ??
             snippet?.thumbnails?.default?.url,
-          format: durationSeconds > 0 && durationSeconds <= 90 ? "short_video" : "long_video",
+          format: isShort ? "short_video" : "long_video",
           views: parseCount(statistics?.viewCount),
           likes: parseCount(statistics?.likeCount),
           comments: parseCount(statistics?.commentCount),
@@ -335,4 +342,25 @@ function parseIsoDurationToSeconds(duration: string) {
   if (!match) return 0;
   const [, days = "0", hours = "0", minutes = "0", seconds = "0"] = match;
   return Number(days) * 86400 + Number(hours) * 3600 + Number(minutes) * 60 + Number(seconds);
+}
+
+/**
+ * Detect if a YouTube video is a Short.
+ * YouTube Shorts thường có duration ngắn (< 10 phút theo yêu cầu).
+ * Dùng duration làm tiêu chí chính vì thumbnail không phản ánh đúng.
+ */
+function detectYouTubeShort(
+  title: string,
+  description: string,
+  _thumbnails: { maxres?: { url?: string; width?: number; height?: number }; high?: { url?: string; width?: number; height?: number }; medium?: { url?: string; width?: number; height?: number }; default?: { url?: string; width?: number; height?: number } } | undefined,
+  durationSeconds: number
+): boolean {
+  // > 10 phút → Long Video
+  if (durationSeconds > 600) return false;
+
+  // #Shorts hashtag → Short
+  if (/#Shorts/i.test(title) || /#Shorts/i.test(description)) return true;
+
+  // Dưới 10 phút → Short Video (theo định nghĩa phân loại nội dung)
+  return durationSeconds > 0;
 }
