@@ -72,12 +72,19 @@ export const hookTypes = [
 export const formatLabels: Record<string, string> = {
   short_video: "Short video",
   long_video: "Long video",
-  livestream: "Livestream",
+  video: "Video",
   carousel: "Carousel",
   image_post: "Image post",
+  single_image_post: "Single image post",
   text_post: "Text post",
   reel: "Reel",
   other: "Khác"
+};
+
+export const platformFormats: Record<string, string[]> = {
+  youtube: ["short_video", "long_video"],
+  facebook: ["image_post", "text_post", "video", "reel", "other"],
+  tiktok: ["carousel", "video", "single_image_post"]
 };
 
 export const sortLabels: Record<SortBy, string> = {

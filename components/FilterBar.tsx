@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { DateRangePicker } from "rsuite";
-import { contentPillars, formatLabels, platformOptions, promotionTypes, sortLabels } from "@/lib/constants";
+import { contentPillars, formatLabels, platformFormats, platformOptions, promotionTypes, sortLabels } from "@/lib/constants";
 import type { AnalyticsFilters } from "@/lib/types";
 
 type FilterBarProps = {
@@ -17,10 +17,16 @@ export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
       ? [new Date(filters.startDate), new Date(filters.endDate)]
       : null;
   const [dateRange, setDateRange] = useState<[Date, Date] | null>(initialRange);
+  const [selectedPlatform, setSelectedPlatform] = useState<string>(lockPlatform ?? filters.platform ?? "all");
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  // Get format options for the selected platform
+  const formatOptions = selectedPlatform && selectedPlatform !== "all" && platformFormats[selectedPlatform]
+    ? platformFormats[selectedPlatform].map((key) => ({ value: key, label: formatLabels[key] }))
+    : Object.entries(formatLabels).map(([value, label]) => ({ value, label }));
 
   const selectClass =
     "h-10 rounded border border-kolia-line bg-white px-3 text-sm font-medium text-slate-700 outline-none transition focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint";
@@ -28,7 +34,7 @@ export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
   return (
     <form className="rounded border border-kolia-line bg-white p-4 shadow-sm">
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-        <select name="platform" defaultValue={lockPlatform ?? filters.platform ?? "all"} className={selectClass} disabled={Boolean(lockPlatform)}>
+        <select name="platform" defaultValue={lockPlatform ?? filters.platform ?? "all"} className={selectClass} disabled={Boolean(lockPlatform)} onChange={(e) => setSelectedPlatform(e.target.value)}>
           {platformOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -94,7 +100,7 @@ export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
         </select>
         <select name="format" defaultValue={filters.format ?? ""} className={selectClass}>
           <option value="">Tất cả định dạng triển khai</option>
-          {Object.entries(formatLabels).map(([value, label]) => (
+          {formatOptions.map(({ value, label }) => (
             <option key={value} value={value}>
               {label}
             </option>
