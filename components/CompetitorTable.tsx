@@ -176,7 +176,6 @@ export function CompetitorTable({ summaries, lockPlatform }: { summaries: Compet
               <th className="px-5 py-3 text-right">Lượt xem</th>
               <th className="px-5 py-3 text-right">Tổng tương tác</th>
               <th className="px-5 py-3 text-right">Tỷ lệ tương tác bình quân</th>
-              <th className="px-5 py-3 text-right">Điểm lan tỏa</th>
               <th className="px-5 py-3">Trụ cột nổi bật</th>
               <th className="px-5 py-3">Bài mới nhất</th>
             </tr>
@@ -198,7 +197,6 @@ export function CompetitorTable({ summaries, lockPlatform }: { summaries: Compet
                 <td className="px-5 py-4 text-right">{formatNumber(item.totalViews)}</td>
                 <td className="px-5 py-4 text-right">{formatNumber(item.totalInteractions)}</td>
                 <td className="px-5 py-4 text-right font-semibold text-kolia-green">{formatPercent(item.avgEngagement)}</td>
-                <td className="px-5 py-4 text-right font-semibold text-kolia-gold">{item.avgVirality.toFixed(1)}</td>
                 <td className="px-5 py-4 text-slate-700">{item.topPillar}</td>
                 <td className="px-5 py-4 text-slate-600">{item.latestPublishedAt ? formatDate(item.latestPublishedAt) : "Chưa có"}</td>
               </tr>
