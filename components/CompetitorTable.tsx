@@ -168,6 +168,7 @@ export function CompetitorTable({ summaries, lockPlatform }: { summaries: Compet
         <table className="min-w-[1180px] divide-y divide-kolia-line text-sm">
           <thead className="bg-slate-50">
             <tr className="text-left text-xs font-bold uppercase tracking-[0.08em] text-slate-500">
+              <th className="w-12 px-3 py-3 text-center">#</th>
               <th className="px-5 py-3">Đối thủ</th>
               <th className="px-5 py-3">Nền tảng</th>
               <th className="px-5 py-3">Nguồn</th>
@@ -181,8 +182,11 @@ export function CompetitorTable({ summaries, lockPlatform }: { summaries: Compet
             </tr>
           </thead>
           <tbody className="divide-y divide-kolia-line">
-            {paginatedSummaries.map((item) => (
+            {paginatedSummaries.map((item, index) => {
+              const rank = (safePage - 1) * PAGE_SIZE + index + 1;
+              return (
               <tr key={item.competitor.id} className="hover:bg-kolia-mint/35">
+                <td className="w-12 px-3 py-4 text-center text-sm font-bold text-slate-400">{rank}</td>
                 <td className="px-5 py-4 font-semibold text-kolia-ink">
                   <a href={item.competitor.channelUrl} target="_blank" rel="noreferrer" className="hover:text-kolia-green">
                     {item.competitor.name}
@@ -198,7 +202,8 @@ export function CompetitorTable({ summaries, lockPlatform }: { summaries: Compet
                 <td className="px-5 py-4 text-slate-700">{item.topPillar}</td>
                 <td className="px-5 py-4 text-slate-600">{item.latestPublishedAt ? formatDate(item.latestPublishedAt) : "Chưa có"}</td>
               </tr>
-            ))}
+            );
+          })}
           </tbody>
         </table>
       </div>

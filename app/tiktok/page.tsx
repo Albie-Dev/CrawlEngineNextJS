@@ -8,7 +8,7 @@ type PageProps = {
 export const dynamic = "force-dynamic";
 
 export default async function TikTokPage({ searchParams }: PageProps) {
-  const filters = parseAnalyticsFilters((await searchParams) ?? {});
+  const filters = parseAnalyticsFilters((await searchParams) ?? {}, "views");
   return (
     <PlatformTrackerView
       platform="tiktok"

@@ -441,7 +441,10 @@ export async function getPlatformAnalytics(platform: Platform, filters: Analytic
   };
 }
 
-export function parseAnalyticsFilters(searchParams: Record<string, string | string[] | undefined>): AnalyticsFilters {
+export function parseAnalyticsFilters(
+  searchParams: Record<string, string | string[] | undefined>,
+  defaultSortBy: SortBy = "engagement"
+): AnalyticsFilters {
   const getValue = (key: string) => {
     const value = searchParams[key];
     return Array.isArray(value) ? value[0] : value;
@@ -455,6 +458,6 @@ export function parseAnalyticsFilters(searchParams: Record<string, string | stri
     contentPillar: getValue("contentPillar") || undefined,
     format: getValue("format") || undefined,
     promotionType: getValue("promotionType") || undefined,
-    sortBy: (getValue("sortBy") as SortBy | undefined) ?? "engagement"
+    sortBy: (getValue("sortBy") as SortBy | undefined) ?? defaultSortBy
   };
 }

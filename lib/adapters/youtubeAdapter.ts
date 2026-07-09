@@ -107,7 +107,7 @@ export class YouTubeAdapter implements CompetitorDataAdapter {
       const uploadsPlaylistId = await getUploadsPlaylistId(channelId, apiKey);
       if (!uploadsPlaylistId) return [];
 
-      const videoIds = await getLatestVideoIds(uploadsPlaylistId, apiKey);
+      const videoIds = await getLatestVideoIds(uploadsPlaylistId, apiKey, context);
       if (!videoIds.length) return [];
 
       return getVideoDetails(videoIds, apiKey, context);
@@ -210,27 +210,51 @@ async function getUploadsPlaylistId(channelId: string, apiKey: string) {
   return playlistId;
 }
 
-async function getLatestVideoIds(playlistId: string, apiKey: string) {
-  const playlist = await youtubeGet<YouTubePlaylistItemsResponse>(
-    "playlistItems",
-    {
+async function getLatestVideoIds(playlistId: string, apiKey: string, context?: AdapterContext) {
+  const maxResults = context?.startDate || context?.endDate ? 50 : 3;
+  const allIds: string[] = [];
+  let pageToken: string | undefined;
+
+  while (true) {
+    const params: Record<string, string | number | undefined> = {
       part: "snippet,contentDetails",
       playlistId,
-      maxResults: 3
-    },
-    apiKey
-  );
+      maxResults,
+    };
+    if (pageToken) params.pageToken = pageToken;
 
-  return Array.from(
-    new Set(
-      (playlist.items ?? [])
-        .map((item) => item.contentDetails?.videoId ?? item.snippet?.resourceId?.videoId ?? "")
-        .filter(Boolean)
-    )
-  );
+    const playlist = await youtubeGet<YouTubePlaylistItemsResponse & { nextPageToken?: string }>(
+      "playlistItems",
+      params,
+      apiKey
+    );
+
+    const ids = (playlist.items ?? [])
+      .map((item) => item.contentDetails?.videoId ?? item.snippet?.resourceId?.videoId ?? "")
+      .filter(Boolean);
+
+    allIds.push(...ids);
+
+    // If we have startDate and the last video in this batch is older than startDate, stop
+    if (context?.startDate && ids.length > 0) {
+      const lastItem = playlist.items?.[playlist.items.length - 1];
+      const lastPublished = lastItem?.snippet?.publishedAt;
+      if (lastPublished && new Date(lastPublished) < new Date(context.startDate)) {
+        break;
+      }
+    }
+
+    // If no more pages or we have enough, stop
+    if (!playlist.nextPageToken || allIds.length >= 200) break;
+    pageToken = playlist.nextPageToken;
+  }
+
+  return Array.from(new Set(allIds));
 }
 
 async function getVideoDetails(videoIds: string[], apiKey: string, context?: AdapterContext): Promise<RawPostInput[]> {
+  if (!videoIds.length) return [];
+
   const videos = await youtubeGet<YouTubeVideosResponse>(
     "videos",
     {
@@ -241,12 +265,23 @@ async function getVideoDetails(videoIds: string[], apiKey: string, context?: Ada
     apiKey
   );
 
+  const startDate = context?.startDate ? new Date(context.startDate) : null;
+  const endDate = context?.endDate ? new Date(context.endDate) : null;
+  // Set endDate to end of day
+  if (endDate) endDate.setHours(23, 59, 59, 999);
+
   const details = await Promise.all(
     (videos.items ?? [])
       .filter((video) => {
         const snippet = video.snippet;
         const publishedAt = snippet?.publishedAt ? new Date(snippet.publishedAt) : new Date();
-        return snippet?.liveBroadcastContent !== "upcoming" && publishedAt.getTime() <= Date.now();
+        // Skip upcoming and future videos
+        if (snippet?.liveBroadcastContent === "upcoming") return false;
+        if (publishedAt.getTime() > Date.now()) return false;
+        // Apply date range filter
+        if (startDate && publishedAt < startDate) return false;
+        if (endDate && publishedAt > endDate) return false;
+        return true;
       })
       .map(async (video) => {
         const snippet = video.snippet;
