@@ -17,6 +17,9 @@ export async function GET(request: Request) {
   const platformParam = searchParams.get("platform") || "all";
   const daysParam = searchParams.get("days");
   const days = daysParam ? parseInt(daysParam, 10) : 30; // Mặc định về 30 ngày để dữ liệu tươi mới hơn
+  // Convert days to startDate
+  const startOfPeriod = new Date();
+  startOfPeriod.setDate(startOfPeriod.getDate() - days);
 
   const cacheKey = `${platformParam}_days_${days}`;
   if (cached[cacheKey] && Date.now() - cached[cacheKey].timestamp < CACHE_TTL) {
@@ -31,9 +34,10 @@ export async function GET(request: Request) {
       ? platformParam as Platform 
       : undefined;
 
+    const filters = { startDate: startOfPeriod.toISOString().split("T")[0], platform: filterPlatform as any };
     const [gap, overview, marketSnapshot, trends] = await Promise.all([
-      getContentGapAnalytics({ days, platform: filterPlatform as any }),
-      getOverviewAnalytics({ days, platform: filterPlatform as any }),
+      getContentGapAnalytics(filters),
+      getOverviewAnalytics(filters),
       fetchMarketSnapshot(),
       getTrendIntelligence(trendPlatform),
     ]);

@@ -207,7 +207,8 @@ export type PublicSettings = {
 // ─── Analytics & Sync ─────────────────────────────────────────────────────
 export type AnalyticsFilters = {
   platform?: Platform | "all";
-  days?: number;
+  startDate?: string; // ISO date string (YYYY-MM-DD)
+  endDate?: string;   // ISO date string (YYYY-MM-DD)
   source?: SourceType | "all";
   contentPillar?: string;
   format?: string;

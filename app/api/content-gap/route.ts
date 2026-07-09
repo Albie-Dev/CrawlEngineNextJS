@@ -14,6 +14,9 @@ export async function GET(request: Request) {
   const days = Math.min(365, Math.max(7, Number(searchParams.get("days") ?? 90)));
   const platform = (searchParams.get("platform") ?? undefined) as Platform | "all" | undefined;
   const source = (searchParams.get("source") ?? undefined) as SourceType | "all" | undefined;
+  // Convert days to startDate
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - days);
   const cacheKey = `days=${days}&platform=${platform ?? ""}&source=${source ?? ""}`;
 
   const cached = cache.get(cacheKey);
@@ -22,7 +25,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const gap = await getContentGapAnalytics({ days, platform, source });
+    const gap = await getContentGapAnalytics({ startDate: startDate.toISOString().split("T")[0], platform, source });
     cache.set(cacheKey, { data: gap, timestamp: Date.now() });
     return NextResponse.json(gap);
   } catch (error) {

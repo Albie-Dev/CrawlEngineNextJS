@@ -36,8 +36,23 @@ function sortOrder(sortBy?: SortBy) {
 export async function getFilteredPosts(filters: AnalyticsFilters = {}, limit?: number): Promise<PostWithCompetitor[]> {
   const platform = cleanFilter(filters.platform);
   const source = cleanFilter(filters.source);
-  const days = filters.days ?? 90;
-  const startDate = daysAgo(days);
+
+  // Use startDate/endDate if provided, fall back to last 90 days
+  let startDate: Date | undefined;
+  let endDate: Date | undefined;
+
+  if (filters.startDate) {
+    startDate = new Date(filters.startDate);
+  }
+  if (filters.endDate) {
+    // End date should include the full day
+    endDate = new Date(filters.endDate);
+    endDate.setHours(23, 59, 59, 999);
+  }
+
+  if (!startDate && !endDate) {
+    startDate = daysAgo(90);
+  }
 
   const platformCondition = platform
     ? platform.includes(",")
@@ -51,7 +66,10 @@ export async function getFilteredPosts(filters: AnalyticsFilters = {}, limit?: n
       ...(filters.contentPillar ? { contentPillar: filters.contentPillar } : {}),
       ...(filters.format ? { format: filters.format } : {}),
       ...(filters.promotionType ? { promotionType: filters.promotionType } : {}),
-      publishedAt: { gte: startDate },
+      publishedAt: {
+        ...(startDate ? { gte: startDate } : {}),
+        ...(endDate ? { lte: endDate } : {})
+      },
       competitor: {
         ...(source ? { source } : {})
       }
@@ -431,7 +449,8 @@ export function parseAnalyticsFilters(searchParams: Record<string, string | stri
 
   return {
     platform: getValue("platform") as Platform | "all" | undefined,
-    days: Number(getValue("days") ?? 90),
+    startDate: getValue("startDate") || undefined,
+    endDate: getValue("endDate") || undefined,
     source: getValue("source") as SourceType | "all" | undefined,
     contentPillar: getValue("contentPillar") || undefined,
     format: getValue("format") || undefined,

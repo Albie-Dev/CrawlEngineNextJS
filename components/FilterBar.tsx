@@ -1,4 +1,8 @@
-import { contentPillars, formatLabels, platformOptions, promotionTypes, sortLabels, timeRangeOptions } from "@/lib/constants";
+"use client";
+
+import { useEffect, useState } from "react";
+import { DateRangePicker } from "rsuite";
+import { contentPillars, formatLabels, platformOptions, promotionTypes, sortLabels } from "@/lib/constants";
 import type { AnalyticsFilters } from "@/lib/types";
 
 type FilterBarProps = {
@@ -7,6 +11,17 @@ type FilterBarProps = {
 };
 
 export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
+  const [isClient, setIsClient] = useState(false);
+  const initialRange: [Date, Date] | null =
+    filters.startDate && filters.endDate
+      ? [new Date(filters.startDate), new Date(filters.endDate)]
+      : null;
+  const [dateRange, setDateRange] = useState<[Date, Date] | null>(initialRange);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const selectClass =
     "h-10 rounded border border-kolia-line bg-white px-3 text-sm font-medium text-slate-700 outline-none transition focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint";
 
@@ -21,13 +36,49 @@ export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
           ))}
         </select>
         {lockPlatform ? <input type="hidden" name="platform" value={lockPlatform} /> : null}
-        <select name="days" defaultValue={String(filters.days ?? 90)} className={selectClass}>
-          {timeRangeOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+
+        {/* Date Range Picker */}
+        <div className="flex flex-col gap-1">
+          {isClient ? (
+            <DateRangePicker
+              value={dateRange}
+              onChange={(value) => {
+                if (!value) {
+                  setDateRange(null);
+                  return;
+                }
+                const [start, end] = value;
+                // Clamp to max 365 days
+                const diffDays = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
+                if (diffDays > 365) {
+                  const clampedEnd = new Date(start.getTime() + 365 * 24 * 60 * 60 * 1000);
+                  setDateRange([start, clampedEnd]);
+                } else {
+                  setDateRange(value);
+                }
+              }}
+              format="dd/MM/yyyy"
+              character=" → "
+              placeholder="Chọn khoảng thời gian"
+              cleanable
+              showOneCalendar={false}
+              shouldDisableDate={(date) => date > new Date()}
+            />
+          ) : (
+            <div className="h-10 rounded border border-kolia-line bg-white px-3 text-sm font-medium text-slate-700 flex items-center">
+              {filters.startDate && filters.endDate
+                ? `${filters.startDate.split("-").reverse().join("/")} → ${filters.endDate.split("-").reverse().join("/")}`
+                : "Chọn khoảng thời gian"}
+            </div>
+          )}
+          {dateRange && (
+            <>
+              <input type="hidden" name="startDate" value={dateRange[0].toISOString().split("T")[0]} />
+              <input type="hidden" name="endDate" value={dateRange[1].toISOString().split("T")[0]} />
+            </>
+          )}
+        </div>
+
         <select name="source" defaultValue={filters.source ?? "all"} className={selectClass}>
           <option value="all">Tất cả nguồn</option>
           <option value="trong_nuoc">Trong nước</option>

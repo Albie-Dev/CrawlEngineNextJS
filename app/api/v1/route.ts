@@ -37,10 +37,13 @@ export async function GET(request: Request) {
   try {
     switch (path) {
       case "posts": {
+        const days = Math.min(365, Math.max(1, Number(searchParams.get("days") ?? 30)));
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - days);
         const posts = await getFilteredPosts(
           {
             platform: (searchParams.get("platform") ?? "all") as "youtube" | "tiktok" | "facebook" | "all",
-            days: Math.min(365, Math.max(1, Number(searchParams.get("days") ?? 30))),
+            startDate: startDate.toISOString().split("T")[0],
             sortBy: (searchParams.get("sortBy") ?? "engagement") as "engagement" | "views" | "comments" | "newest",
           },
           Math.min(100, Math.max(1, Number(searchParams.get("limit") ?? 20)))

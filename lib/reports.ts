@@ -15,13 +15,13 @@ async function aiExecutiveSummary(
   sourceLabel: string,
   topPillarName: string,
   topFormatName: string,
-  days: number,
+  periodDescription: string,
   topPosts: Array<{ title: string; contentPillar: string; engagementRate: number; competitor: { name: string } }>,
   competitorSummariesData: Array<{ competitor: { name: string }; postCount: number; avgEngagement: number }>
 ): Promise<string> {
   if (!await isOpenAIConfigured()) {
     // Fallback: template summary
-    return `Trong ${days} ngày, hệ thống ghi nhận ${formatNumber(postsCount)} bài/video từ ${formatNumber(
+    return `Trong ${periodDescription}, hệ thống ghi nhận ${formatNumber(postsCount)} bài/video từ ${formatNumber(
       competitorsCount
     )} đối thủ trên ${platformLabel.toLowerCase()}, nguồn ${sourceLabel.toLowerCase()}. Trụ cột nội dung nổi bật là ${
       topPillarName || "chưa đủ dữ liệu"
@@ -86,9 +86,10 @@ export async function generateReport(filters: AnalyticsFilters = {}) {
   const topFormats = aggregatePosts(posts, "format").slice(0, 6);
   const topTopics = aggregatePosts(posts, "mainTopic").slice(0, 6);
   const topPosts = posts.slice(0, 12);
-  const periodEnd = new Date();
-  const periodStart = new Date();
-  periodStart.setDate(periodEnd.getDate() - (filters.days ?? 90));
+  const periodEnd = filters.endDate ? new Date(filters.endDate) : new Date();
+  const periodStart = filters.startDate
+    ? new Date(filters.startDate)
+    : new Date(periodEnd.getTime() - 90 * 24 * 60 * 60 * 1000);
   const platformLabel =
     filters.platform && filters.platform !== "all" ? platformLabels[filters.platform as Platform] : "Tất cả nền tảng";
   const sourceLabel =
@@ -111,6 +112,9 @@ export async function generateReport(filters: AnalyticsFilters = {}) {
     "Lead magnet: checklist quản trị vốn cho người mới."
   ];
 
+  const periodDescription = filters.startDate && filters.endDate
+    ? `${formatDate(periodStart)} → ${formatDate(periodEnd)}`
+    : `90 ngày qua`;
   const summary = await aiExecutiveSummary(
     posts.length,
     competitors.length,
@@ -118,7 +122,7 @@ export async function generateReport(filters: AnalyticsFilters = {}) {
     sourceLabel,
     topPillars[0]?.name ?? "chưa đủ dữ liệu",
     topFormats[0]?.name ?? "chưa đủ dữ liệu",
-    filters.days ?? 90,
+    periodDescription,
     topPosts,
     summaries
   );
