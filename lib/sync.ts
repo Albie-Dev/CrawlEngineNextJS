@@ -2,6 +2,7 @@ import { FacebookAdapter } from "@/lib/adapters/facebookAdapter";
 import { TikTokAdapter } from "@/lib/adapters/tiktokAdapter";
 import { YouTubeAdapter } from "@/lib/adapters/youtubeAdapter";
 import { enrichRawPost } from "@/lib/classifier";
+import { aiEnrichRawPost } from "@/lib/aiClassifier";
 import { prisma } from "@/lib/prisma";
 import { getPublicSettings } from "@/lib/settings";
 import type { Platform, SyncFilters } from "@/lib/types";
@@ -125,10 +126,10 @@ export async function syncCompetitorData(platform?: Platform, syncFilters?: Sync
     });
 
     for (const rawPost of rawPosts) {
-      const enriched = enrichRawPost({
+      const enriched = await aiEnrichRawPost({
         ...rawPost,
         competitorId: competitor.id
-      });
+      }, (msg) => send("log", { message: `[${competitor.name}] ${msg}` }));
 
       // Skip posts check removed because date filtering is already handled on the crawler backend
 
@@ -352,7 +353,7 @@ export async function syncCompetitorDataStream(
             if (competitorSaveLimit !== null && competitorCreated + competitorUpdated >= competitorSaveLimit) break;
 
             const rawPost = rawPosts![j];
-            const enriched = enrichRawPost({ ...rawPost, competitorId: competitor.id });
+            const enriched = await aiEnrichRawPost({ ...rawPost, competitorId: competitor.id }, (msg) => send("log", { message: `[${competitor.name}] ${msg}` }));
 
             if (applyDateFilter && (syncFilters?.startDate || syncFilters?.endDate)) {
               const postDate = new Date(enriched.publishedAt);
@@ -581,7 +582,7 @@ export function startBackgroundSync(
           for (const rawPost of (rawPosts || [])) {
             if (compSaveLimit !== null && compCreated + compUpdated >= compSaveLimit) break;
 
-            const enriched = enrichRawPost({ ...rawPost, competitorId: competitor.id });
+            const enriched = await aiEnrichRawPost({ ...rawPost, competitorId: competitor.id }, (msg) => send("log", { message: `[${competitor.name}] ${msg}` }));
 
             if (applyDateFilter && (syncFilters?.startDate || syncFilters?.endDate)) {
               const postDate = new Date(enriched.publishedAt);

@@ -6,9 +6,26 @@ const includesAny = (text: string, keywords: string[]) =>
 
 const hasNumberHook = (text: string) => /(\d+[%x]?|\d{2,}|\btop\s?\d+\b)/i.test(text);
 
-export function classifyPost(postTitle: string, caption: string, platform: Platform): ClassifiedPost {
+/**
+ * Gộp tất cả nội dung có sẵn (title, caption, tags, transcript) thành một text
+ * để phân loại chính xác hơn.
+ */
+function buildFullText(title: string, caption: string, tags?: string[], transcript?: string): string {
+  const parts = [title, caption];
+  if (tags?.length) parts.push(tags.join(" "));
+  if (transcript) parts.push(transcript);
+  return parts.join(" ").toLowerCase();
+}
+
+export function classifyPost(
+  postTitle: string,
+  caption: string,
+  platform: Platform,
+  tags?: string[],
+  transcript?: string,
+): ClassifiedPost {
   const title = postTitle.trim();
-  const text = `${postTitle} ${caption}`.toLowerCase();
+  const text = buildFullText(postTitle, caption, tags, transcript);
 
   let mainTopic = "Thị trường tài chính";
   if (includesAny(text, ["vàng", "gold", "xau", "xauusd", "giá vàng", "silver", "bạc"])) mainTopic = "Vàng";
@@ -117,7 +134,7 @@ export function classifyPost(postTitle: string, caption: string, platform: Platf
 }
 
 export function enrichRawPost(rawPost: RawPostInput): RawPostInput & ClassifiedPost & { engagementRate: number; viralityScore: number } {
-  const classified = classifyPost(rawPost.title, rawPost.caption, rawPost.platform);
+  const classified = classifyPost(rawPost.title, rawPost.caption, rawPost.platform, rawPost.tags, rawPost.transcript);
   const format = rawPost.format ?? classified.format;
   const engagementRate = calculateEngagementRate(rawPost, rawPost.platform);
   const viralityScore = calculateViralityScore(rawPost);

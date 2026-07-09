@@ -55,6 +55,7 @@ type YouTubeVideosResponse = {
     snippet?: {
       title?: string;
       description?: string;
+      tags?: string[];
       publishedAt?: string;
       liveBroadcastContent?: "none" | "live" | "upcoming";
       thumbnails?: {
@@ -313,6 +314,7 @@ async function getVideoDetails(videoIds: string[], apiKey: string, context?: Ada
           postUrl: `https://www.youtube.com/watch?v=${video.id}`,
           title: snippet?.title ?? "Video YouTube chưa có tiêu đề",
           caption: snippet?.description ?? "",
+          tags: snippet?.tags,
           transcript: transcriptText || undefined,
           publishedAt,
           thumbnailUrl:

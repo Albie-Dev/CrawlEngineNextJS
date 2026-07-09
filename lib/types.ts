@@ -17,6 +17,7 @@ export type RawPostInput = {
   postUrl: string;
   title: string;
   caption: string;
+  tags?: string[];
   publishedAt: Date;
   thumbnailUrl?: string;
   views: number;
