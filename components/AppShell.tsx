@@ -51,20 +51,11 @@ const navSections: NavSection[] = [
     ]
   },
   {
-    title: "📤 Duyệt & Xuất bản",
-    items: [
-      { href: "/calendar", label: "Lịch đăng nội dung", icon: CalendarDays }
-    ]
-  },
-  {
     title: "📊 Chiến lược & Tối ưu",
     items: [
       { href: "/recommendations", label: "Đề xuất chiến lược", icon: Brain },
       { href: "/viral-patterns", label: "Viral Patterns", icon: Megaphone },
-      { href: "/ab-test", label: "A/B Test Simulator", icon: Swords },
-      { href: "/brand-voice", label: "Brand Voice", icon: Sparkles },
       { href: "/query", label: "Hỏi đáp dữ liệu AI", icon: FlaskConical },
-      { href: "/reports", label: "Tạo báo cáo phân tích", icon: FileText }
     ]
   },
   {
