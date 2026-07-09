@@ -46,7 +46,16 @@ export async function PlatformTrackerView({
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard title="Đối thủ đang theo dõi" value={formatNumber(analytics.totalCompetitors)} detail={`Chỉ tính các kênh thuộc ${platformLabels[platform]} trong danh sách đã import.`} icon={<Users className="h-5 w-5" />} />
-        <MetricCard title="Nội dung đã thu thập" value={formatNumber(analytics.totalPosts)} detail="Chỉ bao gồm nội dung đã publish, không lấy video đang chờ phát hoặc chưa công khai." icon={<RadioTower className="h-5 w-5" />} />
+
+        {platform === "youtube" ? (
+          <ContentCountCard
+            total={analytics.totalPosts}
+            shortCount={analytics.posts.filter((p) => p.format === "short_video").length}
+            longCount={analytics.posts.filter((p) => p.format === "long_video").length}
+          />
+        ) : (
+          <MetricCard title="Nội dung đã thu thập" value={formatNumber(analytics.totalPosts)} detail="Chỉ bao gồm nội dung đã publish, không lấy video đang chờ phát hoặc chưa công khai." icon={<RadioTower className="h-5 w-5" />} />
+        )}
         <MetricCard title="Lượt xem bình quân / nội dung" value={formatNumber(analytics.avgViewsPerPost)} detail="Đánh giá quy mô tiếp cận trung bình của mỗi nội dung trong phạm vi lọc." icon={<Eye className="h-5 w-5" />} />
         <MetricCard title="Tổng tương tác ghi nhận" value={formatNumber(analytics.totalInteractions)} detail="Tổng like, comment và share để nhận diện chủ đề/kênh cần nghiên cứu sâu hơn." icon={<MessageCircle className="h-5 w-5" />} />
       </div>
@@ -80,28 +89,38 @@ export async function PlatformTrackerView({
   );
 }
 
-function YouTubeAnalysis({ analytics }: { analytics: Awaited<ReturnType<typeof getPlatformAnalytics>> }) {
-  const shortCount = analytics.posts.filter((post) => post.format === "short_video").length;
-  const longCount = analytics.posts.filter((post) => post.format === "long_video").length;
+function ContentCountCard({ total, shortCount, longCount }: { total: number; shortCount: number; longCount: number }) {
+  return (
+    <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-medium text-slate-500">Nội dung đã thu thập</p>
+          <p className="mt-2 text-2xl font-bold text-kolia-ink">{formatNumber(total)}</p>
+        </div>
+        <div className="flex h-11 w-11 items-center justify-center rounded bg-kolia-mint text-kolia-green">
+          <RadioTower className="h-5 w-5" />
+        </div>
+      </div>
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        <div className="rounded bg-kolia-mint px-2 py-1.5 text-center">
+          <p className="text-sm font-bold text-kolia-green">{formatNumber(shortCount)}</p>
+          <p className="text-xs text-slate-600">Video ngắn</p>
+        </div>
+        <div className="rounded bg-kolia-amber px-2 py-1.5 text-center">
+          <p className="text-sm font-bold text-kolia-gold">{formatNumber(longCount)}</p>
+          <p className="text-xs text-slate-600">Video dài</p>
+        </div>
+      </div>
+      <p className="mt-4 text-sm leading-6 text-slate-600">Chỉ bao gồm nội dung đã publish, không lấy video đang chờ phát hoặc chưa công khai.</p>
+    </section>
+  );
+}
 
+function YouTubeAnalysis({ analytics }: { analytics: Awaited<ReturnType<typeof getPlatformAnalytics>> }) {
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-2">
-        <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
-          <h2 className="text-base font-bold text-kolia-ink">Tách video ngắn và video phân tích dài</h2>
-          <div className="mt-4 grid grid-cols-2 gap-3 text-center">
-            <div className="rounded bg-kolia-mint p-4">
-              <p className="text-2xl font-bold text-kolia-green">{formatNumber(shortCount)}</p>
-              <p className="text-sm text-slate-600">Video ngắn</p>
-            </div>
-            <div className="rounded bg-kolia-amber p-4">
-              <p className="text-2xl font-bold text-kolia-gold">{formatNumber(longCount)}</p>
-              <p className="text-sm text-slate-600">Video dài</p>
-            </div>
-          </div>
-        </section>
-        <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
-          <h2 className="text-base font-bold text-kolia-ink">Cấu trúc nội dung tạo sức hút từ kênh nước ngoài</h2>
+      <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
+        <h2 className="text-base font-bold text-kolia-ink">Cấu trúc nội dung tạo sức hút từ kênh nước ngoài</h2>
           <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
             {analytics.foreignFormula.viralPatterns.map((pattern) => (
               <li key={pattern} className="flex gap-2">
@@ -111,7 +130,6 @@ function YouTubeAnalysis({ analytics }: { analytics: Awaited<ReturnType<typeof g
             ))}
           </ul>
         </section>
-      </div>
 
       <ContentGapPanel domestic={analytics.domesticGap} />
 
