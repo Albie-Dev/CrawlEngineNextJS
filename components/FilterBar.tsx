@@ -31,12 +31,14 @@ export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
   // Platform-aware default sortBy
   const defaultSortBy = selectedPlatform && selectedPlatform !== "all" && selectedPlatform !== "facebook" ? "views" : "engagement";
 
+  const isTiktok = lockPlatform === "tiktok";
+
   const selectClass =
     "h-10 rounded border border-kolia-line bg-white px-3 text-sm font-medium text-slate-700 outline-none transition focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint";
 
   return (
     <form className="rounded border border-kolia-line bg-white p-4 shadow-sm">
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+      <div className={`grid gap-3 ${isTiktok ? "grid-cols-1 sm:grid-cols-3" : "md:grid-cols-2 xl:grid-cols-4"}`}>
         <select name="platform" defaultValue={lockPlatform ?? filters.platform ?? "all"} className={selectClass} disabled={Boolean(lockPlatform)} onChange={(e) => setSelectedPlatform(e.target.value)}>
           {platformOptions.map((option) => (
             <option key={option.value} value={option.value}>
@@ -88,42 +90,52 @@ export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
           )}
         </div>
 
-        <select name="source" defaultValue={filters.source ?? "all"} className={selectClass}>
-          <option value="all">Tất cả nguồn</option>
-          <option value="trong_nuoc">Trong nước</option>
-          <option value="nuoc_ngoai">Nước ngoài</option>
-        </select>
-        <select name="contentPillar" defaultValue={filters.contentPillar ?? ""} className={selectClass}>
-          <option value="">Tất cả trụ cột nội dung</option>
-          {contentPillars.map((pillar) => (
-            <option key={pillar} value={pillar}>
-              {pillar}
-            </option>
-          ))}
-        </select>
-        <select name="format" defaultValue={filters.format ?? ""} className={selectClass}>
-          <option value="">Tất cả định dạng triển khai</option>
-          {formatOptions.map(({ value, label }) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
-        <select name="promotionType" defaultValue={filters.promotionType ?? ""} className={selectClass}>
-          <option value="">Tất cả nhóm CTA/ưu đãi</option>
-          {promotionTypes.map((promotionType) => (
-            <option key={promotionType} value={promotionType}>
-              {promotionType}
-            </option>
-          ))}
-        </select>
-        <select name="sortBy" defaultValue={filters.sortBy ?? defaultSortBy} className={selectClass}>
-          {Object.entries(sortLabels).map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
+        {!isTiktok && (
+          <select name="source" defaultValue={filters.source ?? "all"} className={selectClass}>
+            <option value="all">Tất cả nguồn</option>
+            <option value="trong_nuoc">Trong nước</option>
+            <option value="nuoc_ngoai">Nước ngoài</option>
+          </select>
+        )}
+        {!isTiktok && (
+          <select name="contentPillar" defaultValue={filters.contentPillar ?? ""} className={selectClass}>
+            <option value="">Tất cả trụ cột nội dung</option>
+            {contentPillars.map((pillar) => (
+              <option key={pillar} value={pillar}>
+                {pillar}
+              </option>
+            ))}
+          </select>
+        )}
+        {!isTiktok && (
+          <select name="format" defaultValue={filters.format ?? ""} className={selectClass}>
+            <option value="">Tất cả định dạng triển khai</option>
+            {formatOptions.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        )}
+        {!isTiktok && (
+          <select name="promotionType" defaultValue={filters.promotionType ?? ""} className={selectClass}>
+            <option value="">Tất cả nhóm CTA/ưu đãi</option>
+            {promotionTypes.map((promotionType) => (
+              <option key={promotionType} value={promotionType}>
+                {promotionType}
+              </option>
+            ))}
+          </select>
+        )}
+        {!isTiktok && (
+          <select name="sortBy" defaultValue={filters.sortBy ?? defaultSortBy} className={selectClass}>
+            {Object.entries(sortLabels).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
       <div className="mt-3 flex justify-end gap-2">
         <a href="?" className="rounded border border-kolia-line px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">
