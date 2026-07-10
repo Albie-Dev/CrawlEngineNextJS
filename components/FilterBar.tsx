@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { DateRangePicker } from "rsuite";
-import { contentPillars, formatLabels, platformContentPillars, platformFormats, platformOptions, promotionTypes, sortLabels } from "@/lib/constants";
+import { formatLabels, platformFormats, platformOptions, promotionTypes, sortLabels } from "@/lib/constants";
 import type { AnalyticsFilters } from "@/lib/types";
 
 type FilterBarProps = {
@@ -18,20 +18,25 @@ export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
       : null;
   const [dateRange, setDateRange] = useState<[Date, Date] | null>(initialRange);
   const [selectedPlatform, setSelectedPlatform] = useState<string>(lockPlatform ?? filters.platform ?? "all");
+  const [pillarOptions, setPillarOptions] = useState<string[]>([]);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedPlatform && selectedPlatform !== "all") params.set("platform", selectedPlatform);
+    fetch(`/api/pillars?${params.toString()}`)
+      .then((r) => r.json())
+      .then(setPillarOptions)
+      .catch(() => setPillarOptions([]));
+  }, [selectedPlatform]);
+
   // Get format options for the selected platform
   const formatOptions = selectedPlatform && selectedPlatform !== "all" && platformFormats[selectedPlatform]
     ? platformFormats[selectedPlatform].map((key) => ({ value: key, label: formatLabels[key] }))
     : Object.entries(formatLabels).map(([value, label]) => ({ value, label }));
-
-  // Get content pillar options for the selected platform
-  const pillarOptions = selectedPlatform && selectedPlatform !== "all" && platformContentPillars[selectedPlatform]
-    ? platformContentPillars[selectedPlatform]
-    : contentPillars;
 
   // Platform-aware default sortBy
   const defaultSortBy = selectedPlatform && selectedPlatform !== "all" && selectedPlatform !== "facebook" ? "views" : "engagement";

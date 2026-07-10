@@ -55,19 +55,13 @@ export async function aiClassifyPost(
     if (transcript) textParts.push(`PHỤ ĐỀ: ${transcript}`);
     const text = textParts.join("\n\n").slice(0, 8000);
 
-    console.log("=== [ai-classifier] PROMPT GỬI LÊN AI ===");
-    console.log(`Model: ${model}`);
-    console.log(`Input (${text.length} chars):`);
-    console.log(text.slice(0, 2000) + (text.length > 2000 ? "\n...(truncated)..." : ""));
-    console.log("=== END PROMPT ===");
-
     const response = await client.responses.create({
       model,
       input: text,
-      instructions: `Phân tích nội dung video YouTube này dựa trên tiêu đề, mô tả, tags và phụ đề. Trả về JSON:
+      instructions: `Phân tích nội dung video YouTube này. Trả về JSON:
 
 {
-  "contentPillar": "Phân tích vĩ mô|Phân tích kỹ thuật|Giáo dục đầu tư cơ bản|Case study giao dịch|Tâm lý đầu tư|Livestream/Webinar|Bán khóa học|Bán room cộng đồng|Minigame/Community engagement|Review sách/tài liệu|Tin nóng|Cảnh báo rủi ro|Phát triển tư duy tài chính|Cập nhật thị trường",
+  "contentPillar": "string - tên trụ cột nội dung, tối đa 5 từ, viết hoa đầu, KHÔNG thêm giải thích",
   "promotionType": "Không bán hàng|Bán khóa học|Bán room|Webinar|Livestream|Minigame|Lead magnet|Combo/ưu đãi|CTA tư vấn|CTA tham gia cộng đồng|CTA theo dõi kênh",
   "toneOfVoice": "Chuyên gia|Cảnh báo|Giáo dục dễ hiểu|Gấp gáp/FOMO|Trấn an|Phản biện|Truyền cảm hứng|Cộng đồng|Bán hàng trực tiếp|Bán hàng mềm",
   "hookType": "Dự đoán xu hướng|Câu hỏi gây tò mò|Cảnh báo rủi ro|Con số cụ thể|Tin nóng|Góc nhìn trái chiều|Case study|Lời hứa kết quả|Vấn đề phổ biến của nhà đầu tư|So sánh trước/sau",
@@ -82,10 +76,6 @@ export async function aiClassifyPost(
 Chỉ trả về JSON, không markdown.`,
       max_output_tokens: 2000,
     });
-
-    console.log("=== [ai-classifier] RAW RESPONSE TỪ AI ===");
-    console.log(response.output_text ?? "(empty response)");
-    console.log("=== END RESPONSE ===");
 
     const rawText = response.output_text || "";
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);

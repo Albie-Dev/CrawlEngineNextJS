@@ -87,47 +87,6 @@ export const platformFormats: Record<string, string[]> = {
   tiktok: ["carousel", "video", "single_image_post"]
 };
 
-export const platformContentPillars: Record<string, string[]> = {
-  youtube: [
-    "Cập nhật thị trường",
-    "Phân tích vĩ mô",
-    "Phân tích kỹ thuật",
-    "Giáo dục đầu tư cơ bản",
-    "Case study giao dịch",
-    "Tâm lý đầu tư",
-    "Câu chuyện chuyên gia/KOL",
-    "Livestream/Webinar",
-    "Review sách/tài liệu",
-    "Tin nóng",
-    "Cảnh báo rủi ro",
-    "Phát triển tư duy tài chính"
-  ],
-  tiktok: [
-    "Cập nhật thị trường",
-    "Giáo dục đầu tư cơ bản",
-    "Case study giao dịch",
-    "Tâm lý đầu tư",
-    "Tin nóng",
-    "Cảnh báo rủi ro",
-    "Minigame/Community engagement",
-    "Phát triển tư duy tài chính"
-  ],
-  facebook: [
-    "Cập nhật thị trường",
-    "Phân tích vĩ mô",
-    "Giáo dục đầu tư cơ bản",
-    "Case study giao dịch",
-    "Tâm lý đầu tư",
-    "Livestream/Webinar",
-    "Bán khóa học",
-    "Bán room cộng đồng",
-    "Minigame/Community engagement",
-    "Tin nóng",
-    "Cảnh báo rủi ro",
-    "Phát triển tư duy tài chính"
-  ]
-};
-
 export const sortLabels: Record<SortBy, string> = {
   engagement: "Tỷ lệ tương tác cao nhất",
   views: "Lượt xem cao nhất",
