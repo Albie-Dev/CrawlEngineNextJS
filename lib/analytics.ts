@@ -1,9 +1,8 @@
 import type { Competitor, Post } from "@prisma/client";
-import { contentPillars } from "@/lib/constants";
 
 import { prisma } from "@/lib/prisma";
 import { hasPublicYoutubeApiKey } from "@/lib/publicYoutubeData";
-import { aiContentGapAnalysis } from "@/lib/aiClassifier";
+import { aiContentGapAnalysis, aiForeignFormula } from "@/lib/aiClassifier";
 import type { AnalyticsFilters, Platform, SortBy, SourceType } from "@/lib/types";
 import { daysAgo } from "@/lib/utils";
 
@@ -364,15 +363,55 @@ export async function getContentGapAnalytics(filters: AnalyticsFilters = {}) {
     ? domesticPosts.reduce((s, p) => s + p.engagementRate, 0) / domesticPosts.length
     : 0;
 
-  const domestic = await aiContentGapAnalysis(
-    pillarStats.map((p) => ({ name: p.name, count: p.count, avgEngagement: p.avgEngagement, totalViews: p.totalViews })),
-    overallAvg,
-  );
+  const [domestic, foreign] = await Promise.all([
+    aiContentGapAnalysis(
+      pillarStats.map((p) => ({ name: p.name, count: p.count, avgEngagement: p.avgEngagement, totalViews: p.totalViews })),
+      overallAvg,
+    ),
+    (async () => {
+      const foreignYoutube = posts.filter((p) => p.platform === "youtube" && p.competitor.source === "nuoc_ngoai");
+      const topShort = foreignYoutube.filter((p) => p.format === "short_video").sort((a, b) => b.viralityScore - a.viralityScore).slice(0, 4);
+      const topLong = foreignYoutube.filter((p) => p.format !== "short_video").sort((a, b) => b.viralityScore - a.viralityScore).slice(0, 4);
+      const foreign = await aiForeignFormula(
+        foreignYoutube.length,
+        topShort.map((p) => p.title),
+        topLong.map((p) => p.title),
+      );
+      const [shortForm, longForm] = await Promise.all([
+        (async () => {
+          return topShort.map((p) => ({
+            title: p.title,
+            competitor: p.competitor.name,
+            format: p.format,
+            sourceUrl: p.postUrl,
+            mainTopic: p.mainTopic,
+            transcript: p.transcript || "",
+            formula: "Nhấn 'Phân tích' để AI đánh giá",
+            vietnamized: "",
+          }));
+        })(),
+        (async () => {
+          return topLong.map((p) => ({
+            title: p.title,
+            competitor: p.competitor.name,
+            format: p.format,
+            sourceUrl: p.postUrl,
+            mainTopic: p.mainTopic,
+            transcript: p.transcript || "",
+            formula: "Nhấn 'Phân tích' để AI đánh giá",
+            vietnamized: "",
+          }));
+        })(),
+      ]);
+      return {
+        ...foreign,
+        shortForm,
+        longForm,
+      };
+    })(),
+  ]);
 
-  return {
-    domestic,
-    foreign: buildForeignFormula(posts)
-  };
+  return { domestic, foreign };
 }
 
 export async function getPlatformAnalytics(platform: Platform, filters: AnalyticsFilters = {}) {
@@ -415,10 +454,12 @@ export async function getPlatformAnalytics(platform: Platform, filters: Analytic
     topFormats: aggregatePosts(posts, "format").slice(0, 10),
     topPromotionTypes: aggregatePosts(posts, "promotionType").slice(0, 10),
     topTopics: aggregatePosts(posts, "mainTopic").slice(0, 10),
-    topByPillar: contentPillars
-      .map((pillar) => ({
+    topByPillar: Object.entries(
+      Object.groupBy(posts, (p) => p.contentPillar)
+    )
+      .map(([pillar, group]) => ({
         pillar,
-        posts: posts.filter((post) => post.contentPillar === pillar).slice(0, 3)
+        posts: (group ?? []).slice(0, 3)
       }))
       .filter((item) => item.posts.length > 0),
     domesticGap,

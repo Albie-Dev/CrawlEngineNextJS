@@ -155,6 +155,13 @@ const PROVIDER_CONFIG: Record<string, ProviderConfig> = {
     verifyAuth: "header",
     quotaUnit: null,
   },
+  deepseek: {
+    apiKeyKey: "deepseek_api_key",
+    modelKey: "deepseek_model",
+    verifyUrl: "https://api.deepseek.com/models",
+    verifyAuth: "header",
+    quotaUnit: null,
+  },
 };
 
 // ─── Verify key + check quota ─────────────────────────────────────────────

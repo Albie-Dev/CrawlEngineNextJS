@@ -129,7 +129,7 @@ export async function syncCompetitorData(platform?: Platform, syncFilters?: Sync
       const enriched = await aiEnrichRawPost({
         ...rawPost,
         competitorId: competitor.id
-      }, (msg) => send("log", { message: `[${competitor.name}] ${msg}` }));
+      });
 
       // Skip posts check removed because date filtering is already handled on the crawler backend
 

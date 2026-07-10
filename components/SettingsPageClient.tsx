@@ -186,6 +186,7 @@ function ApiKeysTab({ onMsg }: { onMsg: (m: any) => void }) {
     groq: ["groq_api_key", "groq_model", "groq_base_url"],
     openrouter: ["openrouter_api_key", "openrouter_model", "openrouter_base_url"],
     huggingface: ["huggingface_api_key", "huggingface_model", "huggingface_base_url"],
+    deepseek: ["deepseek_api_key", "deepseek_model", "deepseek_base_url"],
   };
   const allProviderKeys = Object.values(AI_PROVIDER_KEYS).flat();
   const activeAiProvider = items.find(c => c.key === "ai_provider")?.value || "openai";
@@ -349,6 +350,7 @@ function ApiKeysTab({ onMsg }: { onMsg: (m: any) => void }) {
                                     <option value="groq">Groq</option>
                                     <option value="openrouter">OpenRouter</option>
                                     <option value="huggingface">HuggingFace</option>
+                                    <option value="deepseek">DeepSeek</option>
                                   </select>
                                 ) : isModelKey(item.key) ? (
                                   <div className="flex w-full items-center gap-1">

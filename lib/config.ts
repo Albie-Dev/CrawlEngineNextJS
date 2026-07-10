@@ -59,6 +59,11 @@ export const CONFIG_REGISTRY: ConfigMeta[] = [
   { key: "huggingface_model", label: "HuggingFace Model", description: "Model ID (vd: mistralai/Mistral-7B-Instruct-v0.3, meta-llama/Llama-3.2-3B-Instruct)", category: "openai", encrypted: false, isSecret: false, envFallback: "HUGGINGFACE_MODEL", placeholder: "mistralai/Mistral-7B-Instruct-v0.3" },
   { key: "huggingface_base_url", label: "HuggingFace Base URL", description: "Custom API base URL (mặc định: https://api-inference.huggingface.co/v1)", category: "openai", encrypted: false, isSecret: false, envFallback: null, placeholder: "https://api-inference.huggingface.co/v1" },
 
+  // ─── DeepSeek ────────────────────────────────────────────────────
+  { key: "deepseek_api_key", label: "DeepSeek API Key", description: "API Key từ DeepSeek (https://platform.deepseek.com)", category: "openai", encrypted: true, isSecret: true, envFallback: "DEEPSEEK_API_KEY" },
+  { key: "deepseek_model", label: "DeepSeek Model", description: "Model ID (vd: deepseek-chat, deepseek-reasoner)", category: "openai", encrypted: false, isSecret: false, envFallback: "DEEPSEEK_MODEL", placeholder: "deepseek-chat" },
+  { key: "deepseek_base_url", label: "DeepSeek Base URL", description: "Custom API base URL (mặc định: https://api.deepseek.com)", category: "openai", encrypted: false, isSecret: false, envFallback: null, placeholder: "https://api.deepseek.com" },
+
   // ─── Facebook ───────────────────────────────────────────────────
   { key: "fb_email", label: "Facebook Email", description: "Email đăng nhập Facebook (Playwright fallback)", category: "facebook", encrypted: true, isSecret: false, envFallback: "FB_EMAIL" },
   { key: "fb_password", label: "Facebook Password", description: "Password đăng nhập Facebook", category: "facebook", encrypted: true, isSecret: true, envFallback: "FB_PASSWORD" },

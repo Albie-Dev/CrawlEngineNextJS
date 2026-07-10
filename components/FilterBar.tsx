@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { DateRangePicker } from "rsuite";
-import { formatLabels, platformFormats, platformOptions, promotionTypes, sortLabels } from "@/lib/constants";
+import { formatLabels, platformFormats, platformOptions, sortLabels } from "@/lib/constants";
 import type { AnalyticsFilters } from "@/lib/types";
 
 type FilterBarProps = {
@@ -19,6 +19,7 @@ export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
   const [dateRange, setDateRange] = useState<[Date, Date] | null>(initialRange);
   const [selectedPlatform, setSelectedPlatform] = useState<string>(lockPlatform ?? filters.platform ?? "all");
   const [pillarOptions, setPillarOptions] = useState<string[]>([]);
+  const [promotionOptions, setPromotionOptions] = useState<string[]>([]);
 
   useEffect(() => {
     setIsClient(true);
@@ -31,6 +32,10 @@ export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
       .then((r) => r.json())
       .then(setPillarOptions)
       .catch(() => setPillarOptions([]));
+    fetch(`/api/promotion-types?${params.toString()}`)
+      .then((r) => r.json())
+      .then(setPromotionOptions)
+      .catch(() => setPromotionOptions([]));
   }, [selectedPlatform]);
 
   // Get format options for the selected platform
@@ -130,7 +135,7 @@ export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
         {!isTiktok && (
           <select name="promotionType" defaultValue={filters.promotionType ?? ""} className={selectClass}>
             <option value="">Tất cả nhóm CTA/ưu đãi</option>
-            {promotionTypes.map((promotionType) => (
+            {promotionOptions.map((promotionType) => (
               <option key={promotionType} value={promotionType}>
                 {promotionType}
               </option>

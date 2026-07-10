@@ -39,7 +39,7 @@ async function aiExecutiveSummary(
       .map((p) => `- "${p.title}" (${p.competitor.name}) — ${p.contentPillar}, engagement ${formatPercent(p.engagementRate)}`)
       .join("\n");
 
-    const prompt = `Phân tích dữ liệu nghiên cứu đối thủ trong ${days} ngày qua:
+    const prompt = `Phân tích dữ liệu nghiên cứu đối thủ giai đoạn ${periodDescription}:
 
 **Tổng quan**: ${formatNumber(postsCount)} bài từ ${formatNumber(competitorsCount)} đối thủ, ${platformLabel}, ${sourceLabel}.
 
@@ -70,7 +70,7 @@ Viết executive summary (tiếng Việt có dấu, 3-5 câu) bao gồm:
     return response.output_text;
   } catch (error) {
     console.warn("[reports] AI executive summary failed, using template:", error);
-    return `Trong ${days} ngày, hệ thống ghi nhận ${formatNumber(postsCount)} bài/video từ ${formatNumber(
+    return `Trong ${periodDescription}, hệ thống ghi nhận ${formatNumber(postsCount)} bài/video từ ${formatNumber(
       competitorsCount
     )} đối thủ trên ${platformLabel.toLowerCase()}, nguồn ${sourceLabel.toLowerCase()}. Trụ cột nội dung nổi bật là ${
       topPillarName || "chưa đủ dữ liệu"

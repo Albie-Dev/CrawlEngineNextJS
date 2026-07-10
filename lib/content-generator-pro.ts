@@ -251,13 +251,14 @@ NGUYÊN TẮC:
 // ═══════════════════════════════════════════════════════════════════════════
 
 async function buildProContext(platform: Platform, days = 30) {
+  const startDate = new Date(); startDate.setDate(startDate.getDate() - days);
   const cacheKey = `${platform}-${days}`;
 
   return getCachedProContext(cacheKey, async () => {
     const [competitorPosts, gapData, overview, brandVoice] = await Promise.all([
-      getFilteredPosts({ platform, days, sortBy: "engagement" }, 20),
-      getContentGapAnalytics({ days }),
-      getOverviewAnalytics({ days }),
+      getFilteredPosts({ platform, startDate: startDate.toISOString().split("T")[0], sortBy: "engagement" }, 20),
+      getContentGapAnalytics({ startDate: startDate.toISOString().split("T")[0] }),
+      getOverviewAnalytics({ startDate: startDate.toISOString().split("T")[0] }),
       getBrandVoice(),
     ]);
 
@@ -1329,9 +1330,11 @@ Tối ưu và trả về JSON:`;
 // ═══════════════════════════════════════════════════════════════════════════
 
 export async function autoGenerateProFromSync(syncRunId: string): Promise<GenerateBatchResponse> {
-  const gapData = await getContentGapAnalytics({ days: 30 });
-  const overview = await getOverviewAnalytics({ days: 30 });
-  const topPosts = await getFilteredPosts({ days: 30, sortBy: "engagement" }, 10);
+  const startDate = new Date(); startDate.setDate(startDate.getDate() - 30);
+  const ds = startDate.toISOString().split("T")[0];
+  const gapData = await getContentGapAnalytics({ startDate: ds });
+  const overview = await getOverviewAnalytics({ startDate: ds });
+  const topPosts = await getFilteredPosts({ startDate: ds, sortBy: "engagement" }, 10);
 
   const topGaps = gapData.domestic.gaps.slice(0, 3);
   const topSuggestions = gapData.domestic.suggestions.slice(0, 3);

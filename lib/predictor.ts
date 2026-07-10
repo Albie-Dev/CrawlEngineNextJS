@@ -20,9 +20,10 @@ export async function predictPerformance(options: {
   contentType: string;
 }): Promise<PredictiveScore> {
   // Lấy historical data để tính baseline
+  const sd = new Date(); sd.setDate(sd.getDate() - 90);
   const similarPosts = await getFilteredPosts({
     platform: options.platform,
-    days: 90,
+    startDate: sd.toISOString().split("T")[0],
     sortBy: "engagement",
   });
 

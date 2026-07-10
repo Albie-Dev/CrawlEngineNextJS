@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { ChevronDown, Loader2, Sparkles } from "lucide-react";
 import { ViralFormulaCard } from "@/components/ViralFormulaCard";
 
 type ForeignFormula = {
@@ -10,6 +10,54 @@ type ForeignFormula = {
   longForm: any[];
   koliaFormats: string[];
 };
+
+type LazyCardProps = {
+  video: any;
+  label: string;
+};
+
+function LazyVideoCard({ video, label }: LazyCardProps) {
+  const [formula, setFormula] = useState(video);
+  const [loading, setLoading] = useState(false);
+
+  const analyze = useCallback(() => {
+    if (loading || formula.formula !== "Nhấn 'Phân tích' để AI đánh giá") return;
+    setLoading(true);
+    const params = new URLSearchParams({
+      title: video.title,
+      format: video.format,
+      mainTopic: video.mainTopic,
+    });
+    if (video.transcript) params.set("transcript", video.transcript.slice(0, 5000));
+    fetch(`/api/analyze-video?${params.toString()}`)
+      .then((r) => r.json())
+      .then((data) => {
+        setFormula((prev: any) => ({ ...prev, ...data }));
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [loading, formula, video]);
+
+  return (
+    <div className="relative">
+      <ViralFormulaCard formula={formula} label={label} />
+      {formula.formula === "Nhấn 'Phân tích' để AI đánh giá" && (
+        <button
+          onClick={analyze}
+          disabled={loading}
+          className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded border border-kolia-line bg-white px-4 py-2 text-sm font-semibold text-kolia-green hover:bg-kolia-mint transition disabled:opacity-50"
+        >
+          {loading ? (
+            <><Loader2 className="h-4 w-4 animate-spin" /> AI đang phân tích...</>
+          ) : (
+            <><Sparkles className="h-4 w-4" /> Phân tích video này</>
+          )}
+        </button>
+      )}
+    </div>
+  );
+}
+;
 
 export function LazyForeignFormula({ hasData }: { hasData?: boolean }) {
   const [data, setData] = useState<ForeignFormula | null>(null);
@@ -82,10 +130,10 @@ export function LazyForeignFormula({ hasData }: { hasData?: boolean }) {
 
           <div className="grid gap-4 lg:grid-cols-2">
             {data.shortForm.slice(0, 2).map((formula: any) => (
-              <ViralFormulaCard key={formula.sourceUrl} formula={formula} label="Video ngắn" />
+              <LazyVideoCard key={formula.sourceUrl} video={formula} label="Video ngắn" />
             ))}
             {data.longForm.slice(0, 2).map((formula: any) => (
-              <ViralFormulaCard key={formula.sourceUrl} formula={formula} label="Video phân tích dài" />
+              <LazyVideoCard key={formula.sourceUrl} video={formula} label="Video phân tích dài" />
             ))}
           </div>
         </div>

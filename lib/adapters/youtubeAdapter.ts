@@ -295,7 +295,6 @@ async function getVideoDetails(videoIds: string[], apiKey: string, context?: Ada
           const { fetchAndFormatTranscript } = await import("@/lib/youtube/youtubeTranscript");
           transcriptText = await fetchAndFormatTranscript(video.id, {
             format: context?.settings?.youtubeTranscriptFormat || "plain_text",
-            autoTranslate: context?.settings?.youtubeTranscriptAutoTranslate !== false,
             onLog: context?.onLog ? (msg) => context.onLog!(`[${snippet?.title || video.id}] ${msg}`) : undefined
           });
         } catch (err) {

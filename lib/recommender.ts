@@ -24,9 +24,11 @@ export async function generateRecommendations(days = 30): Promise<Recommendation
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
     return cached.data;
   }
+  const sd = new Date(); sd.setDate(sd.getDate() - days);
+  const ds = sd.toISOString().split("T")[0];
   const [overview, gapData, competitors] = await Promise.all([
-    getOverviewAnalytics({ days }),
-    getContentGapAnalytics({ days }),
+    getOverviewAnalytics({ startDate: ds }),
+    getContentGapAnalytics({ startDate: ds }),
     getCompetitors({}),
   ]);
 

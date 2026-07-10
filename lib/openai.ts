@@ -59,6 +59,14 @@ const PROVIDERS: Record<string, ProviderInfo> = {
     baseUrlKey: "huggingface_base_url",
     chatOnly: true,
   },
+  deepseek: {
+    label: "DeepSeek",
+    apiKeyKey: "deepseek_api_key",
+    modelKey: "deepseek_model",
+    defaultModel: "deepseek-v4-flash",
+    baseUrl: "https://api.deepseek.com",
+    baseUrlKey: "deepseek_base_url",
+  },
 };
 
 export function getProviderList() {
@@ -317,7 +325,13 @@ export async function callAI(
     `callAI (${model})`,
   );
 
-  return response.choices?.[0]?.message?.content || "";
+  const content = response.choices?.[0]?.message?.content;
+  if (!content) {
+    console.log(`[callAI-debug] Model: ${model}`);
+    console.log(`[callAI-debug] Finish reason: ${response.choices?.[0]?.finish_reason}`);
+    console.log(`[callAI-debug] Full response:`, JSON.stringify(response).slice(0, 2000));
+  }
+  return content || "";
 }
 
 // ─── Backward compatibility aliases ────────────────────────────────────────

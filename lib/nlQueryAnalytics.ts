@@ -11,7 +11,6 @@
  */
 
 import { prisma } from "@/lib/prisma";
-import { contentPillars } from "@/lib/constants";
 import { daysAgo } from "@/lib/utils";
 import type { Platform, SourceType } from "@/lib/types";
 
@@ -275,14 +274,7 @@ export async function getNLQueryContext(days = 30): Promise<NLQueryContext> {
   const medianCount = pillarCounts[Math.floor(pillarCounts.length / 2)] ?? 0;
 
   const gaps: string[] = [];
-  // Missing pillars
-  const activePillars = new Set(Object.keys(domesticPillarStats));
-  for (const pillar of contentPillars) {
-    if (!activePillars.has(pillar)) {
-      gaps.push(`${pillar} gần như chưa xuất hiện trong tập dữ liệu hiện tại.`);
-    }
-  }
-  // Underused high engagement
+  // Underused high engagement pillars
   for (const [name, group] of Object.entries(domesticPillarStats)) {
     const avg = average(group.map((p) => p.engagementRate));
     if (group.length <= Math.max(2, medianCount) && avg >= domesticOverallAvg) {

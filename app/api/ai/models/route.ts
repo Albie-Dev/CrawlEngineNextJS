@@ -29,6 +29,11 @@ const PROVIDER_ENDPOINTS: Record<string, { url: string; auth: "header" | "query"
     auth: "header",
     apiKeyKey: "openrouter_api_key",
   },
+  deepseek: {
+    url: "https://api.deepseek.com/models",
+    auth: "header",
+    apiKeyKey: "deepseek_api_key",
+  },
 };
 
 /**
@@ -149,6 +154,21 @@ export async function GET(req: NextRequest) {
           id: m.id,
           name: m.name || m.id,
         }));
+        break;
+      }
+      case "deepseek": {
+        // DeepSeek: OpenAI-compatible, thử parse { data: [{ id: "deepseek-...", ... }] }
+        if (raw.data?.length) {
+          models = raw.data.map((m: any) => ({ id: m.id, name: m.id }));
+        } else {
+          // Fallback curated list nếu API không trả về
+          models = [
+            { id: "deepseek-v4-flash", name: "DeepSeek V4 Flash" },
+            { id: "deepseek-v4-pro", name: "DeepSeek V4 Pro" },
+            { id: "deepseek-chat", name: "DeepSeek Chat (sắp deprecate)" },
+            { id: "deepseek-reasoner", name: "DeepSeek Reasoner (sắp deprecate)" },
+          ];
+        }
         break;
       }
     }
