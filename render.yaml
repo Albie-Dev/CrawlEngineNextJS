@@ -5,7 +5,7 @@ services:
     dockerfilePath: ./Dockerfile
     region: singapore
     plan: standard
-    preDeployCommand: "npx prisma migrate deploy"
+    preDeployCommand: "./node_modules/.bin/prisma migrate deploy"
     envVars:
       - key: DATABASE_URL
         sync: false
