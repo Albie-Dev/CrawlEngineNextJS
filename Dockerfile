@@ -84,7 +84,13 @@ COPY --from=builder /app/prisma ./prisma
 # has no local binary to resolve, so npx silently downloads the latest
 # major version (7.x), which is incompatible with the pre-7 schema syntax
 # (datasource { url = env(...) }) and fails with P1012.
-COPY --from=deps /app/node_modules ./node_modules
+#
+# IMPORTANT: copy from `builder`, not `deps`. The `builder` stage already
+# ran `prisma generate`, so its node_modules contains the generated
+# @prisma/client. The `deps` stage never runs generate, so copying from
+# it overwrites the standalone output's node_modules with an
+# un-generated client, causing "did not initialize yet" errors.
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
 # Entrypoint script: run migrations with the LOCAL pinned prisma binary,
