@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Competitor {
@@ -235,3 +234,4 @@ model PlatformProviderConfig {
   @@unique([platform])
   @@index([platform])
 }
+
