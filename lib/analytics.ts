@@ -455,11 +455,11 @@ export async function getPlatformAnalytics(platform: Platform, filters: Analytic
     topPromotionTypes: aggregatePosts(posts, "promotionType").slice(0, 10),
     topTopics: aggregatePosts(posts, "mainTopic").slice(0, 10),
     topByPillar: Object.entries(
-      Object.groupBy(posts, (p) => p.contentPillar)
+      groupBy(posts, (p) => p.contentPillar)
     )
       .map(([pillar, group]) => ({
         pillar,
-        posts: (group ?? []).slice(0, 3)
+        posts: group.slice(0, 3)
       }))
       .filter((item) => item.posts.length > 0),
     domesticGap,
