@@ -8,7 +8,7 @@ services:
     preDeployCommand: "npx prisma migrate deploy"
     envVars:
       - key: DATABASE_URL
-        value: postgresql://crawlengine:JnMUz4r1DS6599buIvf06qVvQMdvpkyN@dpg-d8tkg23eo5us73bj1peg-a.singapore-postgres.render.com/crawlengine
+        sync: false
       - key: NODE_ENV
         value: production
       - key: CHROME_EXECUTABLE_PATH
@@ -18,4 +18,4 @@ services:
       - key: PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD
         value: "1"
       - key: ENCRYPTION_KEY
-        generateValue: true
+        sync: false

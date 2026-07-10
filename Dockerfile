@@ -46,8 +46,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma Client
-RUN npx prisma generate
+# Generate Prisma Client (dùng local binary, không dùng npx để tránh cache version mới)
+RUN ./node_modules/.bin/prisma generate
 
 # Build Next.js (standalone mode)
 ENV NEXT_TELEMETRY_DISABLED=1
