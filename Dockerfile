@@ -46,7 +46,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma Client (dùng local binary, không dùng npx để tránh cache version mới)
+# Generate Prisma Client using the LOCAL pinned binary
+# (never use npx here — npx falls back to downloading "latest" if the
+# local binary can't be resolved, which is what caused the v7 mismatch)
 RUN ./node_modules/.bin/prisma generate
 
 # Build Next.js (standalone mode)
@@ -77,9 +79,22 @@ COPY --from=builder /app/.next/static ./.next/static
 # Copy Prisma schema + migrations for runtime/deployment migrations
 COPY --from=builder /app/prisma ./prisma
 
+# Copy node_modules + package.json so the pinned Prisma CLI is available
+# at runtime. Without this, any `npx prisma ...` call at container start
+# has no local binary to resolve, so npx silently downloads the latest
+# major version (7.x), which is incompatible with the pre-7 schema syntax
+# (datasource { url = env(...) }) and fails with P1012.
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+
+# Entrypoint script: run migrations with the LOCAL pinned prisma binary,
+# then hand off to the Next.js standalone server.
+COPY --chown=nextjs:nodejs docker-entrypoint.sh ./docker-entrypoint.sh
+RUN chmod +x ./docker-entrypoint.sh
+
 USER nextjs
 EXPOSE 10000
 
 # Use dumb-init to handle PID 1 properly
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "server.js"]
+CMD ["./docker-entrypoint.sh"]
