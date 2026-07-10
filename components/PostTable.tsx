@@ -15,10 +15,12 @@ type SortDir = "asc" | "desc";
 
 export function PostTable({
   posts,
-  title = "Bài/video nổi bật theo trụ cột nội dung"
+  title = "Bài/video nổi bật theo trụ cột nội dung",
+  hideShare
 }: {
   posts: PostWithCompetitor[];
   title?: string;
+  hideShare?: boolean;
 }) {
   // ── State ──────────────────────────────────────────────────────────────
   const [search, setSearch] = useState("");
@@ -111,9 +113,9 @@ export function PostTable({
           <thead className="bg-slate-50">
             <tr className="text-left text-xs font-bold uppercase tracking-[0.08em] text-slate-500">
               <th className="px-5 py-3">Bài/video</th>
-              <th className="px-5 py-3">Đối thủ</th>
-              <th className="px-5 py-3">Phân loại</th>
-              <th className="px-5 py-3">Hook/Tone</th>
+              <th className="w-44 min-w-[11rem] px-5 py-3">Đối thủ</th>
+              <th className="w-72 min-w-[18rem] px-5 py-3">Phân loại</th>
+              <th className="w-48 min-w-[12rem] px-5 py-3">Hook/Tone</th>
               <th className="cursor-pointer px-5 py-3 text-right select-none hover:text-slate-700" onClick={() => toggleSort("views")}>
                 Lượt xem <SortIcon col="views" />
               </th>
@@ -123,9 +125,11 @@ export function PostTable({
               <th className="cursor-pointer px-5 py-3 text-right select-none hover:text-slate-700" onClick={() => toggleSort("comments")}>
                 Comment <SortIcon col="comments" />
               </th>
+              {!hideShare && (
               <th className="cursor-pointer px-5 py-3 text-right select-none hover:text-slate-700" onClick={() => toggleSort("shares")}>
                 Share <SortIcon col="shares" />
               </th>
+              )}
               <th className="cursor-pointer px-5 py-3 text-right select-none hover:text-slate-700" onClick={() => toggleSort("engagementRate")}>
                 Tỷ lệ tương tác <SortIcon col="engagementRate" />
               </th>
@@ -137,7 +141,7 @@ export function PostTable({
           <tbody className="divide-y divide-kolia-line">
             {paged.length === 0 ? (
               <tr>
-                <td colSpan={10} className="px-5 py-12 text-center text-sm text-slate-400">
+                <td colSpan={hideShare ? 9 : 10} className="px-5 py-12 text-center text-sm text-slate-400">
                   {search ? "Không tìm thấy nội dung phù hợp." : "Chưa có dữ liệu."}
                 </td>
               </tr>
@@ -155,7 +159,7 @@ export function PostTable({
                     </a>
                     <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-500">{post.caption}</p>
                   </td>
-                  <td className="px-5 py-4">
+                  <td className="w-44 min-w-[11rem] px-5 py-4">
                     <p className="font-semibold text-slate-800">{post.competitor.name}</p>
                     <span
                       className={`mt-2 inline-flex rounded px-2 py-1 text-xs font-bold ring-1 ${getPlatformBadgeClass(post.platform)}`}
@@ -177,7 +181,7 @@ export function PostTable({
                   <td className="px-5 py-4 text-right">{formatNumber(post.views)}</td>
                   <td className="px-5 py-4 text-right">{formatNumber(post.likes)}</td>
                   <td className="px-5 py-4 text-right">{formatNumber(post.comments)}</td>
-                  <td className="px-5 py-4 text-right">{formatNumber(post.shares)}</td>
+                  {!hideShare && <td className="px-5 py-4 text-right">{formatNumber(post.shares)}</td>}
                   <td className="px-5 py-4 text-right font-bold text-kolia-green">{formatPercent(post.engagementRate)}</td>
                   <td className="px-5 py-4 text-slate-600">{formatDate(post.publishedAt)}</td>
                 </tr>

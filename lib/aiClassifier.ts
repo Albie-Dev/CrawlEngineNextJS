@@ -5,7 +5,7 @@
  * Fallback về rule-based nếu AI không available.
  */
 
-import { isOpenAIConfigured, getOpenAIClient, getOpenAIModel } from "@/lib/openai";
+import { isOpenAIConfigured, getOpenAIClient, getOpenAIModel, callAI } from "@/lib/openai";
 import { classifyPost, enrichRawPost } from "@/lib/classifier";
 import { calculateEngagementRate, calculateViralityScore } from "@/lib/utils";
 import type { ClassifiedPost, Platform, RawPostInput } from "@/lib/types";
@@ -195,4 +195,93 @@ export async function aiEnrichRawPost(
     }
     return enrichRawPost(rawPost);
   }
+}
+
+// ─── AI Content Gap Analysis ─────────────────────────────────────────────
+
+export type AIContentGapResult = {
+  commonTopics: string[];
+  repeatedTopics: string[];
+  underusedHighEngagement: string[];
+  gaps: string[];
+  suggestions: string[];
+};
+
+/**
+ * AI-powered content gap analysis — thay thế buildDomesticGap cứng nhắc.
+ * Gửi thống kê pillar lên AI để phân tích thông minh.
+ */
+export async function aiContentGapAnalysis(
+  pillarStats: Array<{ name: string; count: number; avgEngagement: number; totalViews: number }>,
+  overallAvgEngagement: number,
+  onLog?: (message: string) => void,
+): Promise<AIContentGapResult> {
+  if (!await isOpenAIConfigured()) {
+    return buildFallbackGap(pillarStats, overallAvgEngagement);
+  }
+
+  try {
+    const statsJson = JSON.stringify({ pillars: pillarStats, overallAvgEngagement }, null, 2);
+    const prompt = `Phân tích dữ liệu trụ cột nội dung đối thủ trong nước dưới đây và đưa ra nhận định chiến lược.
+
+DỮ LIỆU:
+${statsJson}
+
+Yêu cầu trả về JSON (chỉ JSON, không markdown):
+{
+  "commonTopics": ["3-5 chủ đề phổ biến nhất, giải thích ngắn tại sao"],
+  "repeatedTopics": ["2-3 chủ đề bị lặp lại nhiều nhưng engagement thấp, kèm lý do"],
+  "underusedHighEngagement": ["2-3 chủ đề ít được làm nhưng có tiềm năng tương tác cao"],
+  "gaps": ["3-5 khoảng trống nội dung mà Kolia có thể khai thác"],
+  "suggestions": ["3-5 gợi ý tuyến nội dung/chương trình cụ thể, sáng tạo"]
+}
+
+Phân tích phải dựa trên số liệu thực tế, viết bằng tiếng Việt tự nhiên, chuyên nghiệp, mang tính chiến lược.`;
+
+    onLog?.("🤖 [AI Content Gap] Đang phân tích dữ liệu...");
+    const response = await callAI([
+      { role: "system" as const, content: "Bạn là chuyên gia phân tích chiến lược nội dung tài chính cấp enterprise." },
+      { role: "user" as const, content: prompt },
+    ], { maxTokens: 1500 });
+    onLog?.("✅ [AI Content Gap] Phân tích hoàn tất.");
+
+    const jsonMatch = response.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      const parsed = JSON.parse(jsonMatch[0]);
+      return {
+        commonTopics: parsed.commonTopics ?? [],
+        repeatedTopics: parsed.repeatedTopics ?? [],
+        underusedHighEngagement: parsed.underusedHighEngagement ?? [],
+        gaps: parsed.gaps ?? [],
+        suggestions: parsed.suggestions ?? [],
+      };
+    }
+  } catch (error) {
+    console.warn("[ai-content-gap] AI failed, falling back:", error);
+    onLog?.("⚠️ [AI Content Gap] Lỗi, dùng phân tích cơ bản.");
+  }
+
+  return buildFallbackGap(pillarStats, overallAvgEngagement);
+}
+
+function buildFallbackGap(
+  pillarStats: Array<{ name: string; count: number; avgEngagement: number; totalViews: number }>,
+  overallAvgEngagement: number,
+): AIContentGapResult {
+  const counts = pillarStats.map((p) => p.count).sort((a, b) => a - b);
+  const median = counts[Math.floor(counts.length / 2)] ?? 0;
+
+  return {
+    commonTopics: pillarStats.slice(0, 5).map((p) => p.name),
+    repeatedTopics: pillarStats
+      .filter((p) => p.count > median && p.avgEngagement <= overallAvgEngagement)
+      .slice(0, 3)
+      .map((p) => `${p.name} xuất hiện ${p.count} lần nhưng engagement chỉ ${(p.avgEngagement * 100).toFixed(1)}%, thấp hơn trung bình ${(overallAvgEngagement * 100).toFixed(1)}%.`),
+    underusedHighEngagement: pillarStats
+      .filter((p) => p.count <= Math.max(1, median) && p.avgEngagement >= overallAvgEngagement)
+      .slice(0, 3)
+      .map((p) => `${p.name} chỉ có ${p.count} bài nhưng engagement đạt ${(p.avgEngagement * 100).toFixed(1)}% — cơ hội tốt để khai thác sâu.`),
+    gaps: ["Chưa đủ dữ liệu để xác định khoảng trống nội dung."],
+    suggestions: ["Thu thập thêm dữ liệu đối thủ để AI đưa ra gợi ý chiến lược chính xác."],
+  };
 }

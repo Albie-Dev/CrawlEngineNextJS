@@ -3,6 +3,7 @@ import { contentPillars } from "@/lib/constants";
 
 import { prisma } from "@/lib/prisma";
 import { hasPublicYoutubeApiKey } from "@/lib/publicYoutubeData";
+import { aiContentGapAnalysis } from "@/lib/aiClassifier";
 import type { AnalyticsFilters, Platform, SortBy, SourceType } from "@/lib/types";
 import { daysAgo } from "@/lib/utils";
 
@@ -233,48 +234,6 @@ export async function getOverviewAnalytics(filters: AnalyticsFilters = {}) {
   };
 }
 
-function buildDomesticGap(posts: PostWithCompetitor[]) {
-  const domesticPosts = posts.filter((post) => post.competitor.source === "trong_nuoc");
-  const pillarStats = aggregatePosts(domesticPosts, "contentPillar");
-  const overallAvg = average(domesticPosts.map((post) => post.engagementRate));
-  const counts = pillarStats.map((item) => item.count).sort((a, b) => a - b);
-  const medianCount = counts[Math.floor(counts.length / 2)] ?? 0;
-
-  const overused = pillarStats
-    .filter((item) => item.count > medianCount && item.avgEngagement <= overallAvg)
-    .slice(0, 4)
-    .map((item) => `${item.name} đang xuất hiện dày nhưng hiệu quả chỉ quanh mức trung bình.`);
-
-  const underusedHighEngagement = pillarStats
-    .filter((item) => item.count <= Math.max(2, medianCount) && item.avgEngagement >= overallAvg)
-    .slice(0, 4)
-    .map((item) => `${item.name} có tương tác tốt nhưng chưa nhiều bên khai thác sâu.`);
-
-  const missingPillars = contentPillars
-    .filter((pillar) => !pillarStats.some((item) => item.name === pillar))
-    .slice(0, 4)
-    .map((pillar) => `${pillar} gần như chưa xuất hiện trong tập dữ liệu hiện tại.`);
-
-  return {
-    commonTopics: pillarStats.slice(0, 5).map((item) => item.name),
-    repeatedTopics: overused.length ? overused : ["Cập nhật thị trường và tin nóng đang bị lặp lại ở nhiều page/kênh."],
-    underusedHighEngagement: underusedHighEngagement.length
-      ? underusedHighEngagement
-      : ["Case study giao dịch và cảnh báo rủi ro có thể tạo khác biệt nếu Kolia kể bằng dữ liệu rõ ràng."],
-    gaps: [
-      ...missingPillars,
-      "Tuyến giáo dục trung lập về quản trị rủi ro cho người mới còn thiếu chiều sâu.",
-      "Tuyến so sánh trước/sau quyết định đầu tư có thể giúp Kolia nổi bật mà không khuyến nghị cá nhân."
-    ].slice(0, 6),
-    suggestions: [
-      "Chuỗi bài 'Giải thích thị trường trong 5 phút' cho vàng, crypto và VN-Index.",
-      "Mini case study: một quyết định đúng quy trình dù kết quả ngắn hạn chưa đẹp.",
-      "Livestream/Webinar quý: đọc dữ liệu vĩ mô và tự xây kịch bản.",
-      "Minigame dự đoán kịch bản thị trường kèm checklist quản trị rủi ro."
-    ]
-  };
-}
-
 function formulaForPost(post: PostWithCompetitor) {
   const isShort = post.format === "short_video" || post.format === "reel";
   const formula = isShort
@@ -398,8 +357,20 @@ function buildForeignFormula(posts: PostWithCompetitor[]) {
 
 export async function getContentGapAnalytics(filters: AnalyticsFilters = {}) {
   const posts = await getFilteredPosts({ ...filters, platform: filters.platform ?? "all" });
+
+  const domesticPosts = posts.filter((p) => p.competitor.source === "trong_nuoc");
+  const pillarStats = aggregatePosts(domesticPosts, "contentPillar");
+  const overallAvg = domesticPosts.length
+    ? domesticPosts.reduce((s, p) => s + p.engagementRate, 0) / domesticPosts.length
+    : 0;
+
+  const domestic = await aiContentGapAnalysis(
+    pillarStats.map((p) => ({ name: p.name, count: p.count, avgEngagement: p.avgEngagement, totalViews: p.totalViews })),
+    overallAvg,
+  );
+
   return {
-    domestic: buildDomesticGap(posts),
+    domestic,
     foreign: buildForeignFormula(posts)
   };
 }
@@ -410,8 +381,23 @@ export async function getPlatformAnalytics(platform: Platform, filters: Analytic
     getFilteredPosts(scopedFilters),
     getCompetitors({ platform, source: filters.source })
   ]);
-  const domesticGap = buildDomesticGap(posts);
-  const foreignFormula = buildForeignFormula(posts);
+
+  const domesticPosts = posts.filter((p) => p.competitor.source === "trong_nuoc");
+  const pillarStats = aggregatePosts(domesticPosts, "contentPillar");
+  const overallAvg = domesticPosts.length
+    ? domesticPosts.reduce((s, p) => s + p.engagementRate, 0) / domesticPosts.length
+    : 0;
+
+  // Server-side: content gap cơ bản từ dữ liệu (không gọi AI)
+  // AI content gap được lazy-load client-side qua LazyContentGapPanel
+  const domesticGap = {
+    commonTopics: pillarStats.slice(0, 5).map((p) => p.name),
+    repeatedTopics: [] as string[],
+    underusedHighEngagement: [] as string[],
+    gaps: [] as string[],
+    suggestions: [] as string[],
+  };
+  const foreignFormula = { viralPatterns: [], shortForm: [], longForm: [], koliaFormats: [] };
   const totalViews = posts.reduce((sum, post) => sum + post.views, 0);
   const totalInteractions = posts.reduce((sum, post) => sum + post.likes + post.comments + post.shares, 0);
 

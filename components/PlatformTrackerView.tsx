@@ -1,6 +1,7 @@
 import { Eye, MessageCircle, RadioTower, Users } from "lucide-react";
 import { AddYoutubeCompetitorButton } from "@/components/AddYoutubeCompetitorButton";
-import { ContentGapPanel } from "@/components/ContentGapPanel";
+import { LazyContentGapPanel } from "@/components/LazyContentGapPanel";
+import { LazyForeignFormula } from "@/components/LazyForeignFormula";
 import { ContentOpportunityChart } from "@/components/ContentOpportunityChart";
 import { CompetitorTable } from "@/components/CompetitorTable";
 import { FilterBar } from "@/components/FilterBar";
@@ -8,7 +9,6 @@ import { MetricCard } from "@/components/MetricCard";
 import { PlatformTabs } from "@/components/PlatformTabs";
 import { PostTable } from "@/components/PostTable";
 import { TopPostCard } from "@/components/TopPostCard";
-import { ViralFormulaCard } from "@/components/ViralFormulaCard";
 import { getPlatformAnalytics } from "@/lib/analytics";
 import { platformLabels } from "@/lib/constants";
 import type { AnalyticsFilters, Platform } from "@/lib/types";
@@ -76,15 +76,15 @@ export async function PlatformTrackerView({
       </div>
 
       {platform === "youtube" ? (
-        <YouTubeAnalysis analytics={analytics} />
+        <YouTubeAnalysis analytics={analytics} platform={platform} />
       ) : platform === "tiktok" ? (
-        <TikTokAnalysis analytics={analytics} />
+        <TikTokAnalysis analytics={analytics} platform={platform} />
       ) : (
-        <FacebookAnalysis analytics={analytics} ctaPosts={ctaPosts} />
+        <FacebookAnalysis analytics={analytics} ctaPosts={ctaPosts} platform={platform} />
       )}
 
       <CompetitorTable summaries={analytics.competitorSummaries} lockPlatform={platform} />
-      <PostTable posts={analytics.topPosts} title={`Bảng nội dung nổi bật trên ${platformLabels[platform]} theo trụ cột nội dung, link gốc và phân loại`} />
+      <PostTable posts={analytics.topPosts} hideShare={platform === "youtube"} title={`Bảng nội dung nổi bật trên ${platformLabels[platform]} theo trụ cột nội dung, link gốc và phân loại`} />
     </div>
   );
 }
@@ -116,42 +116,16 @@ function ContentCountCard({ total, shortCount, longCount }: { total: number; sho
   );
 }
 
-function YouTubeAnalysis({ analytics }: { analytics: Awaited<ReturnType<typeof getPlatformAnalytics>> }) {
+function YouTubeAnalysis({ analytics, platform }: { analytics: Awaited<ReturnType<typeof getPlatformAnalytics>>; platform: Platform }) {
   return (
     <div className="space-y-6">
-      <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
-        <h2 className="text-base font-bold text-kolia-ink">Cấu trúc nội dung tạo sức hút từ kênh nước ngoài</h2>
-          <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
-            {analytics.foreignFormula.viralPatterns.map((pattern) => (
-              <li key={pattern} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-kolia-gold" />
-                {pattern}
-              </li>
-            ))}
-          </ul>
-        </section>
-
-      <ContentGapPanel domestic={analytics.domesticGap} />
-
-      <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
-        <h2 className="text-base font-bold text-kolia-ink">Kịch bản video và cấu trúc nội dung có thể học từ YouTube nước ngoài</h2>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
-          Phân tích dựa trên tiêu đề, mô tả, định dạng và chỉ số tương tác; không phải transcript đầy đủ của video.
-        </p>
-        <div className="mt-4 grid gap-4 lg:grid-cols-2">
-          {analytics.foreignFormula.shortForm.slice(0, 2).map((formula) => (
-            <ViralFormulaCard key={formula.sourceUrl} formula={formula} label="Video ngắn" />
-          ))}
-          {analytics.foreignFormula.longForm.slice(0, 2).map((formula) => (
-            <ViralFormulaCard key={formula.sourceUrl} formula={formula} label="Video phân tích dài" />
-          ))}
-        </div>
-      </section>
+      <LazyForeignFormula hasData={analytics.totalPosts > 0} />
+      <LazyContentGapPanel platform={platform} hasData={analytics.totalPosts > 0} />
     </div>
   );
 }
 
-function TikTokAnalysis({ analytics }: { analytics: Awaited<ReturnType<typeof getPlatformAnalytics>> }) {
+function TikTokAnalysis({ analytics, platform }: { analytics: Awaited<ReturnType<typeof getPlatformAnalytics>>; platform: Platform }) {
   const tiktokLines = [
     "Tuyến giải thích thị trường vàng dễ hiểu trong 60s.",
     "Tuyến tâm lý nhà đầu tư: FOMO, sợ hãi, kỷ luật vốn.",
@@ -162,7 +136,7 @@ function TikTokAnalysis({ analytics }: { analytics: Awaited<ReturnType<typeof ge
 
   return (
     <div className="space-y-6">
-      <ContentGapPanel domestic={analytics.domesticGap} />
+      <LazyContentGapPanel platform={platform} hasData={analytics.totalPosts > 0} />
       <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
         <h2 className="text-base font-bold text-kolia-ink">Gợi ý tuyến TikTok cho Kolia</h2>
         <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
@@ -199,10 +173,12 @@ function TikTokAnalysis({ analytics }: { analytics: Awaited<ReturnType<typeof ge
 
 function FacebookAnalysis({
   analytics,
-  ctaPosts
+  ctaPosts,
+  platform
 }: {
   analytics: Awaited<ReturnType<typeof getPlatformAnalytics>>;
   ctaPosts: Awaited<ReturnType<typeof getPlatformAnalytics>>["posts"];
+  platform: Platform;
 }) {
   return (
     <div className="space-y-6">
@@ -230,7 +206,7 @@ function FacebookAnalysis({
           </div>
         </section>
       </div>
-      <ContentGapPanel domestic={analytics.domesticGap} />
+      <LazyContentGapPanel platform={platform} hasData={analytics.totalPosts > 0} />
     </div>
   );
 }
