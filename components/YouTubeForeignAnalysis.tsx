@@ -861,37 +861,65 @@ export function YouTubeForeignAnalysis({ domesticPosts = [] }: { domesticPosts?:
             {Math.min(currentPage * itemsPerPage, totalItems)} trong {totalItems} kết quả
           </span>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 overflow-x-auto max-w-[280px] custom-scrollbar">
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="p-1 rounded hover:bg-slate-200/60 disabled:opacity-30 transition"
+              className="p-1 rounded hover:bg-slate-200/60 disabled:opacity-30 shrink-0 transition"
             >
               <ChevronLeft className="h-3 w-3" />
             </button>
 
-            {Array.from({ length: totalPages }).map((_, i) => {
-              const p = i + 1;
-              const isCurrent = currentPage === p;
-              return (
-                <button
-                  key={p}
-                  onClick={() => setCurrentPage(p)}
-                  className={`h-5 w-5 rounded font-bold text-center transition ${
-                    isCurrent
-                      ? "bg-kolia-ink text-white"
-                      : "hover:bg-slate-200/60 text-slate-600"
-                  }`}
-                >
-                  {p}
-                </button>
-              );
-            })}
+            {(() => {
+              const pages: (number | "...")[] = [];
+              const range = 2; // số trang hiển thị 2 bên trang hiện tại
+
+              if (totalPages <= 7) {
+                // Nếu ít trang, hiển thị tất cả
+                for (let i = 1; i <= totalPages; i++) pages.push(i);
+              } else {
+                pages.push(1);
+
+                if (currentPage - range > 2) pages.push("...");
+
+                const start = Math.max(2, currentPage - range);
+                const end = Math.min(totalPages - 1, currentPage + range);
+                for (let i = start; i <= end; i++) pages.push(i);
+
+                if (currentPage + range < totalPages - 1) pages.push("...");
+
+                pages.push(totalPages);
+              }
+
+              return pages.map((p, idx) => {
+                if (p === "...") {
+                  return (
+                    <span key={`ellipsis-${idx}`} className="px-0.5 text-slate-400 font-bold tracking-widest">
+                      ...
+                    </span>
+                  );
+                }
+                const isCurrent = currentPage === p;
+                return (
+                  <button
+                    key={p}
+                    onClick={() => setCurrentPage(p)}
+                    className={`h-5 w-5 rounded font-bold text-center text-[11px] leading-none transition ${
+                      isCurrent
+                        ? "bg-kolia-ink text-white"
+                        : "hover:bg-slate-200/60 text-slate-600"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                );
+              });
+            })()}
 
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages || totalPages === 0}
-              className="p-1 rounded hover:bg-slate-200/60 disabled:opacity-30 transition"
+              className="p-1 rounded hover:bg-slate-200/60 disabled:opacity-30 shrink-0 transition"
             >
               <ChevronRight className="h-3 w-3" />
             </button>
