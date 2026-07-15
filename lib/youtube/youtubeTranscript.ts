@@ -22,7 +22,7 @@ export async function fetchAndFormatTranscript(
     onLog?: (msg: string) => void;
   } = {}
 ): Promise<string> {
-  const format = options.format || "plain_text";
+  const format = options.format || "timestamps";
   const onLog = options.onLog;
 
   let transcriptItems: TranscriptResponse[] = [];

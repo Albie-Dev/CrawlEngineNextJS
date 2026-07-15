@@ -82,12 +82,11 @@ export function CompetitorTable({ summaries, lockPlatform }: { summaries: Compet
   useEffect(() => { setPage(1); }, [competitorQuery, platformFilter, sortMetric, sortDirection]);
 
   return (
-    <div className="overflow-hidden rounded border border-kolia-line bg-white shadow-sm">
+    <div>
       <div className="border-b border-kolia-line px-5 py-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 className="text-base font-bold text-kolia-ink">Tổng bài viết và tương tác theo đối thủ</h2>
-            <p className="mt-1 text-sm leading-6 text-slate-500">
+            <p className="text-sm leading-6 text-slate-500">
               So sánh sản lượng nội dung, quy mô tiếp cận và chất lượng tương tác để xác định đối thủ cần theo dõi sát hơn.
             </p>
           </div>

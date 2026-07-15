@@ -294,7 +294,7 @@ async function getVideoDetails(videoIds: string[], apiKey: string, context?: Ada
         try {
           const { fetchAndFormatTranscript } = await import("@/lib/youtube/youtubeTranscript");
           transcriptText = await fetchAndFormatTranscript(video.id, {
-            format: context?.settings?.youtubeTranscriptFormat || "plain_text",
+            format: context?.settings?.youtubeTranscriptFormat || "timestamps",
             onLog: context?.onLog ? (msg) => context.onLog!(`[${snippet?.title || video.id}] ${msg}`) : undefined
           });
         } catch (err) {
@@ -325,7 +325,8 @@ async function getVideoDetails(videoIds: string[], apiKey: string, context?: Ada
           views: parseCount(statistics?.viewCount),
           likes: parseCount(statistics?.likeCount),
           comments: parseCount(statistics?.commentCount),
-          shares: 0
+          shares: 0,
+          duration: durationSeconds || undefined
         };
       })
   );

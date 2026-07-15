@@ -147,6 +147,7 @@ export async function syncCompetitorData(platform?: Platform, syncFilters?: Sync
         title: sanitize(enriched.title),
         caption: sanitize(enriched.caption),
         transcript: enriched.transcript ? sanitize(enriched.transcript) : null,
+        duration: enriched.duration ?? null,
         publishedAt: enriched.publishedAt,
         thumbnailUrl: sanitize(enriched.thumbnailUrl),
         format: sanitize(enriched.format),
@@ -377,6 +378,7 @@ export async function syncCompetitorDataStream(
               postUrl: sanitize(enriched.postUrl), title: sanitize(enriched.title),
               caption: sanitize(enriched.caption),
               transcript: enriched.transcript ? sanitize(enriched.transcript) : null,
+              duration: enriched.duration ?? null,
               publishedAt: enriched.publishedAt,
               thumbnailUrl: sanitize(enriched.thumbnailUrl), format: sanitize(enriched.format),
               contentPillar: sanitize(enriched.contentPillar), promotionType: sanitize(enriched.promotionType),
@@ -605,6 +607,7 @@ export function startBackgroundSync(
               postUrl: sanitize(enriched.postUrl), title: sanitize(enriched.title),
               caption: sanitize(enriched.caption),
               transcript: enriched.transcript ? sanitize(enriched.transcript) : null,
+              duration: enriched.duration ?? null,
               publishedAt: enriched.publishedAt,
               thumbnailUrl: sanitize(enriched.thumbnailUrl), format: sanitize(enriched.format),
               contentPillar: sanitize(enriched.contentPillar), promotionType: sanitize(enriched.promotionType),
@@ -637,6 +640,25 @@ export function startBackgroundSync(
       const elapsed = formatTime(Date.now() - startTime);
       send("log", { message: `🎉 Đồng bộ hoàn tất sau ${elapsed}!` });
       send("done", { syncRunId, competitors: totalCompetitors, createdPosts, updatedPosts, elapsed, syncedAt: new Date().toISOString() });
+
+      // ─── Auto AI Relevance Scoring cho YouTube posts mới ───────────
+      // Fire-and-forget: không block done event, chạy nền sau khi sync xong
+      if (createdPosts > 0) {
+        (async () => {
+          try {
+            send("log", { message: `🤖 Đang chấm điểm AI liên quan cho ${createdPosts} video YouTube mới...` });
+            const { autoScoreYouTubePosts } = await import("@/lib/youtubeRelevance");
+            const scored = await autoScoreYouTubePosts();
+            if (scored > 0) {
+              send("log", { message: `✅ AI đã chấm điểm liên quan cho ${scored} video YouTube.` });
+            }
+          } catch (scoreErr) {
+            // Non-critical — log only, do not fail sync
+            const msg = scoreErr instanceof Error ? scoreErr.message : String(scoreErr);
+            send("log", { message: `⚠️ Chấm điểm AI liên quan thất bại (non-critical): ${msg}` });
+          }
+        })();
+      }
 
       // ─── Gửi Telegram notification ─────────────────────────────────
       try {

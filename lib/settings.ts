@@ -359,7 +359,7 @@ export async function getPublicSettings(): Promise<PublicSettings> {
     facebookBaseUrl: settings.get("facebookBaseUrl") || undefined,
     facebookLoginUrl: settings.get("facebookLoginUrl") || undefined,
     youtubeTranscriptAutoTranslate: settings.get("youtubeTranscriptAutoTranslate") !== "false",
-    youtubeTranscriptFormat: (settings.get("youtubeTranscriptFormat") as "plain_text" | "timestamps") || "plain_text",
+    youtubeTranscriptFormat: (settings.get("youtubeTranscriptFormat") as "plain_text" | "timestamps") || "timestamps",
 
     // New provider configs
     tiktokProvider,

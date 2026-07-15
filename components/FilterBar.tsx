@@ -43,10 +43,14 @@ export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
     ? platformFormats[selectedPlatform].map((key) => ({ value: key, label: formatLabels[key] }))
     : Object.entries(formatLabels).map(([value, label]) => ({ value, label }));
 
-  // Platform-aware default sortBy
-  const defaultSortBy = selectedPlatform && selectedPlatform !== "all" && selectedPlatform !== "facebook" ? "views" : "engagement";
-
+  const isYoutube = lockPlatform === "youtube" || selectedPlatform === "youtube";
   const isTiktok = lockPlatform === "tiktok";
+
+  // Platform-aware default sortBy
+  const defaultSortBy =
+    selectedPlatform && selectedPlatform !== "all" && selectedPlatform !== "facebook" && selectedPlatform !== "youtube"
+      ? "views"
+      : "engagement";
 
   const selectClass =
     "h-10 rounded border border-kolia-line bg-white px-3 text-sm font-medium text-slate-700 outline-none transition focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint";
@@ -132,7 +136,7 @@ export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
             ))}
           </select>
         )}
-        {!isTiktok && (
+        {!isTiktok && !isYoutube && (
           <select name="promotionType" defaultValue={filters.promotionType ?? ""} className={selectClass}>
             <option value="">Tất cả nhóm CTA/ưu đãi</option>
             {promotionOptions.map((promotionType) => (
@@ -144,11 +148,13 @@ export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
         )}
         {!isTiktok && (
           <select name="sortBy" defaultValue={filters.sortBy ?? defaultSortBy} className={selectClass}>
-            {Object.entries(sortLabels).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
+            {Object.entries(sortLabels)
+              .filter(([value]) => !(isYoutube && value === "views"))
+              .map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
           </select>
         )}
       </div>

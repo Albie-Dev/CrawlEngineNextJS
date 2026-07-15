@@ -339,12 +339,41 @@ Trả về JSON TIẾNG VIỆT (chỉ JSON, không suy luận):
   };
 }
 
-// ─── AI Single Video Formula ─────────────────────────────────────────────
+export type HighlightItem = {
+  timestamp: string;  // VD: "00:08" hoặc "12:30"
+  timeRange?: string; // Khoảng thời gian cụ thể, VD: "00:08 - 01:25"
+  title: string;      // Dòng tóm tắt ngắn (hiển thị mặc định)
+  detail: string;     // Mô tả chi tiết hơn khi expand
+};
 
 export type AIVideoFormula = {
-  formula: string;
+  summary: string;    // Tóm tắt tổng quan video 2-3 câu
+  formatViral: {
+    titleTemplate: string;
+    hookPattern: string;
+    corePromise: string;
+    contentAngle: string;
+    style: string;
+  };
   timeline?: Array<{ time: string; title: string; script: string; role: string }>;
+  editingAndEffects: string[];
+  contentBrief: {
+    topic: string;
+    angle: string;
+    keyPoints: string;
+    cta: string;
+  };
+  highlights: HighlightItem[];
+  tags: string[];
+  channelProfile: {
+    contentStyle: string;
+    targetAudience: string;
+    strengths: string;
+    worthFollowing: "Có" | "Không" | "Tuỳ mục đích";
+    reason: string;
+  };
   vietnamized: string;
+  isDeepAnalysis?: boolean;
 };
 
 export async function aiVideoFormula(
@@ -352,47 +381,164 @@ export async function aiVideoFormula(
   format: string,
   mainTopic: string,
   transcript?: string,
+  isDeepAnalysis: boolean = false,
+  duration?: number | null  // thời lượng video tính bằng giây
 ): Promise<AIVideoFormula> {
   if (!await isOpenAIConfigured()) {
     return {
-      formula: format === "short_video"
-        ? "Hook → Vấn đề → Giải thích → Kết luận"
-        : "Luận điểm → Dữ liệu → Phân tích → Kịch bản → Kết luận",
+      summary: "Chưa phân tích được - Vui lòng cấu hình AI API để bắt đầu phân tích.",
+      formatViral: {
+        titleTemplate: "Chưa phân tích được",
+        hookPattern: format === "short_video" ? "Hook → Vấn đề → Giải thích → Kết luận" : "Luận điểm → Dữ liệu → Phân tích → Kết luận",
+        corePromise: "Chưa phân tích được",
+        contentAngle: "Chưa phân tích được",
+        style: "Chưa phân tích được"
+      },
       timeline: [],
+      editingAndEffects: ["B-roll", "Zoom cut nhanh"],
+      contentBrief: {
+        topic: title,
+        angle: "Phân tích số liệu",
+        keyPoints: "1. Vấn đề\n2. Phân tích\n3. Giải pháp",
+        cta: "Đăng ký kênh"
+      },
+      highlights: [],
+      tags: [],
+      channelProfile: {
+        contentStyle: "Chưa phân tích",
+        targetAudience: "Chưa phân tích",
+        strengths: "Chưa phân tích",
+        worthFollowing: "Tuỳ mục đích",
+        reason: "Chưa phân tích"
+      },
       vietnamized: "Việt hóa dựa trên nội dung gốc.",
+      isDeepAnalysis: false
     };
   }
 
-  try {
-    const parts = [`TIÊU ĐỀ: ${title}`, `CHỦ ĐỀ: ${mainTopic}`];
-    if (transcript) parts.push(`TRANSCRIPT:\n${transcript.slice(0, 10000)}`);
-    const input = parts.join("\n\n");
+  let actualIsDeepAnalysis = isDeepAnalysis;
 
-    const prompt = `${input}
+  // Format thời lượng để truyền vào prompt
+  const formatDuration = (seconds: number): string => {
+    if (seconds < 60) return `${seconds}s`;
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return s > 0 ? `${m} phút ${s}s` : `${m} phút`;
+  };
+  const durationLabel = duration ? formatDuration(duration) : null;
 
-Trả về JSON TIẾNG VIỆT (chỉ JSON, không suy luận):
-{"formula":"cấu trúc kịch bản, 5-10 từ","timeline":[{"time":"mốc","title":"bước","script":"nội dung","role":"vai trò"}],"vietnamized":"gợi ý Việt hóa cho Kolia, 1-2 câu"}
-
-Với ${format === "short_video" ? "short video: 3-4 bước, mỗi bước ~15-20s" : "long video: 4-6 bước, mỗi bước 2-4 phút"}.`;
-
-    const response = await callAI([
-      { role: "system" as const, content: "Chuyên gia phân tích nội dung YouTube. Luôn trả lời bằng TIẾNG VIỆT. Chỉ JSON." },
-      { role: "user" as const, content: prompt },
-    ], { maxTokens: 100000 });
-
-    console.log(`[ai-video-formula] Response for "${title.slice(0, 50)}":`, response.slice(0, 200));
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      const parsed = JSON.parse(jsonMatch[0]);
-      return {
-        formula: parsed.formula || "",
-        timeline: parsed.timeline || [],
-        vietnamized: parsed.vietnamized || "",
-      };
+  const parts = [
+    `TIÊU ĐỀ: ${title}`,
+    `CHỦ ĐỀ: ${mainTopic}`,
+    ...(durationLabel ? [`THỜI LƯỢNG VIDEO: ${durationLabel} (${duration}s)`] : []),
+  ];
+  
+  if (transcript) {
+    if (!isDeepAnalysis && transcript.length > 12000) {
+      // Smart Chunking (Option 2): Tiết kiệm token cho video dài > 20 phút
+      const head = transcript.slice(0, 4000);
+      const midStart = Math.floor(transcript.length / 2) - 2000;
+      const midEnd = Math.floor(transcript.length / 2) + 2000;
+      const mid = transcript.slice(midStart, midEnd);
+      const tail = transcript.slice(-4000);
+      parts.push(`TRANSCRIPT:\n${head}\n\n[...ĐÃ LƯỢC BỎ GIỮA VIDEO ĐỂ TIẾT KIỆM TOKEN...]\n\n${mid}\n\n[...ĐÃ LƯỢC BỎ...]\n\n${tail}`);
+    } else {
+      // Deep Analysis (Option 1) hoặc video ngắn: Gửi full nội dung, max 150.000 ký tự (~4-5 tiếng)
+      parts.push(`TRANSCRIPT:\n${transcript.slice(0, 150000)}`);
+      // Nếu video ngắn (<= 12000) thì mặc định là đã phân tích toàn bộ (SÂU)
+      actualIsDeepAnalysis = true;
     }
-  } catch (e) {
-    console.warn(`[ai-video-formula] AI failed for "${title.slice(0, 50)}":`, e);
+  } else {
+    actualIsDeepAnalysis = true; // Không có transcript thì không có gì để cắt, coi như đã phân tích hết
   }
 
-  return { formula: "", timeline: [], vietnamized: "" };
+  const input = parts.join("\n\n");
+
+  const prompt = `${input}
+
+Phân tích video này và bóc tách cấu trúc nội dung. Trả về JSON TIẾNG VIỆT (chỉ JSON thuần, không markdown) theo đúng format:
+{
+  "summary": "Tóm tắt tổng quan video trong 2-3 câu súc tích, nêu được điểm đặc biệt khiến video này nổi bật",
+  "formatViral": {
+    "titleTemplate": "Mẫu tiêu đề tổng quát có thể tái sử dụng",
+    "hookPattern": "Cách video mở đầu giữ chân người xem",
+    "corePromise": "Giá trị cụ thể người xem nhận được sau khi xem hết",
+    "contentAngle": "Góc tiếp cận / luận điểm độc đáo của tác giả",
+    "style": "Phong cách truyền đạt (VD: Chuyên gia phân tích, kể chuyện, dữ liệu + ví dụ)"
+  },
+  "timeline": [
+    { "time": "0-3s", "title": "Tên đoạn", "script": "Tóm tắt nội dung đoạn này", "role": "Hook | Thiết lập vấn đề | Bằng chứng | Giải pháp | CTA | v.v." },
+    { "time": "3-15s", "title": "Tên đoạn", "script": "Tóm tắt nội dung", "role": "vai trò" }
+  ],
+  "editingAndEffects": ["3-5 kỹ thuật edit nổi bật giúp giữ chân người xem"],
+  "contentBrief": {
+    "topic": "Chủ đề cốt lõi",
+    "angle": "Cách triển khai",
+    "keyPoints": "3-4 ý chính quan trọng nhất",
+    "cta": "CTA được sử dụng hoặc đề xuất"
+  },
+  "highlights": [
+    {
+      "timestamp": "00:08",
+      "timeRange": "Khoảng thời gian cụ thể (VD: 00:08 - 01:25)",
+      "title": "Dòng tóm tắt ngắn nhất có thể của đoạn/ý này (1 câu)",
+      "detail": "Mô tả chi tiết hơn nội dung của đoạn này, tại sao nó quan trọng (2-3 câu)"
+    }
+  ],
+  "tags": ["6-10 từ khoá / thẻ tag mô tả chủ đề, ngành, phong cách"],
+  "channelProfile": {
+    "contentStyle": "Phong cách nội dung của kênh",
+    "targetAudience": "Đối tượng khán giả",
+    "strengths": "Điểm mạnh của kênh",
+    "worthFollowing": "Có",
+    "reason": "Lý do 1-2 câu"
+  },
+  "vietnamized": "Gợi ý 1-2 câu áp dụng format này cho kênh Việt Nam"
+}
+
+QUAN TRỌNG - Quy tắc timeline:
+${durationLabel ? `- Video dài ${durationLabel} — timeline PHẢI bao phủ từ đầu đến cuối (0 → ${durationLabel}).` : "- Timeline phải bao phủ toàn bộ thời lượng video từ đầu đến cuối."}
+- Mỗi đoạn timeline phải có nhãn "role" mô tả đúng vai trò thực tế của đoạn đó trong video (tự phân tích từ nội dung, không dùng nhãn cố định).
+- Số lượng đoạn: ${format === "short_video" ? "5-8 đoạn tính bằng giây (ví dụ: 0-3s, 3-12s, 12-28s...)" : "6-12 đoạn tính bằng phút:giây (ví dụ: 0:00-0:45, 0:45-2:30...)"}.
+- KHÔNG được dừng giữa chừng. Đoạn cuối PHẢI kết thúc đúng thời điểm cuối video.`;
+
+  const response = await callAI([
+    { role: "system" as const, content: "Chuyên gia phân tích nội dung YouTube. Luôn trả lời bằng TIẾNG VIỆT. Chỉ output raw JSON object, không bọc trong markdown tick marks." },
+    { role: "user" as const, content: prompt },
+  ], { maxTokens: 8192 });
+
+  console.log(`[ai-video-formula] Response for "${title.slice(0, 50)}":`, response.slice(0, 200));
+  const jsonMatch = response.match(/\{[\s\S]*\}/);
+  if (jsonMatch) {
+    const parsed = JSON.parse(jsonMatch[0]);
+    return {
+      summary: parsed.summary || "",
+      formatViral: parsed.formatViral || {
+        titleTemplate: "N/A", hookPattern: "N/A", corePromise: "N/A", contentAngle: "N/A", style: "N/A"
+      },
+      timeline: parsed.timeline || [],
+      editingAndEffects: parsed.editingAndEffects || [],
+      contentBrief: parsed.contentBrief || {
+        topic: "N/A", angle: "N/A", keyPoints: "N/A", cta: "N/A"
+      },
+      highlights: Array.isArray(parsed.highlights)
+        ? parsed.highlights.map((h: any) => typeof h === "string"
+            ? { timestamp: "", timeRange: "", title: h, detail: h }  // backward compat
+            : { timestamp: h.timestamp || "", timeRange: h.timeRange || "", title: h.title || "", detail: h.detail || h.title || "" }
+          )
+        : [],
+      tags: parsed.tags || [],
+      channelProfile: parsed.channelProfile || {
+        contentStyle: "N/A",
+        targetAudience: "N/A",
+        strengths: "N/A",
+        worthFollowing: "Tuỳ mục đích",
+        reason: "Chưa phân tích được"
+      },
+      vietnamized: parsed.vietnamized || "",
+      isDeepAnalysis: actualIsDeepAnalysis,
+    };
+  }
+
+  throw new Error(`[ai-video-formula] Không thể parse JSON response cho "${title.slice(0, 50)}"`);
 }

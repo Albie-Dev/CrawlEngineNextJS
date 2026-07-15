@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronRight, Database, Loader2, X } from "lucide-react";
 import { DateRangePicker } from "rsuite";
@@ -63,6 +64,9 @@ const predefinedRanges = [
 ];
 
 export function SyncPanel({ open, onClose }: SyncPanelProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
   const router = useRouter();
   const [competitors, setCompetitors] = useState<CompetitorItem[]>([]);
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>(["youtube", "tiktok", "facebook"]);
@@ -337,10 +341,10 @@ export function SyncPanel({ open, onClose }: SyncPanelProps) {
     })();
   }, [selectedPlatforms, dateRange, selectedCompetitorIds, facebookMaxPosts, syncing, router]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 pt-8 backdrop-blur-sm">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-start justify-center bg-black/40 pt-8 backdrop-blur-sm">
       <div
         ref={panelRef}
         className="mx-4 flex w-full max-w-3xl max-h-[90vh] flex-col rounded-xl border border-kolia-line bg-white shadow-soft"
@@ -626,6 +630,7 @@ export function SyncPanel({ open, onClose }: SyncPanelProps) {
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -26,6 +26,7 @@ export type RawPostInput = {
   shares: number;
   format?: string;
   transcript?: string;
+  duration?: number;
 };
 
 export type CompetitorSeed = {

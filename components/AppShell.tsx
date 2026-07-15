@@ -72,6 +72,7 @@ const flatNavItems = navSections.flatMap((s) => s.items);
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
   const [quotaExhausted, setQuotaExhausted] = useState(false);
   const [quotaMsg, setQuotaMsg] = useState("");
   const [quotaDismissed, setQuotaDismissed] = useState(false);
@@ -152,46 +153,92 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
       </header>
 
-      <aside className="fixed bottom-0 left-0 top-16 z-30 hidden w-72 border-r border-kolia-line/80 bg-white/82 overflow-y-auto p-4 backdrop-blur md:block">
-        <nav className="space-y-6">
-          {navSections.map((section) => (
-            <div key={section.title}>
-              <p className="mb-1.5 px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-kolia-gold">
-                {section.title}
-              </p>
-              <div className="space-y-0.5">
-                {section.items.map((item) => {
-                  const Icon = item.icon;
-                  const active = pathname === item.href;
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={cn(
-                        "flex items-center gap-3 rounded px-3 py-2.5 text-sm font-semibold transition",
-                        active
-                          ? "bg-kolia-ink text-white shadow-soft"
-                          : "text-slate-600 hover:bg-kolia-mint hover:text-kolia-ink"
-                      )}
-                    >
-                      <Icon className="h-4 w-4 shrink-0" />
-                      <span className="truncate">{item.label}</span>
-                    </Link>
-                  );
-                })}
+      <aside
+        className={cn(
+          "fixed bottom-0 left-0 top-16 z-30 hidden border-r border-kolia-line/80 bg-white/82 backdrop-blur transition-all duration-200 md:flex md:flex-col",
+          collapsed ? "w-16" : "w-72"
+        )}
+      >
+        {/* Scrollable nav area */}
+        <div className={cn("flex-1 overflow-y-auto", collapsed ? "p-2" : "p-4")}>
+          <nav className={collapsed ? "space-y-4" : "space-y-6"}>
+            {navSections.map((section) => (
+              <div key={section.title}>
+                {!collapsed && (
+                  <p className="mb-1.5 px-3 text-[11px] font-bold uppercase tracking-[0.12em] text-kolia-gold">
+                    {section.title}
+                  </p>
+                )}
+                <div className="space-y-0.5">
+                  {section.items.map((item) => {
+                    const Icon = item.icon;
+                    const active = pathname === item.href;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                          "group relative flex items-center rounded font-semibold transition",
+                          collapsed
+                            ? "justify-center px-0 py-2.5 text-sm"
+                            : "gap-3 px-3 py-2.5 text-sm",
+                          active
+                            ? "bg-kolia-ink text-white shadow-soft"
+                            : "text-slate-600 hover:bg-kolia-mint hover:text-kolia-ink"
+                        )}
+                      >
+                        <Icon className={cn("shrink-0", collapsed ? "h-5 w-5" : "h-4 w-4")} />
+                        {!collapsed && <span className="truncate">{item.label}</span>}
+
+                        {/* Tooltip on hover when collapsed */}
+                        {collapsed && (
+                          <span className="absolute left-full ml-2 top-1/2 -translate-y-1/2 z-50 hidden whitespace-nowrap rounded bg-kolia-ink px-2 py-1 text-[10px] font-bold text-white shadow-lg group-hover:block pointer-events-none">
+                            {item.label}
+                          </span>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
+            ))}
+          </nav>
+
+          {!collapsed && (
+            <div className="mt-6 rounded border border-kolia-line bg-gradient-to-br from-white to-kolia-amber p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-kolia-gold">Nguyên tắc nội dung</p>
+              <p className="mt-2 text-sm leading-6 text-slate-700">
+                Dashboard phục vụ nghiên cứu marketing, giữ tinh thần giáo dục, minh bạch và không đưa ra khuyến nghị đầu tư cá nhân.
+              </p>
             </div>
-          ))}
-        </nav>
-        <div className="mt-6 rounded border border-kolia-line bg-gradient-to-br from-white to-kolia-amber p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-kolia-gold">Nguyên tắc nội dung</p>
-          <p className="mt-2 text-sm leading-6 text-slate-700">
-            Dashboard phục vụ nghiên cứu marketing, giữ tinh thần giáo dục, minh bạch và không đưa ra khuyến nghị đầu tư cá nhân.
-          </p>
+          )}
         </div>
+
+        {/* Toggle button - floating on the right edge */}
+        <button
+          onClick={() => setCollapsed((c) => !c)}
+          className="absolute -right-4 top-10 flex h-8 w-8 items-center justify-center rounded-full border border-kolia-line bg-white text-slate-500 shadow-sm hover:bg-slate-50 hover:text-slate-700 transition"
+          title={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
+        >
+          <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            {collapsed ? (
+              <path d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+            ) : (
+              <path d="M11 19l-7-7 7-7M19 19l-7-7 7-7" />
+            )}
+          </svg>
+        </button>
       </aside>
 
-      <main className={cn("px-4 pb-10 md:ml-72 md:px-8 transition-all", showBanner ? "pt-[116px] md:pt-[108px]" : "pt-32 md:pt-24")}>{children}</main>
+      <main
+        className={cn(
+          "px-4 pb-10 md:px-8 transition-all duration-200",
+          collapsed ? "md:ml-20" : "md:ml-72",
+          showBanner ? "pt-[116px] md:pt-[108px]" : "pt-32 md:pt-24"
+        )}
+      >
+        {children}
+      </main>
     </div>
   );
 }

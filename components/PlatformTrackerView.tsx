@@ -1,7 +1,6 @@
 import { Eye, MessageCircle, RadioTower, Users } from "lucide-react";
 import { AddYoutubeCompetitorButton } from "@/components/AddYoutubeCompetitorButton";
 import { LazyContentGapPanel } from "@/components/LazyContentGapPanel";
-import { LazyForeignFormula } from "@/components/LazyForeignFormula";
 import { ContentOpportunityChart } from "@/components/ContentOpportunityChart";
 import { CompetitorTable } from "@/components/CompetitorTable";
 import { FilterBar } from "@/components/FilterBar";
@@ -13,6 +12,9 @@ import { getPlatformAnalytics } from "@/lib/analytics";
 import { platformLabels } from "@/lib/constants";
 import type { AnalyticsFilters, Platform } from "@/lib/types";
 import { formatNumber } from "@/lib/utils";
+
+import { YouTubeForeignAnalysis } from "@/components/YouTubeForeignAnalysis";
+import { YouTubeRelevanceTable } from "@/components/YouTubeRelevanceTable";
 
 export async function PlatformTrackerView({
   platform,
@@ -44,7 +46,7 @@ export async function PlatformTrackerView({
 
       <FilterBar filters={filters} lockPlatform={platform} />
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-2">
         <MetricCard title="Đối thủ đang theo dõi" value={formatNumber(analytics.totalCompetitors)} detail={`Chỉ tính các kênh thuộc ${platformLabels[platform]} trong danh sách đã import.`} icon={<Users className="h-5 w-5" />} />
 
         {platform === "youtube" ? (
@@ -56,8 +58,6 @@ export async function PlatformTrackerView({
         ) : (
           <MetricCard title="Nội dung đã thu thập" value={formatNumber(analytics.totalPosts)} detail="Chỉ bao gồm nội dung đã publish, không lấy video đang chờ phát hoặc chưa công khai." icon={<RadioTower className="h-5 w-5" />} />
         )}
-        <MetricCard title="Lượt xem bình quân / nội dung" value={formatNumber(analytics.avgViewsPerPost)} detail="Đánh giá quy mô tiếp cận trung bình của mỗi nội dung trong phạm vi lọc." icon={<Eye className="h-5 w-5" />} />
-        <MetricCard title="Tổng tương tác ghi nhận" value={formatNumber(analytics.totalInteractions)} detail="Tổng like, comment và share để nhận diện chủ đề/kênh cần nghiên cứu sâu hơn." icon={<MessageCircle className="h-5 w-5" />} />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1fr_420px]">
@@ -83,8 +83,36 @@ export async function PlatformTrackerView({
         <FacebookAnalysis analytics={analytics} ctaPosts={ctaPosts} platform={platform} />
       )}
 
-      <CompetitorTable summaries={analytics.competitorSummaries} lockPlatform={platform} />
-      <PostTable posts={analytics.topPosts} hideShare={platform === "youtube"} title={`Bảng nội dung nổi bật trên ${platformLabels[platform]} theo trụ cột nội dung, link gốc và phân loại`} />
+      <details className="group rounded-lg border border-kolia-line bg-white shadow-sm">
+        <summary className="flex cursor-pointer items-center justify-between gap-2 px-5 py-4 select-none hover:bg-slate-50/50 transition">
+          <h2 className="text-base font-bold text-kolia-ink">Tổng bài viết và tương tác theo đối thủ</h2>
+          <svg className="h-4 w-4 shrink-0 text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </summary>
+        <div className="border-t border-kolia-line p-5">
+          <CompetitorTable summaries={analytics.competitorSummaries} lockPlatform={platform} />
+        </div>
+      </details>
+
+      {platform === "youtube" ? (
+        <details className="group rounded-lg border border-kolia-line bg-white shadow-sm">
+          <summary className="flex cursor-pointer items-center justify-between gap-2 px-5 py-4 select-none hover:bg-slate-50/50 transition">
+            <div>
+              <h2 className="text-base font-bold text-kolia-ink">Bảng nội dung nổi bật trên YouTube</h2>
+              <p className="text-sm text-slate-500">Bảng giúp bạn phân tích đối thủ, chủ đề, hook/tone và hiệu suất để tối ưu chiến lược nội dung.</p>
+            </div>
+            <svg className="h-4 w-4 text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </summary>
+          <div className="border-t border-kolia-line p-5">
+            <YouTubeRelevanceTable />
+          </div>
+        </details>
+      ) : (
+        <PostTable posts={analytics.topPosts} hideShare={false} title={`Bảng nội dung nổi bật trên ${platformLabels[platform]} theo trụ cột nội dung, link gốc và phân loại`} />
+      )}
     </div>
   );
 }
@@ -118,9 +146,22 @@ function ContentCountCard({ total, shortCount, longCount }: { total: number; sho
 
 function YouTubeAnalysis({ analytics, platform }: { analytics: Awaited<ReturnType<typeof getPlatformAnalytics>>; platform: Platform }) {
   return (
-    <div className="space-y-6">
-      <LazyForeignFormula hasData={analytics.totalPosts > 0} />
-      <LazyContentGapPanel platform={platform} hasData={analytics.totalPosts > 0} />
+    <div className="space-y-8">
+      {/* ─── Phân tích video nước ngoài ──────────────────────────────────── */}
+      <details className="group rounded-lg border border-kolia-line bg-white shadow-sm">
+        <summary className="flex cursor-pointer items-center justify-between gap-2 px-5 py-4 select-none hover:bg-slate-50/50 transition">
+          <div>
+            <h2 className="text-xl font-extrabold text-kolia-ink">Phân tích video nước ngoài</h2>
+            <p className="text-sm text-slate-500">Tìm video viral từ kênh quốc tế và trích xuất format để tái tạo tại Việt Nam</p>
+          </div>
+          <svg className="h-5 w-5 shrink-0 text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </summary>
+        <div className="border-t border-kolia-line p-5">
+          <YouTubeForeignAnalysis domesticPosts={analytics.posts} />
+        </div>
+      </details>
     </div>
   );
 }

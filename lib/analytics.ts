@@ -72,7 +72,9 @@ export async function getFilteredPosts(filters: AnalyticsFilters = {}, limit?: n
       },
       competitor: {
         ...(source ? { source } : {})
-      }
+      },
+      // Loại trừ video đã bị đánh dấu "Không liên quan" khỏi mọi tính toán analytics
+      NOT: { relevanceStatus: "irrelevant" }
     },
     include: { competitor: true },
     orderBy: sortOrder(filters.sortBy),
@@ -137,6 +139,54 @@ export function competitorSummaries(posts: PostWithCompetitor[], competitors: Co
       };
     })
     .sort((a, b) => b.avgEngagement - a.avgEngagement || b.postCount - a.postCount);
+}
+
+/**
+ * Tính Outlier Score cho YouTube theo thang 100.
+ *
+ * Công thức cơ bản:
+ *   multiplier = Views video / Median views 15-20 video gần nhất cùng kênh
+ *   score_100  = min(multiplier × 20, 100)
+ *
+ * Ý nghĩa thang 100:
+ *   0-20  → Dưới TB (< 1.0x)
+ *   20-40 → Baseline (1.0-2.0x)
+ *   40-60 → Vượt trội (2.0-3.0x)
+ *   60-80 → Outlier (3.0-5.0x)
+ *   80-100→ Siêu Outlier (> 5.0x)
+ */
+function calculateOutlierScores(posts: PostWithCompetitor[]): Record<string, number> {
+  const grouped = groupBy(posts, (p) => p.competitorId);
+  const scores: Record<string, number> = {};
+
+  for (const [, competitorPosts] of Object.entries(grouped)) {
+    const sorted = competitorPosts
+      .slice()
+      .sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
+
+    for (const post of sorted) {
+      // 15-20 video gần nhất từ cùng kênh, bỏ qua video hiện tại
+      const otherPosts = sorted.filter((p) => p.id !== post.id).slice(0, 20);
+
+      if (otherPosts.length < 3) {
+        scores[post.id] = 20; // baseline mặc định
+        continue;
+      }
+
+      // Median views của các video khác
+      const views = otherPosts.map((p) => p.views).sort((a, b) => a - b);
+      const mid = Math.floor(views.length / 2);
+      const medianViews =
+        views.length % 2 === 0 ? (views[mid - 1] + views[mid]) / 2 : views[mid];
+
+      // multiplier = views / median
+      const multiplier = medianViews > 0 ? post.views / medianViews : 1.0;
+      // quy về thang 100
+      scores[post.id] = Math.min(Math.round(multiplier * 20), 100);
+    }
+  }
+
+  return scores;
 }
 
 /**
@@ -440,6 +490,9 @@ export async function getPlatformAnalytics(platform: Platform, filters: Analytic
   const totalViews = posts.reduce((sum, post) => sum + post.views, 0);
   const totalInteractions = posts.reduce((sum, post) => sum + post.likes + post.comments + post.shares, 0);
 
+  // Outlier Score cho YouTube: so sánh views từng video với median views của cùng kênh
+  const outlierScores = calculateOutlierScores(posts);
+
   return {
     platform,
     totalCompetitors: competitors.length,
@@ -464,6 +517,7 @@ export async function getPlatformAnalytics(platform: Platform, filters: Analytic
       .filter((item) => item.posts.length > 0),
     domesticGap,
     foreignFormula,
+    outlierScores,
     posts
   };
 }

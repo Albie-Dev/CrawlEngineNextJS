@@ -102,7 +102,8 @@ export function ContentGapPageClient() {
           Report chia thành đối thủ trong nước và nước ngoài, giúp Kolia chọn tuyến nội dung/chương trình có thể khai thác mà vẫn trung lập, giáo dục và minh bạch.
         </p>
       </div>
-      <ContentGapPanel domestic={gap.domestic} />
+      {/* TẠM THỜI ẨN - Content gap đối thủ trong nước (sẽ mở lại sau) */}
+      {/* <ContentGapPanel domestic={gap.domestic} /> */}
       <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
         <h2 className="text-base font-bold text-kolia-ink">B. Đối thủ nước ngoài: cấu trúc nội dung tạo lan tỏa có thể Việt hóa</h2>
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
