@@ -1,9 +1,62 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { ChevronDown } from "lucide-react";
 import { DateRangePicker } from "rsuite";
 import { formatLabels, platformFormats, platformOptions, sortLabels } from "@/lib/constants";
 import type { AnalyticsFilters } from "@/lib/types";
+
+function FilterSelect({
+  name,
+  value,
+  onChange,
+  options,
+  disabled
+}: {
+  name: string;
+  value: string;
+  onChange: (val: string) => void;
+  options: { label: string; value: string }[];
+  disabled?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectedOption = options.find((o) => o.value === value) || options[0];
+
+  return (
+    <div ref={ref} className={`relative h-10 w-full rounded border border-kolia-line bg-white shadow-sm flex flex-col justify-center cursor-pointer select-none transition ${disabled ? "opacity-50 pointer-events-none bg-slate-50" : "hover:border-kolia-green"}`} onClick={() => !disabled && setOpen(!open)}>
+      <input type="hidden" name={name} value={selectedOption?.value ?? ""} />
+      <div className="flex items-center justify-between gap-2 px-3">
+        <span className="text-sm font-medium text-slate-700 line-clamp-1">{selectedOption?.label ?? ""}</span>
+        <ChevronDown className={`h-4 w-4 shrink-0 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`} />
+      </div>
+      {open && (
+        <div className="absolute left-0 top-[calc(100%+4px)] z-50 max-h-60 w-full min-w-[150px] overflow-auto rounded border border-kolia-line bg-white py-1 shadow-lg">
+          {options.map((opt) => (
+            <div
+              key={opt.value}
+              className={`px-3 py-2 text-sm cursor-pointer transition-colors hover:bg-slate-50 ${value === opt.value ? "bg-slate-50 font-semibold text-kolia-green" : "text-slate-700"}`}
+              onClick={() => { onChange(opt.value); setOpen(false); }}
+            >
+              {opt.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 type FilterBarProps = {
   filters: AnalyticsFilters;
@@ -20,6 +73,12 @@ export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
   const [selectedPlatform, setSelectedPlatform] = useState<string>(lockPlatform ?? filters.platform ?? "all");
   const [pillarOptions, setPillarOptions] = useState<string[]>([]);
   const [promotionOptions, setPromotionOptions] = useState<string[]>([]);
+
+  // States for dropdowns
+  const [selectedSource, setSelectedSource] = useState(filters.source ?? "all");
+  const [selectedPillar, setSelectedPillar] = useState(filters.contentPillar ?? "");
+  const [selectedFormat, setSelectedFormat] = useState(filters.format ?? "");
+  const [selectedPromotion, setSelectedPromotion] = useState(filters.promotionType ?? "");
 
   useEffect(() => {
     setIsClient(true);
@@ -52,19 +111,25 @@ export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
       ? "views"
       : "engagement";
 
-  const selectClass =
-    "h-10 rounded border border-kolia-line bg-white px-3 text-sm font-medium text-slate-700 outline-none transition focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint";
+  const [selectedSortBy, setSelectedSortBy] = useState(filters.sortBy ?? defaultSortBy);
+
+  // Sync selectedSortBy if platform changes to youtube
+  useEffect(() => {
+    if (isYoutube && selectedSortBy === "views") {
+      setSelectedSortBy("engagement");
+    }
+  }, [isYoutube, selectedSortBy]);
 
   return (
     <form className="rounded border border-kolia-line bg-white p-4 shadow-sm">
       <div className={`grid gap-3 ${isTiktok ? "grid-cols-1 sm:grid-cols-3" : "md:grid-cols-2 xl:grid-cols-4"}`}>
-        <select name="platform" defaultValue={lockPlatform ?? filters.platform ?? "all"} className={selectClass} disabled={Boolean(lockPlatform)} onChange={(e) => setSelectedPlatform(e.target.value)}>
-          {platformOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+        <FilterSelect
+          name="platform"
+          value={selectedPlatform}
+          onChange={setSelectedPlatform}
+          options={platformOptions.map((o) => ({ label: o.label, value: o.value }))}
+          disabled={Boolean(lockPlatform)}
+        />
         {lockPlatform ? <input type="hidden" name="platform" value={lockPlatform} /> : null}
 
         {/* Date Range Picker */}
@@ -110,52 +175,59 @@ export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
         </div>
 
         {!isTiktok && (
-          <select name="source" defaultValue={filters.source ?? "all"} className={selectClass}>
-            <option value="all">Tất cả nguồn</option>
-            <option value="trong_nuoc">Trong nước</option>
-            <option value="nuoc_ngoai">Nước ngoài</option>
-          </select>
+          <FilterSelect
+            name="source"
+            value={selectedSource}
+            onChange={(val) => setSelectedSource(val as "all" | "trong_nuoc" | "nuoc_ngoai")}
+            options={[
+              { value: "all", label: "Tất cả nguồn" },
+              { value: "trong_nuoc", label: "Trong nước" },
+              { value: "nuoc_ngoai", label: "Nước ngoài" }
+            ]}
+          />
         )}
         {!isTiktok && (
-          <select name="contentPillar" defaultValue={filters.contentPillar ?? ""} className={selectClass}>
-            <option value="">Tất cả trụ cột nội dung</option>
-            {pillarOptions.map((pillar) => (
-              <option key={pillar} value={pillar}>
-                {pillar}
-              </option>
-            ))}
-          </select>
+          <FilterSelect
+            name="contentPillar"
+            value={selectedPillar}
+            onChange={setSelectedPillar}
+            options={[
+              { value: "", label: "Tất cả trụ cột nội dung" },
+              ...pillarOptions.map(p => ({ value: p, label: p }))
+            ]}
+          />
         )}
         {!isTiktok && (
-          <select name="format" defaultValue={filters.format ?? ""} className={selectClass}>
-            <option value="">Tất cả định dạng triển khai</option>
-            {formatOptions.map(({ value, label }) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
+          <FilterSelect
+            name="format"
+            value={selectedFormat}
+            onChange={setSelectedFormat}
+            options={[
+              { value: "", label: "Tất cả định dạng triển khai" },
+              ...formatOptions
+            ]}
+          />
         )}
         {!isTiktok && !isYoutube && (
-          <select name="promotionType" defaultValue={filters.promotionType ?? ""} className={selectClass}>
-            <option value="">Tất cả nhóm CTA/ưu đãi</option>
-            {promotionOptions.map((promotionType) => (
-              <option key={promotionType} value={promotionType}>
-                {promotionType}
-              </option>
-            ))}
-          </select>
+          <FilterSelect
+            name="promotionType"
+            value={selectedPromotion}
+            onChange={setSelectedPromotion}
+            options={[
+              { value: "", label: "Tất cả nhóm CTA/ưu đãi" },
+              ...promotionOptions.map(p => ({ value: p, label: p }))
+            ]}
+          />
         )}
         {!isTiktok && (
-          <select name="sortBy" defaultValue={filters.sortBy ?? defaultSortBy} className={selectClass}>
-            {Object.entries(sortLabels)
+          <FilterSelect
+            name="sortBy"
+            value={selectedSortBy}
+            onChange={(val) => setSelectedSortBy(val as "views" | "comments" | "engagement" | "newest")}
+            options={Object.entries(sortLabels)
               .filter(([value]) => !(isYoutube && value === "views"))
-              .map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-          </select>
+              .map(([value, label]) => ({ value, label }))}
+          />
         )}
       </div>
       <div className="mt-3 flex justify-end gap-2">

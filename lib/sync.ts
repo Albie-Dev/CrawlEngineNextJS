@@ -140,7 +140,7 @@ export async function syncCompetitorData(platform?: Platform, syncFilters?: Sync
         },
         select: { id: true }
       });
-      const data = {
+      const baseData = {
         competitorId: competitor.id,
         platform: enriched.platform,
         postUrl: sanitize(enriched.postUrl),
@@ -161,17 +161,26 @@ export async function syncCompetitorData(platform?: Platform, syncFilters?: Sync
         comments: enriched.comments,
         shares: enriched.shares,
         engagementRate: enriched.engagementRate,
-        viralityScore: enriched.viralityScore
+        viralityScore: enriched.viralityScore,
       };
 
       if (existingPost) {
+        // Update — không ghi đè relevance fields (user/AI đã quản lý riêng)
         await prisma.post.update({
           where: { id: existingPost.id },
-          data
+          data: baseData
         });
         updatedPosts += 1;
       } else {
-        await prisma.post.create({ data });
+        // Create — set relevance fields mặc định
+        await prisma.post.create({
+          data: {
+            ...baseData,
+            aiRelevanceScore: null,
+            relevanceStatus: "pending",
+            relevanceNote: null,
+          }
+        });
         createdPosts += 1;
       }
     }
@@ -373,7 +382,7 @@ export async function syncCompetitorDataStream(
               select: { id: true },
             });
 
-            const data = {
+            const baseData2 = {
               competitorId: competitor.id, platform: enriched.platform,
               postUrl: sanitize(enriched.postUrl), title: sanitize(enriched.title),
               caption: sanitize(enriched.caption),
@@ -389,10 +398,10 @@ export async function syncCompetitorDataStream(
             };
 
             if (existingPost) {
-              await prisma.post.update({ where: { id: existingPost.id }, data });
+              await prisma.post.update({ where: { id: existingPost.id }, data: baseData2 });
               competitorUpdated++;
             } else {
-              await prisma.post.create({ data });
+              await prisma.post.create({ data: { ...baseData2, aiRelevanceScore: null, relevanceStatus: "pending", relevanceNote: null } });
               competitorCreated++;
             }
 
@@ -602,7 +611,7 @@ export function startBackgroundSync(
               select: { id: true },
             });
 
-            const data = {
+            const baseData3 = {
               competitorId: competitor.id, platform: enriched.platform,
               postUrl: sanitize(enriched.postUrl), title: sanitize(enriched.title),
               caption: sanitize(enriched.caption),
@@ -618,10 +627,10 @@ export function startBackgroundSync(
             };
 
             if (existingPost) {
-              await prisma.post.update({ where: { id: existingPost.id }, data });
+              await prisma.post.update({ where: { id: existingPost.id }, data: baseData3 });
               compUpdated++;
             } else {
-              await prisma.post.create({ data });
+              await prisma.post.create({ data: { ...baseData3, aiRelevanceScore: null, relevanceStatus: "pending", relevanceNote: null } });
               compCreated++;
             }
           }
@@ -659,6 +668,38 @@ export function startBackgroundSync(
           }
         })();
       }
+
+      // ─── Auto refresh Content Gap Snapshot ─────────────────────────
+      // Fire-and-forget: generate AI content gap analysis sau mỗi sync
+      // Kết quả lưu vào DB — user vào /content-gap sẽ đọc từ cache, không gọi AI lại
+      // Chỉ chạy nếu user bật "Tự động cập nhật phân tích" trong Content Gap settings
+      (async () => {
+        try {
+          // Kiểm tra setting autoRefresh
+          const autoRefreshSetting = await prisma.setting.findUnique({
+            where: { key: "content_gap_auto_refresh" },
+            select: { value: true },
+          });
+          const autoRefresh = autoRefreshSetting
+            ? (JSON.parse(autoRefreshSetting.value)?.autoRefresh ?? true)
+            : true; // default = bật
+
+          if (!autoRefresh) {
+            send("log", { message: "ℹ️ [ContentGap] Tự động cập nhật đã tắt — bỏ qua snapshot." });
+            return;
+          }
+
+          send("log", { message: "🔍 [ContentGap] Đang tổng hợp phân tích content gap từ dữ liệu mới..." });
+          const { refreshContentGapSnapshot } = await import("@/lib/contentGapSnapshot");
+          await refreshContentGapSnapshot("youtube", "trong_nuoc", (msg) =>
+            send("log", { message: msg })
+          );
+        } catch (gapErr) {
+          // Non-critical — log only, do not fail sync
+          const msg = gapErr instanceof Error ? gapErr.message : String(gapErr);
+          send("log", { message: `⚠️ [ContentGap] Không thể tạo snapshot (non-critical): ${msg}` });
+        }
+      })();
 
       // ─── Gửi Telegram notification ─────────────────────────────────
       try {

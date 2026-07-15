@@ -56,10 +56,10 @@ button {
 
 /* Override rsuite popup z-index to appear above modal backdrops */
 .rs-picker-popup {
-  z-index: 60 !important;
+  z-index: 101 !important;
 }
 .rs-picker-popup-daterange {
-  z-index: 60 !important;
+  z-index: 101 !important;
 }
 
 /* Custom Scrollbar */

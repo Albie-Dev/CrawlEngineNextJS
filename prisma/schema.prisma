@@ -222,6 +222,25 @@ model AuditLog {
   @@index([createdAt])
 }
 
+/// Cache kết quả phân tích content gap AI sau mỗi lần sync.
+/// Tránh gọi AI lại mỗi lần user vào trang — đọc từ snapshot.
+/// deepAnalysis (per topic) được lưu riêng khi user bấm "Phân tích sâu hơn".
+model ContentGapSnapshot {
+  id          String   @id @default(cuid())
+  /// Platform được phân tích (thường là "youtube")
+  platform    String   @default("youtube")
+  /// Nguồn ("trong_nuoc" hoặc "nuoc_ngoai")
+  source      String   @default("trong_nuoc")
+  /// JSON: DomesticGapSnapshot (toàn bộ stat cards + topic rows + topic details)
+  data        String
+  /// Thời điểm AI generate snapshot này
+  generatedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  @@index([platform, source])
+  @@index([generatedAt])
+}
+
 /// Lưu cấu hình provider crawl cho từng platform.
 /// Mỗi platform (facebook/tiktok) có thể có nhiều provider config,
 /// nhưng chỉ một activeProvider được dùng khi sync.

@@ -1,16 +1,30 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Database, Loader2, ScanSearch, Sparkles, Target, TrendingUp } from "lucide-react";
+import {
+  Database,
+  Loader2,
+  RefreshCw,
+  ScanSearch,
+  Sparkles,
+  Star,
+  Target,
+  TrendingUp,
+  ToggleLeft,
+  ToggleRight,
+  Info,
+} from "lucide-react";
 import { ContentGapPanel } from "@/components/ContentGapPanel";
-import { ViralFormulaCard } from "@/components/ViralFormulaCard";
+import type { DomesticGapSnapshot } from "@/lib/contentGapSnapshot";
+
+// ─── Loading progress ─────────────────────────────────────────────────────────
 
 const GAP_STEPS = [
-  { icon: Database, label: "Đang truy xuất dữ liệu bài viết...", duration: 3000 },
-  { icon: Target, label: "Đang phân tích trụ cột nội dung...", duration: 4000 },
-  { icon: TrendingUp, label: "Đang đánh giá mức độ tương tác...", duration: 4000 },
-  { icon: ScanSearch, label: "Đang dò tìm khoảng trống nội dung...", duration: 5000 },
-  { icon: Sparkles, label: "Đang tổng hợp kết quả...", duration: 3000 },
+  { icon: Database, label: "Đang truy xuất dữ liệu bài viết..." },
+  { icon: Target, label: "Đang phân tích trụ cột nội dung..." },
+  { icon: TrendingUp, label: "Đang đánh giá mức độ tương tác..." },
+  { icon: ScanSearch, label: "Đang dò tìm khoảng trống nội dung..." },
+  { icon: Sparkles, label: "Đang tổng hợp kết quả..." },
 ];
 
 function GapLoadingProgress() {
@@ -23,43 +37,58 @@ function GapLoadingProgress() {
     const timer = setInterval(() => {
       const now = Date.now();
       setElapsed(Math.floor((now - startRef.current) / 1000));
-      if (now - stepStartRef.current >= GAP_STEPS[stepIdx].duration) {
+      if (now - stepStartRef.current >= 4000) {
         setStepIdx((i) => Math.min(i + 1, GAP_STEPS.length - 1));
         stepStartRef.current = now;
       }
     }, 1000);
     return () => clearInterval(timer);
-  }, [stepIdx]);
+  }, []);
 
   return (
     <div className="mx-auto max-w-lg py-16">
-      <div className="rounded-xl border border-kolia-line bg-white p-8 shadow-sm">
+      <div className="rounded-2xl border border-kolia-line bg-white p-8 shadow-sm">
         <div className="mb-8 flex justify-center">
-          <div className="relative">
-            <ScanSearch className="h-16 w-16 animate-pulse text-kolia-green" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-kolia-mint">
+            <ScanSearch className="h-8 w-8 text-kolia-green animate-pulse" />
           </div>
         </div>
+        <p className="text-center text-sm font-semibold text-kolia-ink mb-6">
+          Đang tổng hợp phân tích lần đầu...
+        </p>
         <div className="space-y-4">
           {GAP_STEPS.map((step, i) => {
             const Icon = step.icon;
             const isActive = i === stepIdx;
             const isDone = i < stepIdx;
             return (
-              <div key={i} className={`flex items-center gap-4 transition-opacity ${isActive ? "opacity-100" : isDone ? "opacity-60" : "opacity-30"}`}>
-                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 ${
-                  isDone ? "border-green-500 bg-green-50 text-green-600" : isActive ? "border-kolia-green bg-kolia-mint text-kolia-green" : "border-slate-200 bg-slate-50 text-slate-400"
-                }`}>
+              <div
+                key={i}
+                className={`flex items-center gap-4 transition-opacity ${
+                  isActive ? "opacity-100" : isDone ? "opacity-60" : "opacity-30"
+                }`}
+              >
+                <div
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 ${
+                    isDone
+                      ? "border-green-500 bg-green-50 text-green-600"
+                      : isActive
+                      ? "border-kolia-green bg-kolia-mint text-kolia-green"
+                      : "border-slate-200 bg-slate-50 text-slate-400"
+                  }`}
+                >
                   {isDone ? (
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                     </svg>
                   ) : (
-                    <Icon className={`h-5 w-5 ${isActive ? "animate-bounce" : ""}`} />
+                    <Icon className={`h-4 w-4 ${isActive ? "animate-bounce" : ""}`} />
                   )}
                 </div>
-                <p className={`text-sm font-semibold ${isDone ? "text-green-700" : isActive ? "text-kolia-ink" : "text-slate-400"}`}>
+                <p className={`text-sm font-medium ${isDone ? "text-green-700" : isActive ? "text-kolia-ink" : "text-slate-400"}`}>
                   {step.label}
                 </p>
+                {isActive && <Loader2 className="ml-auto h-4 w-4 animate-spin text-kolia-green" />}
               </div>
             );
           })}
@@ -70,62 +99,237 @@ function GapLoadingProgress() {
   );
 }
 
-export function ContentGapPageClient() {
-  const [gap, setGap] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+// ─── Auto refresh settings panel ──────────────────────────────────────────────
 
-  useEffect(() => {
-    fetch("/api/content-gap?days=90")
-      .then((r) => r.json())
-      .then((data) => { setGap(data); setLoading(false); })
-      .catch(() => setLoading(false));
-  }, []);
+function AutoRefreshSettings({
+  autoRefresh,
+  onChange,
+}: {
+  autoRefresh: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  const [saving, setSaving] = useState(false);
 
-  if (loading) {
-    return <GapLoadingProgress />;
-  }
-
-  if (!gap) {
-    return (
-      <div className="py-32 text-center text-sm text-red-500">
-        Không thể tải dữ liệu. Vui lòng thử lại.
-      </div>
-    );
+  async function toggle() {
+    setSaving(true);
+    try {
+      await fetch("/api/content-gap/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ autoRefresh: !autoRefresh }),
+      });
+      onChange(!autoRefresh);
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <p className="text-sm font-bold uppercase tracking-[0.16em] text-kolia-green">Báo cáo chiến lược nội dung</p>
-        <h1 className="mt-2 text-3xl font-bold text-kolia-ink">Khoảng trống nội dung</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-          Report chia thành đối thủ trong nước và nước ngoài, giúp Kolia chọn tuyến nội dung/chương trình có thể khai thác mà vẫn trung lập, giáo dục và minh bạch.
-        </p>
+    <div className="rounded-2xl border border-kolia-line bg-white p-4">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-kolia-ink">Tự động cập nhật phân tích</p>
+          <p className="mt-1 text-xs text-slate-500 leading-relaxed">
+            {autoRefresh ? (
+              <>
+                <span className="inline-flex items-center gap-1 font-medium text-kolia-green">
+                  <span className="h-1.5 w-1.5 rounded-full bg-kolia-green inline-block animate-pulse" />
+                  Đang bật
+                </span>
+                {" "}— Sau mỗi lần Sync dữ liệu hoàn tất, AI sẽ tự động tổng hợp lại phân tích
+                Content Gap và lưu vào hệ thống. Lần vào trang sau sẽ đọc từ cache, không tốn
+                thêm AI quota.
+              </>
+            ) : (
+              <>
+                <span className="font-medium text-slate-500">Đang tắt</span>
+                {" "}— Phân tích sẽ không tự động cập nhật sau Sync. Bạn có thể bấm{" "}
+                <span className="font-medium text-kolia-green">"Phân tích thủ công"</span> bên dưới
+                để tạo snapshot mới bất kỳ lúc nào.
+              </>
+            )}
+          </p>
+          {autoRefresh && (
+            <div className="mt-2 rounded-xl bg-slate-50 border border-kolia-line px-3 py-2">
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                <span className="font-semibold text-slate-500">Lịch hoạt động:</span> Hook tự động
+                chạy sau mỗi lần bấm{" "}
+                <span className="font-semibold">Sync dữ liệu</span> trong bất kỳ trang nào. Để
+                thiết lập sync tự động theo lịch (cron), vui lòng cấu hình trong môi trường server
+                — tính năng scheduler sẽ được bổ sung trong phiên bản tiếp theo.
+              </p>
+            </div>
+          )}
+        </div>
+        <button
+          onClick={toggle}
+          disabled={saving}
+          className="mt-0.5 shrink-0 flex items-center gap-1.5 text-kolia-green hover:opacity-80 transition-opacity disabled:opacity-40"
+          title={autoRefresh ? "Tắt tự động cập nhật" : "Bật tự động cập nhật"}
+        >
+          {saving ? (
+            <Loader2 className="h-7 w-7 animate-spin" />
+          ) : autoRefresh ? (
+            <ToggleRight className="h-8 w-8" />
+          ) : (
+            <ToggleLeft className="h-8 w-8 text-slate-400" />
+          )}
+        </button>
       </div>
-      {/* TẠM THỜI ẨN - Content gap đối thủ trong nước (sẽ mở lại sau) */}
-      {/* <ContentGapPanel domestic={gap.domestic} /> */}
-      <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
-        <h2 className="text-base font-bold text-kolia-ink">B. Đối thủ nước ngoài: cấu trúc nội dung tạo lan tỏa có thể Việt hóa</h2>
-        <div className="mt-4 grid gap-4 lg:grid-cols-2">
-          {gap.foreign?.shortForm?.slice(0, 3).map((formula: any) => (
-            <ViralFormulaCard key={formula.sourceUrl} formula={formula} label="Video ngắn hiệu quả" />
-          ))}
-          {gap.foreign?.longForm?.slice(0, 3).map((formula: any) => (
-            <ViralFormulaCard key={formula.sourceUrl} formula={formula} label="Video phân tích dài hiệu quả" />
-          ))}
+    </div>
+  );
+}
+
+// ─── Main page client ─────────────────────────────────────────────────────────
+
+export function ContentGapPageClient() {
+  const [domestic, setDomestic] = useState<DomesticGapSnapshot | null>(null);
+  const [generatedAt, setGeneratedAt] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [error, setError] = useState(false);
+  const [noData, setNoData] = useState(false);
+
+  // Load snapshot
+  useEffect(() => {
+    fetch("/api/content-gap")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.domestic) {
+          setDomestic(data.domestic);
+          setGeneratedAt(data.generatedAt);
+          setLoading(false);
+        } else if (data.message) {
+          // Generating first time — poll
+          setNoData(true);
+          setLoading(false);
+        } else {
+          setError(true);
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        setError(true);
+        setLoading(false);
+      });
+
+    // Load auto-refresh setting
+    fetch("/api/content-gap/settings")
+      .then((r) => r.json())
+      .then((d) => {
+        if (typeof d.autoRefresh === "boolean") setAutoRefresh(d.autoRefresh);
+      })
+      .catch(() => {});
+  }, []);
+
+  // Manual generate
+  async function handleManualGenerate() {
+    setIsGenerating(true);
+    try {
+      const res = await fetch("/api/content-gap", { method: "POST" });
+      const data = await res.json();
+      if (data.ok) {
+        // Reload snapshot
+        const snap = await fetch("/api/content-gap").then((r) => r.json());
+        if (snap.domestic) {
+          setDomestic(snap.domestic);
+          setGeneratedAt(snap.generatedAt);
+          setNoData(false);
+        }
+      }
+    } finally {
+      setIsGenerating(false);
+    }
+  }
+
+  function formatAge(iso: string) {
+    const diff = Date.now() - new Date(iso).getTime();
+    const h = Math.floor(diff / 3_600_000);
+    const m = Math.floor((diff % 3_600_000) / 60_000);
+    if (h >= 24) return `${Math.floor(h / 24)} ngày trước`;
+    if (h > 0) return `${h} giờ ${m} phút trước`;
+    return `${m} phút trước`;
+  }
+
+  if (loading) return <GapLoadingProgress />;
+
+  return (
+    <div className="space-y-5">
+      {/* ── Page header ── */}
+      <div>
+        <h1 className="text-xl font-bold text-kolia-ink">Content gap đối thủ trong nước</h1>
+        <p className="mt-1 text-sm text-slate-500">
+          Tìm cơ hội nội dung bằng cách phân tích các chủ đề top view từ kênh Việt Nam.
+        </p>
+        {generatedAt && (
+          <p className="mt-1 text-xs text-slate-400">
+            Cập nhật lần cuối:{" "}
+            <span className="font-medium text-slate-500">{formatAge(generatedAt)}</span>
+          </p>
+        )}
+      </div>
+
+      {/* ── Settings panel ── */}
+      <AutoRefreshSettings autoRefresh={autoRefresh} onChange={setAutoRefresh} />
+
+      {/* ── Error states ── */}
+      {error && (
+        <div className="rounded-2xl border border-red-100 bg-red-50 p-5 text-sm text-red-600">
+          Không thể tải dữ liệu. Vui lòng thử lại hoặc bấm Phân tích thủ công.
         </div>
-        <div className="mt-5 rounded bg-kolia-amber p-4">
-          <h3 className="font-bold text-kolia-ink">Định dạng triển khai phù hợp với Kolia</h3>
-          <ul className="mt-3 grid gap-2 text-sm leading-6 text-slate-700 md:grid-cols-2">
-            {gap.foreign?.koliaFormats?.map((format: string) => (
-              <li key={format} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-kolia-gold" />
-                {format}
-              </li>
-            ))}
-          </ul>
+      )}
+
+      {noData && (
+        <div className="rounded-2xl border border-kolia-line bg-white p-8 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-kolia-mint">
+            <ScanSearch className="h-7 w-7 text-kolia-green" />
+          </div>
+          <p className="text-sm font-semibold text-kolia-ink">Chưa có snapshot phân tích</p>
+          <p className="mt-1 text-xs text-slate-500 max-w-sm mx-auto">
+            Hệ thống đang tổng hợp dữ liệu lần đầu, hoặc bạn có thể bấm Phân tích thủ công để
+            tạo ngay.
+          </p>
+          <button
+            onClick={handleManualGenerate}
+            disabled={isGenerating}
+            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-kolia-green px-5 py-2.5 text-sm font-semibold text-white hover:bg-kolia-green/90 disabled:opacity-60 transition-colors"
+          >
+            {isGenerating ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Sparkles className="h-4 w-4" />
+            )}
+            {isGenerating ? "Đang phân tích..." : "Phân tích thủ công"}
+          </button>
         </div>
-      </section>
+      )}
+
+      {/* ── Main content panel ── */}
+      {domestic && (
+        <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+          <ContentGapPanel domestic={domestic} />
+        </div>
+      )}
+
+      {/* ── Manual refresh button (when data exists) ── */}
+      {domestic && (
+        <div className="flex items-center justify-between rounded-2xl border border-kolia-line bg-slate-50 px-4 py-3">
+          <p className="text-xs text-slate-500">{domestic.stats.dataNote}</p>
+          <button
+            onClick={handleManualGenerate}
+            disabled={isGenerating}
+            className="ml-4 shrink-0 inline-flex items-center gap-1.5 rounded-xl border border-kolia-line bg-white px-3 py-1.5 text-xs font-semibold text-kolia-green hover:bg-kolia-mint transition-colors disabled:opacity-60"
+          >
+            {isGenerating ? (
+              <Loader2 className="h-3 w-3 animate-spin" />
+            ) : (
+              <RefreshCw className="h-3 w-3" />
+            )}
+            {isGenerating ? "Đang phân tích..." : "Phân tích thủ công"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

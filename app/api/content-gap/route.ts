@@ -1,38 +1,61 @@
 import { NextResponse } from "next/server";
-import { getContentGapAnalytics } from "@/lib/analytics";
-import type { Platform, SourceType } from "@/lib/types";
+import { getLatestSnapshot, refreshContentGapSnapshot } from "@/lib/contentGapSnapshot";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Module-level cache
-const cache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_TTL = 120_000;
-
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const days = Math.min(365, Math.max(7, Number(searchParams.get("days") ?? 90)));
-  const platform = (searchParams.get("platform") ?? undefined) as Platform | "all" | undefined;
-  const source = (searchParams.get("source") ?? undefined) as SourceType | "all" | undefined;
-  // Convert days to startDate
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - days);
-  const cacheKey = `days=${days}&platform=${platform ?? ""}&source=${source ?? ""}`;
+  const platform = searchParams.get("platform") ?? "youtube";
+  const source = searchParams.get("source") ?? "trong_nuoc";
 
-  const cached = cache.get(cacheKey);
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    return NextResponse.json(cached.data);
+  // Đọc snapshot từ DB (cache — không gọi AI)
+  let result = null;
+  try {
+    result = await getLatestSnapshot(platform, source);
+  } catch (err) {
+    console.error("[content-gap API] Lỗi đọc snapshot (có thể do chưa chạy migration):", err);
   }
 
+  if (result) {
+    return NextResponse.json({
+      domestic: result.snapshot,
+      generatedAt: result.generatedAt.toISOString(),
+      fromCache: true,
+    });
+  }
+
+  // Chưa có snapshot: trigger generate async, trả skeleton
+  (async () => {
+    try {
+      await refreshContentGapSnapshot(platform, source);
+    } catch {
+      // silent
+    }
+  })();
+
+  return NextResponse.json({
+    domestic: null,
+    generatedAt: null,
+    fromCache: false,
+    message: "Đang tổng hợp phân tích lần đầu — vui lòng thử lại sau 30 giây.",
+  });
+}
+
+/**
+ * POST: Trigger thủ công refresh snapshot (từ nút "Phân tích thủ công" trong Settings)
+ */
+export async function POST(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const platform = searchParams.get("platform") ?? "youtube";
+  const source = searchParams.get("source") ?? "trong_nuoc";
+
   try {
-    const gap = await getContentGapAnalytics({ startDate: startDate.toISOString().split("T")[0], platform, source });
-    cache.set(cacheKey, { data: gap, timestamp: Date.now() });
-    return NextResponse.json(gap);
-  } catch (error) {
-    console.error("[content-gap] Error:", error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unknown" },
-      { status: 500 }
-    );
+    await refreshContentGapSnapshot(platform, source);
+    const result = await getLatestSnapshot(platform, source);
+    return NextResponse.json({ ok: true, generatedAt: result?.generatedAt?.toISOString() });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ ok: false, error: msg }, { status: 500 });
   }
 }

@@ -92,7 +92,10 @@ export async function aiClassifyPost(
   "targetAudience": "string",
   "tags": ["tag1", "tag2"],
   "summary": "tóm tắt 1 câu",
-  "confidence": 0.0-1.0
+  "confidence": 0.0-1.0,
+  "aiRelevanceScore": 0.8, // Điểm liên quan 0.0-1.0 đối với ngách: tài chính cá nhân, đầu tư chứng khoán, crypto, bất động sản, vĩ mô.
+  "relevanceStatus": "relevant", // "relevant" nếu score >= 0.5, ngược lại "irrelevant"
+  "relevanceNote": "lý do ngắn gọn 1 câu"
 }
 
 Chỉ trả về JSON, không markdown.`,
@@ -115,6 +118,9 @@ Chỉ trả về JSON, không markdown.`,
         confidence: parsed.confidence || 0.7,
         tags: parsed.tags || [],
         summary: parsed.summary || title.slice(0, 200),
+        aiRelevanceScore: typeof parsed.aiRelevanceScore === "number" ? parsed.aiRelevanceScore : null,
+        relevanceStatus: ["relevant", "irrelevant"].includes(parsed.relevanceStatus) ? parsed.relevanceStatus : "pending",
+        relevanceNote: parsed.relevanceNote || null,
       };
     }
   } catch (error) {
@@ -131,6 +137,9 @@ Chỉ trả về JSON, không markdown.`,
     confidence: 0.5,
     tags: [ruleResult.mainTopic, ruleResult.contentPillar],
     summary: title.slice(0, 200),
+    aiRelevanceScore: null,
+    relevanceStatus: "pending",
+    relevanceNote: null,
   };
 }
 
@@ -159,6 +168,9 @@ export async function aiClassifyBatch(
               confidence: 0.3,
               tags: [],
               summary: "",
+              aiRelevanceScore: null,
+              relevanceStatus: "pending",
+              relevanceNote: null,
             }
       );
     }
@@ -201,6 +213,9 @@ export async function aiEnrichRawPost(
       mainTopic: aiResult.mainTopic,
       engagementRate,
       viralityScore,
+      aiRelevanceScore: aiResult.aiRelevanceScore,
+      relevanceStatus: aiResult.relevanceStatus,
+      relevanceNote: aiResult.relevanceNote,
     };
   } catch {
     if (aiAvailable) {

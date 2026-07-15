@@ -15,6 +15,7 @@ import { formatNumber } from "@/lib/utils";
 
 import { YouTubeForeignAnalysis } from "@/components/YouTubeForeignAnalysis";
 import { YouTubeRelevanceTable } from "@/components/YouTubeRelevanceTable";
+import { getLatestSnapshot } from "@/lib/contentGapSnapshot";
 
 export async function PlatformTrackerView({
   platform,
@@ -29,6 +30,15 @@ export async function PlatformTrackerView({
 }) {
   const analytics = await getPlatformAnalytics(platform, filters);
   const ctaPosts = analytics.posts.filter((post) => post.promotionType !== "Không bán hàng").slice(0, 10);
+  const gapData = await getLatestSnapshot(platform, "trong_nuoc");
+  const topics = gapData?.snapshot 
+    ? [
+        ...gapData.snapshot.commonTopics,
+        ...gapData.snapshot.repeatedTopics,
+        ...gapData.snapshot.underusedHighEngagement,
+        ...gapData.snapshot.gaps
+      ].filter((t, i, arr) => arr.findIndex((x) => x.slug === t.slug) === i)
+    : [];
 
   return (
     <div className="space-y-6">
@@ -60,20 +70,21 @@ export async function PlatformTrackerView({
         )}
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_420px]">
-        <ContentOpportunityChart data={analytics.topPillars} />
+      <ContentOpportunityChart topics={topics} />
+
+      {platform !== "youtube" && (
         <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
           <h2 className="text-base font-bold text-kolia-ink">Nội dung có tỷ lệ người xem tương tác cao</h2>
           <p className="mt-1 text-sm leading-6 text-slate-500">
             Tỷ lệ tương tác = (like + comment + share) / lượt xem. Không dùng điểm lan tỏa nội bộ ở phần này.
           </p>
-          <div className="mt-4 space-y-3">
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
             {analytics.topPosts.slice(0, 4).map((post, index) => (
               <TopPostCard key={post.id} post={post} rank={index + 1} />
             ))}
           </div>
         </section>
-      </div>
+      )}
 
       {platform === "youtube" ? (
         <YouTubeAnalysis analytics={analytics} platform={platform} />
@@ -147,6 +158,22 @@ function ContentCountCard({ total, shortCount, longCount }: { total: number; sho
 function YouTubeAnalysis({ analytics, platform }: { analytics: Awaited<ReturnType<typeof getPlatformAnalytics>>; platform: Platform }) {
   return (
     <div className="space-y-8">
+      {/* ─── Content gap đối thủ trong nước ──────────────────────────────── */}
+      <details className="group rounded-lg border border-kolia-line bg-white shadow-sm" open>
+        <summary className="flex cursor-pointer items-center justify-between gap-2 px-5 py-4 select-none hover:bg-slate-50/50 transition">
+          <div>
+            <h2 className="text-xl font-extrabold text-kolia-ink">Content gap đối thủ trong nước</h2>
+            <p className="text-sm text-slate-500">Tìm cơ hội nội dung bằng cách phân tích các chủ đề top view từ kênh Việt Nam</p>
+          </div>
+          <svg className="h-5 w-5 shrink-0 text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </summary>
+        <div className="border-t border-kolia-line p-5">
+          <LazyContentGapPanel platform={platform} hasData={analytics.totalPosts > 0} />
+        </div>
+      </details>
+
       {/* ─── Phân tích video nước ngoài ──────────────────────────────────── */}
       <details className="group rounded-lg border border-kolia-line bg-white shadow-sm">
         <summary className="flex cursor-pointer items-center justify-between gap-2 px-5 py-4 select-none hover:bg-slate-50/50 transition">
@@ -166,6 +193,7 @@ function YouTubeAnalysis({ analytics, platform }: { analytics: Awaited<ReturnTyp
   );
 }
 
+
 function TikTokAnalysis({ analytics, platform }: { analytics: Awaited<ReturnType<typeof getPlatformAnalytics>>; platform: Platform }) {
   const tiktokLines = [
     "Tuyến giải thích thị trường vàng dễ hiểu trong 60s.",
@@ -177,7 +205,20 @@ function TikTokAnalysis({ analytics, platform }: { analytics: Awaited<ReturnType
 
   return (
     <div className="space-y-6">
-      <LazyContentGapPanel platform={platform} hasData={analytics.totalPosts > 0} />
+      <details className="group rounded-lg border border-kolia-line bg-white shadow-sm" open>
+        <summary className="flex cursor-pointer items-center justify-between gap-2 px-5 py-4 select-none hover:bg-slate-50/50 transition">
+          <div>
+            <h2 className="text-xl font-extrabold text-kolia-ink">Content gap đối thủ trong nước</h2>
+            <p className="text-sm text-slate-500">Tìm cơ hội nội dung bằng cách phân tích các chủ đề top view từ kênh Việt Nam</p>
+          </div>
+          <svg className="h-5 w-5 shrink-0 text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </summary>
+        <div className="border-t border-kolia-line p-5">
+          <LazyContentGapPanel platform={platform} hasData={analytics.totalPosts > 0} />
+        </div>
+      </details>
       <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
         <h2 className="text-base font-bold text-kolia-ink">Gợi ý tuyến TikTok cho Kolia</h2>
         <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
@@ -247,7 +288,20 @@ function FacebookAnalysis({
           </div>
         </section>
       </div>
-      <LazyContentGapPanel platform={platform} hasData={analytics.totalPosts > 0} />
+      <details className="group rounded-lg border border-kolia-line bg-white shadow-sm" open>
+        <summary className="flex cursor-pointer items-center justify-between gap-2 px-5 py-4 select-none hover:bg-slate-50/50 transition">
+          <div>
+            <h2 className="text-xl font-extrabold text-kolia-ink">Content gap đối thủ trong nước</h2>
+            <p className="text-sm text-slate-500">Tìm cơ hội nội dung bằng cách phân tích các chủ đề top view từ kênh Việt Nam</p>
+          </div>
+          <svg className="h-5 w-5 shrink-0 text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </summary>
+        <div className="border-t border-kolia-line p-5">
+          <LazyContentGapPanel platform={platform} hasData={analytics.totalPosts > 0} />
+        </div>
+      </details>
     </div>
   );
 }

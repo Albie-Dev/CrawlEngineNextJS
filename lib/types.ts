@@ -9,6 +9,9 @@ export type ClassifiedPost = {
   hookType: string;
   format: string;
   mainTopic: string;
+  aiRelevanceScore?: number | null;
+  relevanceStatus?: "relevant" | "irrelevant" | "pending";
+  relevanceNote?: string | null;
 };
 
 export type RawPostInput = {
