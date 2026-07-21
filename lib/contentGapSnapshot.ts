@@ -37,7 +37,7 @@ export type TopicRow = {
   growthRate30d: number;   // tốc độ tăng trưởng 30 ngày (bubble color, %)
   avgEngagement: number;   // tỷ lệ tương tác trung bình
   competitionScore: number; // # video / # kênh (X-axis)
-  sampleVideos: TopicVideo[]; // top 10 videos for drill-down
+  sampleVideos: TopicVideo[]; // all videos for drill-down
   priority: TopicPriority;
   detail?: TopicDetail;    // AI generated per-topic summary, null = chưa generate
   deepDetail?: TopicDeepDetail;
@@ -531,9 +531,9 @@ export async function refreshContentGapSnapshot(
         const outlierRate = computeOutlierRate(data.views);
         const growthRate30d = computeGrowthRate(data.views30d, data.views60d);
         const competitionScore = channelCount > 0 ? Math.round((videoCount / channelCount) * 10) / 10 : videoCount;
-        // Top 10 videos sorted by views desc
+        // Top videos sorted by views desc (include all for drill-down)
         const sortedPosts = [...data.posts].sort((a, b) => b.views - a.views);
-        const sampleVideos: TopicVideo[] = sortedPosts.slice(0, 10).map((p) => {
+        const sampleVideos: TopicVideo[] = sortedPosts.map((p) => {
           // Extract YouTube video ID from postUrl (e.g. https://youtube.com/watch?v=XXXXX)
           let youtubeId: string | undefined;
           try {
