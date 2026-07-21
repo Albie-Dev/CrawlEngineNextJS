@@ -105,7 +105,8 @@ Chỉ trả về JSON, không markdown.`,
     const rawText = response.output_text || "";
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
-      const parsed = JSON.parse(jsonMatch[0]);
+      const sanitized = jsonMatch[0].replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+      const parsed = JSON.parse(sanitized);
       return {
         contentPillar: parsed.contentPillar || "Cập nhật thị trường",
         promotionType: parsed.promotionType || "Không bán hàng",
@@ -264,7 +265,8 @@ Trả về JSON (chỉ JSON, không suy luận):
 
     const jsonMatch = response.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
-      const parsed = JSON.parse(jsonMatch[0]);
+      const sanitized = jsonMatch[0].replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+      const parsed = JSON.parse(sanitized);
       return {
         commonTopics: parsed.commonTopics ?? [],
         repeatedTopics: parsed.repeatedTopics ?? [],
@@ -338,7 +340,8 @@ Trả về JSON TIẾNG VIỆT (chỉ JSON, không suy luận):
 
     const jsonMatch = response.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
-      const parsed = JSON.parse(jsonMatch[0]);
+      const sanitized = jsonMatch[0].replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+      const parsed = JSON.parse(sanitized);
       return {
         viralPatterns: parsed.viralPatterns ?? [],
         koliaFormats: parsed.koliaFormats ?? [],
@@ -522,10 +525,12 @@ ${durationLabel ? `- Video dài ${durationLabel} — timeline PHẢI bao phủ t
     { role: "user" as const, content: prompt },
   ], { maxTokens: 8192 });
 
-  console.log(`[ai-video-formula] Response for "${title.slice(0, 50)}":`, response.slice(0, 200));
   const jsonMatch = response.match(/\{[\s\S]*\}/);
   if (jsonMatch) {
-    const parsed = JSON.parse(jsonMatch[0]);
+    // Sanitize JSON trước khi parse: loại bỏ control characters (trừ \t \n \r) trong string values
+    const raw = jsonMatch[0];
+    const sanitized = raw.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+    const parsed = JSON.parse(sanitized);
     return {
       summary: parsed.summary || "",
       formatViral: parsed.formatViral || {

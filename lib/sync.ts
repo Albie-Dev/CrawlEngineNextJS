@@ -7,6 +7,20 @@ import { prisma } from "@/lib/prisma";
 import { getPublicSettings } from "@/lib/settings";
 import type { Platform, SyncFilters } from "@/lib/types";
 
+/** Trích xuất YouTube video ID từ URL */
+function extractVideoId(url: string): string | null {
+  if (!url) return null;
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+    /^([a-zA-Z0-9_-]{11})$/
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m) return m[1];
+  }
+  return null;
+}
+
 // ─── Global sync job status store ──────────────────────────────────────────
 
 export type SyncJobStatus = {
@@ -126,24 +140,62 @@ export async function syncCompetitorData(platform?: Platform, syncFilters?: Sync
     });
 
     for (const rawPost of rawPosts) {
-      const enriched = await aiEnrichRawPost({
-        ...rawPost,
-        competitorId: competitor.id
-      });
-
-      // Skip posts check removed because date filtering is already handled on the crawler backend
-
+      // Kiểm tra post đã tồn tại chưa — nếu có rồi thì chỉ update metrics, không chạy AI lại
       const existingPost = await prisma.post.findFirst({
         where: {
           competitorId: competitor.id,
-          postUrl: enriched.postUrl
+          postUrl: rawPost.postUrl
         },
-        select: { id: true, relevanceStatus: true }
+        select: { id: true, relevanceStatus: true, contentPillar: true, aiAnalysis: true, transcript: true }
       });
 
       if (existingPost?.relevanceStatus === "irrelevant") {
         continue;
       }
+
+      if (existingPost && existingPost.contentPillar) {
+        // ── Post cũ: chỉ update metrics, giữ nguyên AI data ──────────
+        await prisma.post.update({
+          where: { id: existingPost.id },
+          data: {
+            views: rawPost.views,
+            likes: rawPost.likes,
+            comments: rawPost.comments,
+            shares: rawPost.shares ?? 0,
+            thumbnailUrl: sanitize(rawPost.thumbnailUrl),
+            engagementRate: rawPost.views > 0
+              ? ((rawPost.likes + rawPost.comments + (rawPost.shares ?? 0)) / rawPost.views)
+              : 0,
+            viralityScore: rawPost.views > 0
+              ? Math.min((rawPost.likes + rawPost.comments + (rawPost.shares ?? 0)) / rawPost.views, 1)
+              : 0,
+          }
+        });
+        updatedPosts += 1;
+        continue;
+      }
+
+      // ── Post mới: chạy AI enrichment + transcript ──────────────────
+      let transcriptText = rawPost.transcript || "";
+      if (!transcriptText) {
+        try {
+          const videoId = extractVideoId(rawPost.postUrl);
+          if (videoId) {
+            const { fetchAndFormatTranscript } = await import("@/lib/youtube/youtubeTranscript");
+            transcriptText = await fetchAndFormatTranscript(videoId, {
+              format: settings?.youtubeTranscriptFormat || "timestamps",
+            });
+          }
+        } catch {
+          // Transcript không bắt buộc
+        }
+      }
+
+      const enriched = await aiEnrichRawPost({
+        ...rawPost,
+        competitorId: competitor.id,
+        transcript: transcriptText || undefined,
+      });
       const baseData = {
         competitorId: competitor.id,
         platform: enriched.platform,
@@ -605,6 +657,36 @@ export function startBackgroundSync(
           for (const rawPost of (rawPosts || [])) {
             if (compSaveLimit !== null && compCreated + compUpdated >= compSaveLimit) break;
 
+            // Kiểm tra post đã tồn tại — nếu có rồi thì chỉ update metrics
+            const existingPost = await prisma.post.findFirst({
+              where: { competitorId: competitor.id, postUrl: rawPost.postUrl },
+              select: { id: true, relevanceStatus: true, contentPillar: true },
+            });
+
+            if (existingPost?.relevanceStatus === "irrelevant") {
+              send("log", { message: `⏭️ ${competitor.name}: Bỏ qua bài đã đánh dấu không liên quan — ${rawPost.postUrl}` });
+              continue;
+            }
+
+            if (existingPost && existingPost.contentPillar) {
+              const vidLabel = rawPost.title?.slice(0, 60) || rawPost.postUrl;
+              send("log", { message: `🔄 Cập nhật metrics: "${vidLabel}"` });
+              await prisma.post.update({
+                where: { id: existingPost.id },
+                data: {
+                  views: rawPost.views, likes: rawPost.likes, comments: rawPost.comments,
+                  shares: rawPost.shares ?? 0,
+                  thumbnailUrl: sanitize(rawPost.thumbnailUrl),
+                  engagementRate: rawPost.views > 0
+                    ? ((rawPost.likes + rawPost.comments + (rawPost.shares ?? 0)) / rawPost.views) : 0,
+                  viralityScore: rawPost.views > 0
+                    ? Math.min((rawPost.likes + rawPost.comments + (rawPost.shares ?? 0)) / rawPost.views, 1) : 0,
+                },
+              });
+              compUpdated++;
+              continue;
+            }
+
             const enriched = await aiEnrichRawPost({ ...rawPost, competitorId: competitor.id }, (msg) => send("log", { message: `[${competitor.name}] ${msg}` }));
 
             if (applyDateFilter && (syncFilters?.startDate || syncFilters?.endDate)) {
@@ -616,18 +698,6 @@ export function startBackgroundSync(
                 });
                 continue;
               }
-            }
-
-            const existingPost = await prisma.post.findFirst({
-              where: { competitorId: competitor.id, postUrl: enriched.postUrl },
-              select: { id: true, relevanceStatus: true },
-            });
-
-            if (existingPost?.relevanceStatus === "irrelevant") {
-              send("log", {
-                message: `⏭️ ${competitor.name}: Bỏ qua bài đã đánh dấu không liên quan — ${enriched.postUrl}`,
-              });
-              continue;
             }
 
             const baseData3 = {
@@ -679,6 +749,8 @@ export function startBackgroundSync(
             const scored = await autoScoreYouTubePosts();
             if (scored > 0) {
               send("log", { message: `✅ AI đã chấm điểm liên quan cho ${scored} video YouTube.` });
+            } else {
+              send("log", { message: `ℹ️ Không có video YouTube nào cần chấm điểm AI (đã có điểm từ trước).` });
             }
           } catch (scoreErr) {
             // Non-critical — log only, do not fail sync
@@ -691,7 +763,8 @@ export function startBackgroundSync(
       // ─── Auto refresh Content Gap Snapshot ─────────────────────────
       // Fire-and-forget: generate AI content gap analysis sau mỗi sync
       // Kết quả lưu vào DB — user vào /content-gap sẽ đọc từ cache, không gọi AI lại
-      // Chỉ chạy nếu user bật "Tự động cập nhật phân tích" trong Content Gap settings
+      // Chỉ chạy nếu có bài mới và user bật "Tự động cập nhật phân tích"
+      if (createdPosts > 0) {
       (async () => {
         try {
           // Kiểm tra setting autoRefresh
@@ -719,6 +792,7 @@ export function startBackgroundSync(
           send("log", { message: `⚠️ [ContentGap] Không thể tạo snapshot (non-critical): ${msg}` });
         }
       })();
+      }
 
       // ─── Gửi Telegram notification ─────────────────────────────────
       try {

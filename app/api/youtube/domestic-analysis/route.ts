@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   // ── Build where clause ──────────────────────────────────────────────
   const baseWhere: any = {
     platform: "youtube",
-    competitor: { source: "nuoc_ngoai" },
+    competitor: { source: "trong_nuoc" },
     // Loại trừ video đã đánh dấu "Không liên quan"
     NOT: { relevanceStatus: "irrelevant" },
   };
@@ -47,7 +47,7 @@ export async function GET(request: Request) {
     : baseWhere;
 
   // ── Fetch posts + total count ───────────────────────────────────────
-  const [posts, total, allForeignPosts] = await Promise.all([
+  const [posts, total, allDomesticPosts] = await Promise.all([
     prisma.post.findMany({
       where,
       include: { competitor: true },
@@ -56,11 +56,11 @@ export async function GET(request: Request) {
       take: limit,
     }),
     prisma.post.count({ where }),
-    // Fetch ALL foreign youtube posts for outlier score + unique dropdowns
+    // Fetch ALL domestic youtube posts for outlier score + unique dropdowns
     prisma.post.findMany({
       where: {
         platform: "youtube",
-        competitor: { source: "nuoc_ngoai" },
+        competitor: { source: "trong_nuoc" },
         NOT: { relevanceStatus: "irrelevant" },
       },
       select: {
@@ -77,8 +77,8 @@ export async function GET(request: Request) {
 
   // ── Compute Outlier Scores (same formula as analytics.ts) ───────────
   const outlierScores: Record<string, number> = {};
-  const grouped: Record<string, typeof allForeignPosts> = {};
-  for (const p of allForeignPosts) {
+  const grouped: Record<string, typeof allDomesticPosts> = {};
+  for (const p of allDomesticPosts) {
     (grouped[p.competitorId] ??= []).push(p);
   }
   for (const [, competitorPosts] of Object.entries(grouped)) {
@@ -98,8 +98,8 @@ export async function GET(request: Request) {
   }
 
   // ── Unique topics & channels for dropdowns ──────────────────────────
-  const uniqueTopics = [...new Set(allForeignPosts.map((p) => p.contentPillar).filter(Boolean))].sort() as string[];
-  const uniqueChannels = [...new Set(allForeignPosts.map((p) => p.competitor?.name).filter(Boolean))].sort() as string[];
+  const uniqueTopics = [...new Set(allDomesticPosts.map((p) => p.contentPillar).filter(Boolean))].sort() as string[];
+  const uniqueChannels = [...new Set(allDomesticPosts.map((p) => p.competitor?.name).filter(Boolean))].sort() as string[];
 
   return NextResponse.json({
     posts,

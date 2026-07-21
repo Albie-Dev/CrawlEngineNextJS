@@ -51,7 +51,6 @@ export type TopicDetail = {
   channels: string[];         // tên kênh thực từ DB competitor
   hooks: string[];            // hookType examples từ DB posts
   contentAngles: string[];    // AI suggest content angles
-  internationalNote?: string; // ghi chú nếu topic cũng phổ biến ở nước ngoài
   generatedAt: string;        // ISO timestamp
 };
 
@@ -322,7 +321,9 @@ async function aiCategorizePillars(
   }
 
   try {
-    const statsJson = JSON.stringify({ pillars: pillarStats, overallAvgEngagement: overallAvg });
+    const statsSummary = pillarStats.map(p => 
+      `${p.name}: ${p.videoCount} video, ${p.channelCount} kênh, ${formatViews(p.medianViews)} views, tỷ lệ tương tác ${(p.avgEngagement * 100).toFixed(2)}%`
+    ).join("\n");
     const response = await callAI([
       {
         role: "system",
@@ -331,13 +332,14 @@ async function aiCategorizePillars(
       },
       {
         role: "user",
-        content: `Dữ liệu pillar nội dung từ đối thủ trong nước:\n${statsJson}\n\nPhân loại các pillar vào 4 nhóm. Trả về JSON:\n{"commonTopics":["3-6 pillar phổ biến nhất, nhiều kênh làm"],"repeatedTopics":["2-4 pillar bị lặp lại, engagement thấp hơn trung bình"],"underusedHighEngagement":["2-4 pillar ít kênh làm nhưng engagement cao"],"gaps":["3-5 pillar khoảng trống Kolia có thể khai thác"]}`,
+        content: `Dữ liệu pillar nội dung từ đối thủ trong nước (overall engagement: ${(overallAvg * 100).toFixed(2)}%):\n${statsSummary}\n\nPhân loại các pillar vào 4 nhóm. Trả về JSON:\n{"commonTopics":["3-6 pillar phổ biến nhất, nhiều kênh làm"],"repeatedTopics":["2-4 pillar bị lặp lại, engagement thấp hơn trung bình"],"underusedHighEngagement":["2-4 pillar ít kênh làm nhưng engagement cao"],"gaps":["3-5 pillar khoảng trống Kolia có thể khai thác"]}`,
       },
     ], { maxTokens: 2000 });
 
     const match = response.match(/\{[\s\S]*\}/);
     if (match) {
-      const parsed = JSON.parse(match[0]);
+      const sanitized = match[0].replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+      const parsed = JSON.parse(sanitized);
       return {
         commonTopics: parsed.commonTopics ?? [],
         repeatedTopics: parsed.repeatedTopics ?? [],
@@ -349,7 +351,7 @@ async function aiCategorizePillars(
     console.warn("[content-gap-snapshot] AI categorize failed, using fallback:", err);
   }
 
-  // Fallback if AI returns bad JSON
+  // Fallback if AI fails or times out
   const sorted = [...pillarStats].sort((a, b) => b.videoCount - a.videoCount);
   return {
     commonTopics: sorted.slice(0, 5).map((p) => p.name),
@@ -398,8 +400,7 @@ Trả về JSON TIẾNG VIỆT (chỉ JSON):
   "badge": "Cơ hội cao|Tiềm năng|Cạnh tranh cao",
   "tagline": "1 câu mô tả cơ hội, tối đa 12 từ",
   "competitionLevel": "Cao|Trung bình|Thấp",
-  "contentAngles": ["3-4 góc nội dung Kolia có thể triển khai khác biệt"],
-  "internationalNote": "nếu chủ đề này cũng phổ biến ở YouTube quốc tế thì ghi chú ngắn, không thì null"
+  "contentAngles": ["3-4 góc nội dung Kolia có thể triển khai khác biệt"]
 }`;
 
     const response = await callAI([
@@ -409,7 +410,8 @@ Trả về JSON TIẾNG VIỆT (chỉ JSON):
 
     const match = response.match(/\{[\s\S]*\}/);
     if (match) {
-      const parsed = JSON.parse(match[0]);
+      const sanitized = match[0].replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+      const parsed = JSON.parse(sanitized);
       return {
         badge: parsed.badge ?? "Tiềm năng",
         tagline: parsed.tagline ?? `Chủ đề "${topicName}" đang được nhiều kênh khai thác.`,
@@ -417,7 +419,6 @@ Trả về JSON TIẾNG VIỆT (chỉ JSON):
         channels: channels.slice(0, 6),
         hooks: [...new Set(hooks)].slice(0, 5),
         contentAngles: parsed.contentAngles ?? [],
-        internationalNote: parsed.internationalNote ?? undefined,
         generatedAt,
       };
     }
@@ -480,22 +481,33 @@ export async function refreshContentGapSnapshot(
     ];
     const uniqueTopicNames = [...new Set(allTopicNames)];
 
-    onLog?.(`🤖 [ContentGap] Đang generate chi tiết cho ${uniqueTopicNames.length} chủ đề...`);
+    onLog?.(`🤖 [ContentGap] Đang generate chi tiết cho ${uniqueTopicNames.length} chủ đề (tối đa 3 luồng song song)...`);
 
     const topicDetailMap = new Map<string, TopicDetail>();
-    for (const name of uniqueTopicNames) {
-      const data = rows.get(name);
-      if (!data) continue;
-      const detail = await aiGenerateTopicDetail(
-        name,
-        [...data.channelNames],
-        data.hookTypes,
-        data.views.length,
-        median(data.views),
-        data.competitorIds.size
+    // Chạy parallel nhưng giới hạn 3 luồng để tránh rate limit
+    const CONCURRENCY = 3;
+    for (let i = 0; i < uniqueTopicNames.length; i += CONCURRENCY) {
+      const batch = uniqueTopicNames.slice(i, i + CONCURRENCY);
+      const batchResults = await Promise.all(
+        batch.map(async (name) => {
+          const data = rows.get(name);
+          if (!data) return null;
+          const detail = await aiGenerateTopicDetail(
+            name,
+            [...data.channelNames],
+            data.hookTypes,
+            data.views.length,
+            median(data.views),
+            data.competitorIds.size
+          );
+          return { name, detail };
+        })
       );
-      topicDetailMap.set(name, detail);
-      onLog?.(`  ✅ "${name}" — ${detail.badge}`);
+      for (const r of batchResults) {
+        if (!r) continue;
+        topicDetailMap.set(r.name, r.detail);
+        onLog?.(`  ✅ "${r.name}" — ${r.detail.badge}`);
+      }
     }
 
     // Compute outlier rate: videos whose views > 2x median of their own channel avg
@@ -791,7 +803,8 @@ Trả về JSON TIẾNG VIỆT (chỉ JSON, tối đa 400 từ):
 
       const match = response.match(/\{[\s\S]*\}/);
       if (match) {
-        const parsed = JSON.parse(match[0]);
+        const sanitized = match[0].replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+        const parsed = JSON.parse(sanitized);
         deepDetail = {
           summary: parsed.summary ?? "",
           opportunity: parsed.opportunity ?? "",

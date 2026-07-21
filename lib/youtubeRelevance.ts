@@ -65,7 +65,8 @@ ${listText}`;
     throw new Error("AI không trả về JSON hợp lệ");
   }
 
-  const parsed = JSON.parse(jsonMatch[0]) as ScoreResult[];
+  const sanitized = jsonMatch[0].replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+  const parsed = JSON.parse(sanitized) as ScoreResult[];
   return parsed;
 }
 

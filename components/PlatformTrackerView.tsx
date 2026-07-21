@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Eye, MessageCircle, RadioTower, Users } from "lucide-react";
 import { AddYoutubeCompetitorButton } from "@/components/AddYoutubeCompetitorButton";
 import { LazyContentGapPanel } from "@/components/LazyContentGapPanel";
@@ -28,6 +29,11 @@ export async function PlatformTrackerView({
   title: string;
   subtitle: string;
 }) {
+  // Fetch unfiltered analytics for the ContentCountCard (ignore format param)
+  const cardFilters = { ...filters, format: undefined };
+  const cardAnalytics = await getPlatformAnalytics(platform, cardFilters);
+
+  // Fetch analytics with all filters for the analysis sections
   const analytics = await getPlatformAnalytics(platform, filters);
   const ctaPosts = analytics.posts.filter((post) => post.promotionType !== "Không bán hàng").slice(0, 10);
   const gapData = await getLatestSnapshot(platform, "trong_nuoc");
@@ -61,9 +67,10 @@ export async function PlatformTrackerView({
 
         {platform === "youtube" ? (
           <ContentCountCard
-            total={analytics.totalPosts}
-            shortCount={analytics.posts.filter((p) => p.format === "short_video").length}
-            longCount={analytics.posts.filter((p) => p.format === "long_video").length}
+            platform={platform}
+            total={cardAnalytics.totalPosts}
+            shortCount={cardAnalytics.posts.filter((p) => p.format === "short_video").length}
+            longCount={cardAnalytics.posts.filter((p) => p.format === "long_video").length}
           />
         ) : (
           <MetricCard title="Nội dung đã thu thập" value={formatNumber(analytics.totalPosts)} detail="Chỉ bao gồm nội dung đã publish, không lấy video đang chờ phát hoặc chưa công khai." icon={<RadioTower className="h-5 w-5" />} />
@@ -87,7 +94,7 @@ export async function PlatformTrackerView({
       )}
 
       {platform === "youtube" ? (
-        <YouTubeAnalysis analytics={analytics} platform={platform} />
+        <YouTubeAnalysis analytics={analytics} platform={platform} filters={filters} />
       ) : platform === "tiktok" ? (
         <TikTokAnalysis analytics={analytics} platform={platform} />
       ) : (
@@ -128,7 +135,7 @@ export async function PlatformTrackerView({
   );
 }
 
-function ContentCountCard({ total, shortCount, longCount }: { total: number; shortCount: number; longCount: number }) {
+function ContentCountCard({ platform, total, shortCount, longCount }: { platform: string; total: number; shortCount: number; longCount: number }) {
   return (
     <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
       <div className="flex items-start justify-between gap-4">
@@ -141,21 +148,28 @@ function ContentCountCard({ total, shortCount, longCount }: { total: number; sho
         </div>
       </div>
       <div className="mt-4 grid grid-cols-2 gap-2">
-        <div className="rounded bg-kolia-mint px-2 py-1.5 text-center">
+        <Link
+          href={`/${platform}?format=short_video#phan-tich-video`}
+          className="rounded bg-kolia-mint px-2 py-1.5 text-center block hover:bg-emerald-100 transition-colors"
+        >
           <p className="text-sm font-bold text-kolia-green">{formatNumber(shortCount)}</p>
           <p className="text-xs text-slate-600">Video ngắn</p>
-        </div>
-        <div className="rounded bg-kolia-amber px-2 py-1.5 text-center">
+        </Link>
+        <Link
+          href={`/${platform}?format=long_video#phan-tich-video`}
+          className="rounded bg-kolia-amber px-2 py-1.5 text-center block hover:bg-amber-100 transition-colors"
+        >
           <p className="text-sm font-bold text-kolia-gold">{formatNumber(longCount)}</p>
           <p className="text-xs text-slate-600">Video dài</p>
-        </div>
+        </Link>
       </div>
       <p className="mt-4 text-sm leading-6 text-slate-600">Chỉ bao gồm nội dung đã publish, không lấy video đang chờ phát hoặc chưa công khai.</p>
     </section>
   );
 }
 
-function YouTubeAnalysis({ analytics, platform }: { analytics: Awaited<ReturnType<typeof getPlatformAnalytics>>; platform: Platform }) {
+function YouTubeAnalysis({ analytics, platform, filters }: { analytics: Awaited<ReturnType<typeof getPlatformAnalytics>>; platform: Platform; filters: AnalyticsFilters }) {
+  const isVideoFilter = filters.format === "long_video" || filters.format === "short_video";
   return (
     <div className="space-y-8">
       {/* ─── Content gap đối thủ trong nước ──────────────────────────────── */}
@@ -175,7 +189,7 @@ function YouTubeAnalysis({ analytics, platform }: { analytics: Awaited<ReturnTyp
       </details>
 
       {/* ─── Phân tích video nước ngoài ──────────────────────────────────── */}
-      <details className="group rounded-lg border border-kolia-line bg-white shadow-sm">
+      <details id="phan-tich-video" className="group rounded-lg border border-kolia-line bg-white shadow-sm" open={isVideoFilter ? true : undefined}>
         <summary className="flex cursor-pointer items-center justify-between gap-2 px-5 py-4 select-none hover:bg-slate-50/50 transition">
           <div>
             <h2 className="text-xl font-extrabold text-kolia-ink">Phân tích video nước ngoài</h2>
@@ -186,7 +200,23 @@ function YouTubeAnalysis({ analytics, platform }: { analytics: Awaited<ReturnTyp
           </svg>
         </summary>
         <div className="border-t border-kolia-line p-5">
-          <YouTubeForeignAnalysis domesticPosts={analytics.posts} />
+          <YouTubeForeignAnalysis domesticPosts={analytics.posts} initialFormat={filters.format ?? ""} />
+        </div>
+      </details>
+
+      {/* ─── Phân tích video trong nước ──────────────────────────────────── */}
+      <details className="group rounded-lg border border-kolia-line bg-white shadow-sm" open={isVideoFilter ? true : undefined}>
+        <summary className="flex cursor-pointer items-center justify-between gap-2 px-5 py-4 select-none hover:bg-slate-50/50 transition">
+          <div>
+            <h2 className="text-xl font-extrabold text-kolia-ink">Phân tích video trong nước</h2>
+            <p className="text-sm text-slate-500">Phân tích cấu trúc, format và hiệu suất video từ kênh YouTube Việt Nam</p>
+          </div>
+          <svg className="h-5 w-5 shrink-0 text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </summary>
+        <div className="border-t border-kolia-line p-5">
+          <YouTubeForeignAnalysis variant="domestic" domesticPosts={analytics.posts} initialFormat={filters.format ?? ""} />
         </div>
       </details>
     </div>

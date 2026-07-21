@@ -175,7 +175,7 @@ export function LazyContentGapPanel({ platform, hasData }: Props) {
 
   // ── Data ──
   return (
-    <section className="rounded-2xl border border-kolia-line bg-white p-5 shadow-sm">
+    <section>
       <ContentGapPanel domestic={data} />
     </section>
   );

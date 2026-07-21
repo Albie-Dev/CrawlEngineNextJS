@@ -12,8 +12,8 @@ export const sourceLabels: Record<SourceType, string> = {
 };
 
 export const formatLabels: Record<string, string> = {
-  short_video: "Short video",
-  long_video: "Long video",
+  short_video: "Video ngắn",
+  long_video: "Video dài",
   video: "Video",
   carousel: "Carousel",
   image_post: "Image post",

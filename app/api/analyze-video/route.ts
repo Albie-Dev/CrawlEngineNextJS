@@ -30,7 +30,7 @@ export async function POST(request: Request) {
         const existingAnalysis = JSON.parse(post.aiAnalysis);
         return NextResponse.json(existingAnalysis);
       } catch (e) {
-        console.warn(`[analyze-video] Không thể parse aiAnalysis hiện tại cho post ${postId}, sẽ chạy lại AI.`);
+        // aiAnalysis parse failed — will re-run AI
       }
     }
 
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     return NextResponse.json(result);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Lỗi không xác định";
-    console.error(`[analyze-video] AI failed:`, error);
+    // AI analysis failed — see server logs for details
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

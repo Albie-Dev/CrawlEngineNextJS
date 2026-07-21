@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   BarChart2,
@@ -49,7 +48,7 @@ function StatCard({
   const isDown = trend < 0;
 
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-slate-100 bg-white p-5 transition-all hover:shadow-md hover:-translate-y-0.5">
+    <div className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5">
       {/* Decorative gradient bar */}
       <div className={`absolute inset-x-0 top-0 h-1 ${iconBg.replace('bg-', 'bg-')} opacity-60`} />
 
@@ -117,7 +116,6 @@ function TopicDetailPanel({
   topic: TopicRow;
   onBack: () => void;
 }) {
-  const router = useRouter();
   const [isDeepAnalyzing, setIsDeepAnalyzing] = useState(false);
   const [deepDetail, setDeepDetail] = useState<TopicDeepDetail | undefined>(topic.deepDetail);
   const detail: TopicDetail | undefined = topic.detail;
@@ -149,7 +147,7 @@ function TopicDetailPanel({
       : "text-red-500";
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-2xl border border-slate-100 shadow-sm p-6 relative">
+    <div className="flex flex-col h-full bg-white rounded-2xl border border-kolia-line shadow-sm p-6 relative">
       {/* Back button (Mobile/Tablet) */}
       <button
         onClick={onBack}
@@ -368,22 +366,6 @@ function TopicDetailPanel({
         </div>
       </div>
 
-      {/* International note */}
-      {detail?.internationalNote && (
-        <div className="flex items-center gap-3 rounded-xl bg-[#F4FBFA] border border-[#E6F4F1] px-4 py-3 mt-6">
-          <Globe className="h-5 w-5 shrink-0 text-kolia-green" />
-          <p className="flex-1 text-xs text-slate-600 leading-relaxed">
-            {detail.internationalNote}
-          </p>
-          <button
-            onClick={() => router.push(`/youtube?source=nuoc_ngoai&search=${encodeURIComponent(topic.name)}`)}
-            className="shrink-0 rounded bg-white border border-slate-200 px-3 py-1.5 text-[11px] font-semibold text-slate-600 hover:bg-slate-50 flex items-center gap-1"
-          >
-            Xem nguồn quốc tế
-            <ChevronRight className="h-3 w-3" />
-          </button>
-        </div>
-      )}
     </div>
   );
 }
@@ -461,7 +443,7 @@ export function ContentGapPanel({ domestic }: { domestic: DomesticGapSnapshot })
 
       <div className="grid gap-6 lg:grid-cols-[1fr_420px] h-full min-h-[600px]">
       {/* ── Left: topic list ── */}
-      <div className="overflow-y-auto pr-0 lg:pr-2">
+      <div className="overflow-y-auto pr-0 lg:pr-2 rounded-2xl border border-kolia-line bg-white p-5 shadow-sm">
         <div className="space-y-8">
           {CATEGORY_META.map((cat) => {
             const topics = domestic[cat.key];
@@ -563,7 +545,7 @@ export function ContentGapPanel({ domestic }: { domestic: DomesticGapSnapshot })
             onBack={() => setSelectedTopic(null)}
           />
         ) : (
-          <div className="flex h-full flex-col items-center justify-center gap-3 text-center py-12 rounded-2xl border border-slate-100 bg-slate-50/50">
+          <div className="flex h-full flex-col items-center justify-center gap-3 text-center py-12 rounded-2xl border border-kolia-line bg-slate-50/50">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
               <TrendingUp className="h-6 w-6 text-slate-400" />
             </div>

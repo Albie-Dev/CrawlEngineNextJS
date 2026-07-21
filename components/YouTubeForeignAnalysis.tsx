@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Search,
   Filter,
@@ -12,7 +12,11 @@ import {
   Clock,
   Calendar,
   Check,
-  Loader2
+  Loader2,
+  X,
+  Play,
+  ExternalLink,
+  ChevronDown
 } from "lucide-react";
 
 type Segment = {
@@ -348,36 +352,166 @@ function outlierLabel(score: number): string {
   return "Dưới TB";
 }
 
-function getVietnamComparison(videoTopic: string, videoCategory: string, allPosts: any[]) {
-  const table = allPosts
-    .filter((p) => p.competitor?.source === "trong_nuoc" && (p.mainTopic === videoTopic || p.contentPillar === videoCategory))
-    .slice(0, 3)
-    .map((p) => ({
-      channel: p.competitor?.name || "Kênh Việt",
-      topic: p.title,
-      views: formatViews(p.views),
-      efficiency: (p.engagementRate >= 0.05 ? "Cao" : p.engagementRate >= 0.02 ? "Trung bình" : "Thấp") as "Cao" | "Trung bình" | "Thấp",
-      date: new Date(p.publishedAt).toLocaleDateString("vi-VN")
-    }));
+/** Extract YouTube video ID from various YouTube URL formats */
+function extractYoutubeId(url: string): string | null {
+  if (!url) return null;
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+    /^([a-zA-Z0-9_-]{11})$/
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m) return m[1];
+  }
+  return null;
+}
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Smart Vietnam Comparison - Level 1+2+3 (Fuzzy + Dynamic + Smart Sort)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Fuzzy matching: Check if two strings are similar
+ * - Exact match: 100 points
+ * - Contains match: 70 points
+ * - Partial match (2+ words): 40 points
+ */
+function calculateSimilarity(str1: string, str2: string): number {
+  if (!str1 || !str2) return 0;
+  const s1 = str1.toLowerCase().trim();
+  const s2 = str2.toLowerCase().trim();
+
+  if (s1 === s2) return 100;
+  if (s1.includes(s2) || s2.includes(s1)) return 70;
+
+  // Check partial word match (at least 2 words)
+  const words1 = s1.split(/\s+/);
+  const words2 = s2.split(/\s+/);
+  const commonWords = words1.filter(w => w.length > 2 && words2.includes(w));
+  if (commonWords.length >= 2) return 40;
+  if (commonWords.length === 1) return 20;
+
+  return 0;
+}
+
+/**
+ * Calculate relevance score for a post compared to foreign video
+ * - Topic similarity: 50% weight
+ * - Category match: 30% weight
+ * - Title similarity: 20% weight
+ */
+function calculateRelevanceScore(
+  post: any,
+  foreignTopic: string,
+  foreignCategory: string
+): number {
+  const topicSimilarity = calculateSimilarity(post.mainTopic || "", foreignTopic);
+  const categoryMatch = post.contentPillar === foreignCategory ? 100 :
+                       calculateSimilarity(post.contentPillar || "", foreignCategory);
+  const titleSimilarity = calculateSimilarity(post.title || "", foreignTopic);
+
+  return Math.round(topicSimilarity * 0.5 + categoryMatch * 0.3 + titleSimilarity * 0.2);
+}
+
+/**
+ * Calculate efficiency level with dynamic threshold
+ * - Uses median engagement rate of domestic posts as baseline
+ * - High: >= median * 1.2
+ * - Medium: >= median * 0.8
+ * - Low: < median * 0.8
+ */
+function calculateEfficiencyLevel(
+  engagementRate: number,
+  domesticPosts: any[]
+): "Cao" | "Trung bình" | "Thấp" {
+  const domesticRates = domesticPosts
+    .filter(p => p.competitor?.source === "trong_nuoc" && typeof p.engagementRate === "number")
+    .map(p => p.engagementRate);
+
+  if (domesticRates.length === 0) {
+    // Fallback to hardcoded threshold if no data
+    return engagementRate >= 0.05 ? "Cao" : engagementRate >= 0.02 ? "Trung bình" : "Thấp";
+  }
+
+  // Calculate median
+  const sorted = domesticRates.slice().sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  const median = sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+
+  if (engagementRate >= median * 1.2) return "Cao";
+  if (engagementRate >= median * 0.8) return "Trung bình";
+  return "Thấp";
+}
+
+function getVietnamComparison(videoTopic: string, videoCategory: string, allPosts: any[], limit: number = 10) {
+  // Pre-filter domestic posts
+  const domesticPosts = allPosts.filter(p => p.competitor?.source === "trong_nuoc");
+
+  // Calculate relevance scores for all domestic posts
+  const scored = domesticPosts
+    .map(p => ({
+      post: p,
+      relevanceScore: calculateRelevanceScore(p, videoTopic, videoCategory),
+      efficiencyRate: p.engagementRate || 0
+    }))
+    .filter(item => item.relevanceScore >= 30); // Only keep posts with relevance >= 30%
+
+  // Smart sort: relevance (60%) + efficiency (40%)
+  // Normalize efficiency to 0-100 scale (assuming 0-10% range)
+  const scoredWithCombined = scored.map(item => ({
+    ...item,
+    combinedScore: item.relevanceScore * 0.6 + Math.min(item.efficiencyRate * 1000, 100) * 0.4
+  }));
+
+  // Sort by combined score and take top N
+  const topCandidates = scoredWithCombined
+    .sort((a, b) => b.combinedScore - a.combinedScore)
+    .slice(0, limit);
+
+  // Build table with additional metadata
+  const table = topCandidates.map(item => {
+    const efficiency = calculateEfficiencyLevel(item.efficiencyRate, domesticPosts);
+    return {
+      channel: item.post.competitor?.name || "Kênh Việt",
+      channelAvatar: item.post.competitor?.avatarUrl || item.post.competitor?.logo || "",
+      topic: item.post.title,
+      views: formatViews(item.post.views),
+      efficiency,
+      efficiencyRate: item.efficiencyRate, // Raw value for debugging
+      date: new Date(item.post.publishedAt).toLocaleDateString("vi-VN"),
+      relevanceScore: item.relevanceScore,
+      combinedScore: item.combinedScore,
+      postId: item.post.id, // Add for click handling
+      postUrl: item.post.postUrl, // Add for external link
+      thumbnailUrl: item.post.thumbnailUrl || ""
+    };
+  });
+
+  // Generate verdict based on results
   let quickVerdict = "Cơ hội tốt cho nhà sáng tạo Việt Nam";
   let quickVerdictDesc = "Chủ đề này chưa bị khai thác nhiều tại thị trường Việt Nam.";
+  const totalMatches = scoredWithCombined.length; // Total available matches
 
   if (table.length === 0) {
     quickVerdict = "Thị trường ngách xanh mướt (Blue Ocean)";
     quickVerdictDesc = "Ở VN chưa ai làm chủ đề này, cơ hội cực lớn để đi tiên phong!";
   } else {
     const hasHighEfficiency = table.some((r) => r.efficiency === "Cao");
-    if (hasHighEfficiency) {
+    const avgRelevance = table.reduce((sum, r) => sum + r.relevanceScore, 0) / table.length;
+
+    if (hasHighEfficiency && avgRelevance >= 70) {
       quickVerdict = "Chủ đề siêu Hot (Red Ocean)";
-      quickVerdictDesc = "Đã có kênh VN làm và rất thành công, độ cạnh tranh cao, cần khai thác ngách (angle) mới mẻ hơn.";
+      quickVerdictDesc = "Đã có kênh VN làm rất thành công với chủ đề tương tự, độ cạnh tranh cao.";
+    } else if (hasHighEfficiency) {
+      quickVerdict = "Đã có cạnh tranh";
+      quickVerdictDesc = "Một số kênh VN đang làm và có hiệu quả tốt, cần tìm angle mới để khác biệt hóa.";
     } else {
       quickVerdict = "Có người làm nhưng chưa tới";
       quickVerdictDesc = "Chủ đề đã xuất hiện ở VN nhưng chưa bùng nổ, bạn có thể làm tốt hơn nhờ format từ nước ngoài.";
     }
   }
 
-  return { quickVerdict, quickVerdictDesc, table };
+  return { quickVerdict, quickVerdictDesc, table, totalMatches, hasMore: totalMatches > limit };
 }
 
 function HighlightsTabContent({
@@ -487,7 +621,62 @@ function HighlightsTabContent({
   );
 }
 
-export function YouTubeForeignAnalysis({ domesticPosts = [] }: { domesticPosts?: any[] }) {
+// ─────────────────────────────────────────────────────────────────────────────
+// Inline filter select (giống FilterBar.tsx nhưng compact)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function FilterSelectInline({
+  value,
+  onChange,
+  options,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selected = options.find((o) => o.value === value) || options[0];
+
+  return (
+    <div
+      ref={ref}
+      className="relative h-8 min-w-[130px] flex-1 rounded border border-slate-200 bg-white shadow-xs flex items-center cursor-pointer select-none hover:border-slate-300 transition"
+      onClick={() => setOpen(!open)}
+    >
+      <div className="flex items-center justify-between gap-1.5 w-full px-2.5">
+        <span className="text-[10px] font-medium text-slate-700 truncate">{selected?.label}</span>
+        <ChevronDown className={`h-3 w-3 shrink-0 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`} />
+      </div>
+      {open && (
+        <div className="absolute left-0 top-full z-50 w-full min-w-[150px] mt-0.5 rounded border border-slate-200 bg-white py-1 shadow-lg max-h-60 overflow-y-auto">
+          {options.map((opt) => (
+            <div
+              key={opt.value}
+              className={`px-3 py-1.5 text-[11px] cursor-pointer transition-colors hover:bg-slate-50 ${
+                value === opt.value ? "bg-slate-50 font-semibold text-kolia-green" : "text-slate-700"
+              }`}
+              onClick={() => { onChange(opt.value); setOpen(false); }}
+            >
+              {opt.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function YouTubeForeignAnalysis({ domesticPosts = [], variant = "foreign", initialFormat = "" }: { domesticPosts?: any[]; variant?: "foreign" | "domestic"; initialFormat?: string }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [videoList, setVideoList] = useState<VideoData[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<VideoData | null>(null);
@@ -498,10 +687,20 @@ export function YouTubeForeignAnalysis({ domesticPosts = [] }: { domesticPosts?:
   const [showFilter, setShowFilter] = useState(false);
   const [filterTopic, setFilterTopic] = useState("");
   const [filterChannel, setFilterChannel] = useState("");
+  const [filterFormat, setFilterFormat] = useState(initialFormat);
   const [loadingList, setLoadingList] = useState(true);
+
+  // Sync internal filter state when initialFormat prop changes (e.g. navigation)
+  useEffect(() => {
+    setFilterFormat(initialFormat);
+    setCurrentPage(1);
+  }, [initialFormat]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 0 });
   const [uniqueTopics, setUniqueTopics] = useState<string[]>([]);
   const [uniqueChannels, setUniqueChannels] = useState<string[]>([]);
+  const [showMoreVietnamVideos, setShowMoreVietnamVideos] = useState(false);
+  const [vietnamVideosFullData, setVietnamVideosFullData] = useState<any>(null);
+  const [selectedVietnamVideoIdx, setSelectedVietnamVideoIdx] = useState(0);
 
   // ── Fetch from API when search/filter/page changes ────────────────
   useEffect(() => {
@@ -510,10 +709,12 @@ export function YouTubeForeignAnalysis({ domesticPosts = [] }: { domesticPosts?:
       search: searchTerm,
       topic: filterTopic,
       channel: filterChannel,
+      format: filterFormat,
       page: String(currentPage),
       limit: "10",
     });
-    fetch(`/api/youtube/foreign-analysis?${params}`)
+    const apiPath = variant === "domestic" ? "/api/youtube/domestic-analysis" : "/api/youtube/foreign-analysis";
+    fetch(`${apiPath}?${params}`)
       .then((r) => r.json())
       .then((data) => {
         const mapped = data.posts.map((p: any) => {
@@ -543,7 +744,7 @@ export function YouTubeForeignAnalysis({ domesticPosts = [] }: { domesticPosts?:
             mainTopic,
             transcript: p.transcript || "Chưa có bản dịch cho video này.",
             url: p.postUrl || `https://www.youtube.com/watch?v=${p.id}`,
-            vietnamComparison: getVietnamComparison(mainTopic, category, domesticPosts),
+            vietnamComparison: variant === "domestic" ? undefined : getVietnamComparison(mainTopic, category, domesticPosts),
             ...(aiData ? {
               isDeepAnalysis: aiData.isDeepAnalysis,
               formatViral: aiData.formatViral,
@@ -580,7 +781,7 @@ export function YouTubeForeignAnalysis({ domesticPosts = [] }: { domesticPosts?:
         setLoadingList(false);
       })
       .catch(() => setLoadingList(false));
-  }, [searchTerm, filterTopic, filterChannel, currentPage]);
+  }, [searchTerm, filterTopic, filterChannel, filterFormat, currentPage]);
 
   // Handle manual re-analyze
   const handleReanalyze = async (isDeepAnalysis: boolean = false) => {
@@ -639,7 +840,7 @@ export function YouTubeForeignAnalysis({ domesticPosts = [] }: { domesticPosts?:
         keyPoints: "Chưa phân tích được",
         cta: data.vietnamized || "Đăng ký kênh để theo dõi cập nhật!"
       },
-      vietnamComparison: getVietnamComparison(selectedVideo!.mainTopic, selectedVideo!.category, domesticPosts),
+      vietnamComparison: variant === "domestic" ? undefined : getVietnamComparison(selectedVideo!.mainTopic, selectedVideo!.category, domesticPosts),
       summary: data.summary,
       highlights: data.highlights && data.highlights.length > 0 ? data.highlights : [],
       tags: data.tags && data.tags.length > 0 ? data.tags : [selectedVideo!.mainTopic],
@@ -685,7 +886,7 @@ export function YouTubeForeignAnalysis({ domesticPosts = [] }: { domesticPosts?:
   // Reset page when search/filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, filterTopic, filterChannel]);
+  }, [searchTerm, filterTopic, filterChannel, filterFormat]);
 
   const itemsPerPage = 10;
   const totalItems = pagination.total;
@@ -712,53 +913,55 @@ export function YouTubeForeignAnalysis({ domesticPosts = [] }: { domesticPosts?:
             <button
               onClick={() => setShowFilter((f) => !f)}
               className={`inline-flex items-center gap-1 rounded border px-2.5 py-1.5 text-xs font-semibold shadow-2xs transition ${
-                showFilter || filterTopic || filterChannel
+                showFilter || filterTopic || filterChannel || filterFormat
                   ? "border-kolia-green bg-kolia-green text-white"
                   : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
               }`}
             >
               <Filter className="h-3 w-3" />
               Bộ lọc
-              {(filterTopic || filterChannel) && (
-                <span className="ml-0.5 rounded bg-white/20 px-1 text-[9px] font-bold">{+!!filterTopic + +!!filterChannel}</span>
+              {(filterTopic || filterChannel || filterFormat) && (
+                <span className="ml-0.5 rounded bg-white/20 px-1 text-[9px] font-bold">{+!!filterTopic + +!!filterChannel + +!!filterFormat}</span>
               )}
             </button>
           </div>
 
           {/* Filter dropdown panel */}
           {showFilter && (
-            <div className="flex items-center gap-3 px-3 pb-3 pt-0">
+            <div className="flex flex-wrap items-center gap-2 px-3 pb-3 pt-0">
+              {/* Format filter */}
+              <FilterSelectInline
+                value={filterFormat}
+                onChange={setFilterFormat}
+                options={[
+                  { value: "", label: "Tất cả độ dài" },
+                  { value: "short_video", label: "Short video" },
+                  { value: "long_video", label: "Long video" },
+                ]}
+              />
               {/* Topic filter */}
-              <div className="flex-1">
-                <select
-                  value={filterTopic}
-                  onChange={(e) => setFilterTopic(e.target.value)}
-                  className="w-full rounded border border-slate-200 bg-white px-2 py-1.5 text-[10px] text-kolia-ink focus:border-kolia-green focus:outline-none"
-                >
-                  <option value="">Tất cả chủ đề</option>
-                  {uniqueTopics.map((t) => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
-              </div>
+              <FilterSelectInline
+                value={filterTopic}
+                onChange={setFilterTopic}
+                options={[
+                  { value: "", label: "Tất cả chủ đề" },
+                  ...uniqueTopics.map((t) => ({ value: t, label: t })),
+                ]}
+              />
               {/* Channel filter */}
-              <div className="flex-1">
-                <select
-                  value={filterChannel}
-                  onChange={(e) => setFilterChannel(e.target.value)}
-                  className="w-full rounded border border-slate-200 bg-white px-2 py-1.5 text-[10px] text-kolia-ink focus:border-kolia-green focus:outline-none"
-                >
-                  <option value="">Tất cả kênh</option>
-                  {uniqueChannels.map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
-              </div>
+              <FilterSelectInline
+                value={filterChannel}
+                onChange={setFilterChannel}
+                options={[
+                  { value: "", label: "Tất cả kênh" },
+                  ...uniqueChannels.map((c) => ({ value: c, label: c })),
+                ]}
+              />
               {/* Clear filter */}
-              {(filterTopic || filterChannel) && (
+              {(filterTopic || filterChannel || filterFormat) && (
                 <button
-                  onClick={() => { setFilterTopic(""); setFilterChannel(""); }}
-                  className="shrink-0 rounded border border-red-200 bg-white px-2 py-1.5 text-[10px] font-semibold text-red-500 hover:bg-red-50 transition"
+                  onClick={() => { setFilterTopic(""); setFilterChannel(""); setFilterFormat(""); }}
+                  className="shrink-0 rounded border border-red-200 bg-white px-2.5 py-1.5 text-[10px] font-semibold text-red-500 hover:bg-red-50 transition"
                 >
                   Xoá
                 </button>
@@ -774,7 +977,7 @@ export function YouTubeForeignAnalysis({ domesticPosts = [] }: { domesticPosts?:
               <Loader2 className="h-5 w-5 animate-spin text-kolia-green" />
             </div>
           ) : displayedVideos.length === 0 ? (
-            <div className="text-center py-12 text-xs text-slate-400">Không tìm thấy video đối thủ nước ngoài nào</div>
+            <div className="text-center py-12 text-xs text-slate-400">{variant === "domestic" ? "Không tìm thấy video trong nước nào" : "Không tìm thấy video đối thủ nước ngoài nào"}</div>
           ) : displayedVideos.map((video, idx) => {
             const globalIndex = (currentPage - 1) * itemsPerPage + idx + 1;
             const isSelected = selectedVideo?.id === video.id;
@@ -1219,91 +1422,123 @@ export function YouTubeForeignAnalysis({ domesticPosts = [] }: { domesticPosts?:
                     </div>
                   </section>
 
-                  {/* 5. Đối chiếu tại Việt Nam */}
-                  <section className="col-span-2 rounded border border-kolia-line bg-white p-4 shadow-2xs">
-                    <h3 className="text-xs font-bold text-kolia-ink border-b border-kolia-line pb-2 mb-3">
-                      5. Đối chiếu tại Việt Nam
-                    </h3>
+                  {variant !== "domestic" && (
+                    <section className="col-span-2 rounded border border-kolia-line bg-white p-4 shadow-2xs">
+                      <h3 className="text-xs font-bold text-kolia-ink border-b border-kolia-line pb-2 mb-3">
+                        5. Đối chiếu tại Việt Nam
+                      </h3>
 
-                    <div className="grid gap-4 xl:grid-cols-[1fr_2fr] items-start">
-                      {/* Verdict Card */}
-                      <div className="rounded-lg border border-slate-100 bg-slate-50 p-3 flex flex-col justify-center min-h-[120px]">
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Kết luận nhanh</span>
-                        <div className="mt-2 flex items-start gap-2">
-                          <div className="rounded-full bg-emerald-100 p-0.5 text-kolia-green shrink-0 mt-0.5">
-                            <Check className="h-3.5 w-3.5 stroke-[3]" />
+                      <div className="grid gap-4 xl:grid-cols-[1fr_2fr] items-start">
+                        {/* Verdict Card */}
+                        <div className="rounded-lg border border-slate-100 bg-slate-50 p-3 flex flex-col justify-center min-h-[120px]">
+                          <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Kết luận nhanh</span>
+                          <div className="mt-2 flex items-start gap-2">
+                            <div className="rounded-full bg-emerald-100 p-0.5 text-kolia-green shrink-0 mt-0.5">
+                              <Check className="h-3.5 w-3.5 stroke-[3]" />
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-kolia-ink text-xs">
+                                {selectedVideo.vietnamComparison?.quickVerdict}
+                              </h4>
+                              <p className="mt-0.5 text-[10px] text-slate-500 leading-relaxed">
+                                {selectedVideo.vietnamComparison?.quickVerdictDesc}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <h4 className="font-bold text-kolia-ink text-xs">
-                              {selectedVideo.vietnamComparison?.quickVerdict}
-                            </h4>
-                            <p className="mt-0.5 text-[10px] text-slate-500 leading-relaxed">
-                              {selectedVideo.vietnamComparison?.quickVerdictDesc}
-                            </p>
-                          </div>
+                        </div>
+
+                        {/* Vietnam Channels Table */}
+                        <div className="overflow-x-auto rounded border border-slate-150">
+                          <table className="w-full text-left border-collapse text-[10px]">
+                            <thead>
+                              <tr className="bg-slate-50 border-b border-slate-200">
+                                <th className="p-2 font-bold text-slate-600">#</th>
+                                <th className="p-2 font-bold text-slate-600">Kênh</th>
+                                <th className="p-2 font-bold text-slate-600">Chủ đề tương tự</th>
+                                <th className="p-2 font-bold text-slate-600 text-right">Lượt xem</th>
+                                <th className="p-2 font-bold text-slate-600 text-right">Độ giống</th>
+                                <th className="p-2 font-bold text-slate-600">Hiệu quả</th>
+                                <th className="p-2 font-bold text-slate-600">Ngày đăng</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                              {selectedVideo.vietnamComparison && selectedVideo.vietnamComparison.table.length > 0 ? (
+                                selectedVideo.vietnamComparison.table.map((row: any, i: number) => (
+                                  <tr key={i} className="hover:bg-slate-50/50">
+                                    <td className="p-2 font-semibold text-slate-500">{i + 1}</td>
+                                    <td className="p-2 font-bold text-kolia-ink">{row.channel}</td>
+                                    <td className="p-2 text-slate-600 leading-relaxed">{row.topic}</td>
+                                    <td className="p-2 text-right font-semibold text-slate-700">{row.views}</td>
+                                    <td className="p-2 text-right">
+                                      <div className="flex items-center justify-end gap-1">
+                                        <span className="h-1.5 w-12 rounded-full overflow-hidden bg-slate-100 flex">
+                                          <span
+                                            className={`h-full rounded-full ${
+                                              row.relevanceScore >= 70
+                                                ? "bg-emerald-500"
+                                                : row.relevanceScore >= 50
+                                                ? "bg-blue-400"
+                                                : "bg-amber-400"
+                                            }`}
+                                            style={{ width: `${row.relevanceScore}%` }}
+                                          />
+                                        </span>
+                                        <span className="font-semibold text-[9px] text-slate-600">{row.relevanceScore}%</span>
+                                      </div>
+                                    </td>
+                                    <td className="p-2">
+                                      <div className="flex items-center gap-1">
+                                        <span className="h-1 w-10 rounded-full overflow-hidden bg-slate-100 flex">
+                                          <span
+                                            className={`h-full rounded-full ${
+                                              row.efficiency === "Cao"
+                                                ? "bg-emerald-500 w-full"
+                                                : row.efficiency === "Trung bình"
+                                                ? "bg-amber-400 w-2/3"
+                                                : "bg-red-400 w-1/3"
+                                            }`}
+                                          />
+                                        </span>
+                                        <span className="font-semibold text-[9px] text-slate-600">{row.efficiency}</span>
+                                      </div>
+                                    </td>
+                                    <td className="p-2 text-slate-400 whitespace-nowrap">{row.date}</td>
+                                  </tr>
+                                ))
+                              ) : (
+                                <tr>
+                                  <td colSpan={7} className="p-3 text-center text-slate-400 text-xs">
+                                    Chưa tìm thấy video đối chiếu tương tự ở Việt Nam
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
                         </div>
                       </div>
 
-                      {/* Vietnam Channels Table */}
-                      <div className="overflow-x-auto rounded border border-slate-150">
-                        <table className="w-full text-left border-collapse text-[10px]">
-                          <thead>
-                            <tr className="bg-slate-50 border-b border-slate-200">
-                              <th className="p-2 font-bold text-slate-600">#</th>
-                              <th className="p-2 font-bold text-slate-600">Kênh</th>
-                              <th className="p-2 font-bold text-slate-600">Chủ đề tương tự</th>
-                              <th className="p-2 font-bold text-slate-600 text-right">Lượt xem</th>
-                              <th className="p-2 font-bold text-slate-600">Hiệu quả</th>
-                              <th className="p-2 font-bold text-slate-600">Ngày đăng</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-slate-100">
-                            {selectedVideo.vietnamComparison && selectedVideo.vietnamComparison.table.length > 0 ? (
-                              selectedVideo.vietnamComparison.table.map((row, i) => (
-                                <tr key={i} className="hover:bg-slate-50/50">
-                                  <td className="p-2 font-semibold text-slate-500">{i + 1}</td>
-                                  <td className="p-2 font-bold text-kolia-ink">{row.channel}</td>
-                                  <td className="p-2 text-slate-600 leading-relaxed">{row.topic}</td>
-                                  <td className="p-2 text-right font-semibold text-slate-700">{row.views}</td>
-                                  <td className="p-2">
-                                    <div className="flex items-center gap-1">
-                                      <span className="h-1 w-10 rounded-full overflow-hidden bg-slate-100 flex">
-                                        <span
-                                          className={`h-full rounded-full ${
-                                            row.efficiency === "Cao"
-                                              ? "bg-emerald-500 w-full"
-                                              : row.efficiency === "Trung bình"
-                                              ? "bg-amber-400 w-2/3"
-                                              : "bg-red-400 w-1/3"
-                                          }`}
-                                        />
-                                      </span>
-                                      <span className="font-semibold text-[9px] text-slate-600">{row.efficiency}</span>
-                                    </div>
-                                  </td>
-                                  <td className="p-2 text-slate-400 whitespace-nowrap">{row.date}</td>
-                                </tr>
-                              ))
-                            ) : (
-                              <tr>
-                                <td colSpan={6} className="p-3 text-center text-slate-400 text-xs">
-                                  Chưa tìm thấy video đối chiếu tương tự ở Việt Nam
-                                </td>
-                              </tr>
-                            )}
-                          </tbody>
-                        </table>
+                      {/* Footer link */}
+                      <div className="mt-3 flex justify-end">
+                        <button
+                          onClick={() => {
+                            const fullData = getVietnamComparison(
+                              selectedVideo.mainTopic,
+                              selectedVideo.category,
+                              domesticPosts,
+                              100
+                            );
+                            setVietnamVideosFullData(fullData);
+                            setSelectedVietnamVideoIdx(0);
+                            setShowMoreVietnamVideos(true);
+                          }}
+                          className="inline-flex items-center gap-0.5 text-[10px] font-bold text-kolia-green hover:underline"
+                        >
+                          Xem thêm video tại Việt Nam
+                          <ChevronRight className="h-3 w-3" />
+                        </button>
                       </div>
-                    </div>
-
-                    {/* Footer link */}
-                    <div className="mt-3 flex justify-end">
-                      <button className="inline-flex items-center gap-0.5 text-[10px] font-bold text-kolia-green hover:underline">
-                        Xem thêm video tại Việt Nam
-                        <ChevronRight className="h-3 w-3" />
-                      </button>
-                    </div>
-                  </section>
+                    </section>
+                  )}
                 </div>
               ) : activeTab === "transcript" ? (
                 <TranscriptTabContent transcript={selectedVideo.transcript} />
@@ -1330,7 +1565,7 @@ export function YouTubeForeignAnalysis({ domesticPosts = [] }: { domesticPosts?:
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-bold text-sm text-kolia-ink">{selectedVideo.channel}</h4>
-                        <span className="text-[10px] text-slate-400">Kênh nước ngoài</span>
+                        <span className="text-[10px] text-slate-400">{variant === "domestic" ? "Kênh Việt Nam" : "Kênh nước ngoài"}</span>
                       </div>
                       <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full shrink-0 ${
                         selectedVideo.channelProfile.worthFollowing === "Có"
@@ -1373,10 +1608,237 @@ export function YouTubeForeignAnalysis({ domesticPosts = [] }: { domesticPosts?:
           </>
         ) : (
           <div className="flex items-center justify-center h-full text-slate-400 text-xs bg-slate-50/10">
-            Chưa có video đối thủ nước ngoài nào được import trong hệ thống
+            {variant === "domestic" ? "Chưa có video trong nước nào được import trong hệ thống" : "Chưa có video đối thủ nước ngoài nào được import trong hệ thống"}
           </div>
         )}
       </div>
+
+      {/* ── Modal: Xem thêm video tại Việt Nam ─────────────────────────── */}
+      {showMoreVietnamVideos && vietnamVideosFullData && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm"
+          onClick={() => {
+            setShowMoreVietnamVideos(false);
+            setVietnamVideosFullData(null);
+          }}
+        >
+          <div
+            className="bg-white sm:rounded-2xl shadow-2xl w-full h-full sm:h-[82vh] sm:max-w-6xl flex flex-col overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50 shrink-0">
+              <div className="min-w-0">
+                <h3 className="text-[15px] font-bold text-slate-800 truncate">
+                  Video tại Việt Nam · {selectedVideo?.mainTopic}
+                </h3>
+                <p className="text-[10px] text-slate-500 mt-0.5 tabular-nums">
+                  {vietnamVideosFullData.totalMatches} video liên quan · {vietnamVideosFullData.table.length} hiển thị
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowMoreVietnamVideos(false);
+                  setVietnamVideosFullData(null);
+                }}
+                className="p-2 hover:bg-slate-200 rounded-lg transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kolia-green/40"
+                aria-label="Đóng"
+              >
+                <X className="h-5 w-5 text-slate-500" />
+              </button>
+            </div>
+
+            {/* Body: Player (left) + Playlist (right) */}
+            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+              {/* ── Left: Video Player ─────────────────────────────────── */}
+              <div className="lg:w-3/4 flex flex-col bg-slate-950 min-h-[45%]">
+                {vietnamVideosFullData.table.length > 0 ? (
+                  <>
+                    <div className="flex-1 flex items-center justify-center p-4 sm:p-6">
+                      <div className="w-full max-w-4xl">
+                        <div className="aspect-video bg-black rounded-xl overflow-hidden shadow-xl ring-1 ring-white/10">
+                          {(() => {
+                            const currentRow = vietnamVideosFullData.table[selectedVietnamVideoIdx];
+                            const youtubeId = currentRow?.postUrl ? extractYoutubeId(currentRow.postUrl) : null;
+                            return youtubeId ? (
+                              <iframe
+                                width="100%"
+                                height="100%"
+                                src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1`}
+                                title={currentRow.topic}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                                className="w-full h-full rounded-xl"
+                              />
+                            ) : currentRow?.postUrl ? (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <div className="text-center text-slate-400">
+                                  <Play className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                                  <p className="text-sm">Không thể nhúng video</p>
+                                  <a
+                                    href={currentRow.postUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 mt-2 text-xs text-slate-300 hover:text-white transition-colors"
+                                  >
+                                    Xem trên nền tảng gốc
+                                    <ExternalLink className="h-3 w-3" />
+                                  </a>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <div className="text-center text-slate-400">
+                                  <Play className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                                  <p className="text-sm">Chọn một video từ danh sách</p>
+                                </div>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                    </div>
+                    {/* Video info bar */}
+                    {vietnamVideosFullData.table[selectedVietnamVideoIdx] && (
+                      <div className="p-4 border-t border-white/10 bg-slate-900">
+                        <h4 className="text-sm font-semibold text-white mb-2 leading-snug">
+                          {vietnamVideosFullData.table[selectedVietnamVideoIdx].topic}
+                        </h4>
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-300 tabular-nums">
+                          <span>{vietnamVideosFullData.table[selectedVietnamVideoIdx].channel}</span>
+                          <span className="opacity-40">•</span>
+                          <span>{vietnamVideosFullData.table[selectedVietnamVideoIdx].views} lượt xem</span>
+                          <span className="opacity-40">•</span>
+                          <span
+                            className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[9px] font-bold ${
+                              vietnamVideosFullData.table[selectedVietnamVideoIdx].efficiency === "Cao"
+                                ? "bg-emerald-500/20 text-emerald-300"
+                                : vietnamVideosFullData.table[selectedVietnamVideoIdx].efficiency === "Trung bình"
+                                ? "bg-amber-500/20 text-amber-300"
+                                : "bg-red-500/20 text-red-300"
+                            }`}
+                          >
+                            {vietnamVideosFullData.table[selectedVietnamVideoIdx].efficiency}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex-1 flex items-center justify-center p-6">
+                    <div className="text-center text-slate-400">
+                      <Eye className="h-16 w-16 mx-auto mb-4 opacity-30" />
+                      <p className="text-sm">Chưa tìm thấy video đối chiếu tương tự ở Việt Nam</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* ── Right: Playlist ────────────────────────────────────── */}
+              <div className="lg:w-1/4 border-t lg:border-t-0 lg:border-l border-slate-200 flex flex-col min-h-0">
+                {/* Verdict summary */}
+                <div className="shrink-0 border-b border-slate-200 bg-slate-50 p-3">
+                  <div className="flex items-start gap-2">
+                    <div className="rounded-full bg-emerald-100 p-0.5 text-kolia-green shrink-0 mt-0.5">
+                      <Check className="h-3 w-3 stroke-[3]" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-kolia-ink text-[11px]">{vietnamVideosFullData.quickVerdict}</h4>
+                      <p className="mt-0.5 text-[9px] text-slate-500 leading-relaxed">{vietnamVideosFullData.quickVerdictDesc}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Scrollable playlist */}
+                <div className="flex-1 overflow-y-auto p-2 space-y-2">
+                  {vietnamVideosFullData.table.map((row: any, i: number) => {
+                    const isSelected = selectedVietnamVideoIdx === i;
+                    return (
+                      <div
+                        key={i}
+                        onClick={() => setSelectedVietnamVideoIdx(i)}
+                        className={`group flex gap-2.5 rounded-xl p-2 cursor-pointer transition-colors ${
+                          isSelected
+                            ? "bg-kolia-ink text-white"
+                            : "hover:bg-slate-100"
+                        }`}
+                      >
+                        {/* Thumbnail */}
+                        <div className="relative h-[52px] w-[80px] shrink-0 overflow-hidden rounded-lg bg-slate-100">
+                          {row.thumbnailUrl ? (
+                            <img
+                              src={row.thumbnailUrl}
+                              alt={row.topic}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center">
+                              <Eye className="h-4 w-4 text-slate-300" />
+                            </div>
+                          )}
+                          {/* Index badge */}
+                          <span className={`absolute bottom-0.5 left-0.5 flex h-[16px] w-[16px] items-center justify-center rounded-full text-[8px] font-bold leading-none ${
+                            isSelected ? "bg-white/25 text-white" : "bg-black/75 text-white"
+                          }`}>
+                            {i + 1}
+                          </span>
+                        </div>
+
+                        {/* Info */}
+                        <div className="min-w-0 flex-1">
+                          <p className={`text-[10.5px] font-medium leading-tight line-clamp-2 ${
+                            isSelected ? "text-white" : "text-slate-700"
+                          }`}>
+                            {row.topic}
+                          </p>
+                          <p className={`text-[9px] truncate mt-0.5 ${
+                            isSelected ? "text-slate-300" : "text-slate-400"
+                          }`}>
+                            {row.channel}
+                          </p>
+                          {/* Stats */}
+                          <div className={`flex items-center gap-1.5 mt-0.5 ${
+                            isSelected ? "text-slate-300" : "text-slate-500"
+                          }`}>
+                            <span className="text-[8px] font-semibold">{row.views}</span>
+                            <span className="text-[8px] opacity-40">·</span>
+                            <span className="text-[8px]">{row.relevanceScore}%</span>
+                            <span className="text-[8px] opacity-40">·</span>
+                            <span className="text-[8px]">{row.efficiency}</span>
+                          </div>
+                        </div>
+
+                        {/* External link */}
+                        {row.postUrl && (
+                          <a
+                            href={row.postUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className={`shrink-0 opacity-0 group-hover:opacity-100 transition self-start mt-1 ${
+                              isSelected ? "text-white/60 hover:text-white" : "text-slate-400 hover:text-slate-600"
+                            }`}
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {vietnamVideosFullData.hasMore && (
+                  <div className="shrink-0 border-t border-slate-100 p-2 text-center">
+                    <p className="text-[8px] text-slate-400">
+                      +{vietnamVideosFullData.totalMatches - vietnamVideosFullData.table.length} video khác (độ tương đồng thấp hơn)
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

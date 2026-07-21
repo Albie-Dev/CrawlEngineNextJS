@@ -326,11 +326,6 @@ export async function callAI(
   );
 
   const content = response.choices?.[0]?.message?.content;
-  if (!content) {
-    console.log(`[callAI-debug] Model: ${model}`);
-    console.log(`[callAI-debug] Finish reason: ${response.choices?.[0]?.finish_reason}`);
-    console.log(`[callAI-debug] Full response:`, JSON.stringify(response).slice(0, 2000));
-  }
   return content || "";
 }
 
