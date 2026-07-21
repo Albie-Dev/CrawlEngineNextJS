@@ -36,7 +36,7 @@ function ViralLoadingProgress() {
 
   return (
     <div className="mx-auto max-w-lg py-16">
-      <div className="rounded-xl border border-kolia-line bg-white p-8 shadow-sm">
+      <div className="rounded-xl border border-kolia-line dark:border-slate-800 dark:border-slate-800 bg-white dark:bg-slate-900 dark:bg-slate-900 p-8 shadow-sm">
         <div className="mb-8 flex justify-center">
           <div className="relative">
             <BrainCircuit className="h-16 w-16 animate-pulse text-kolia-green" />
@@ -55,10 +55,10 @@ function ViralLoadingProgress() {
               <div key={i} className={`flex items-center gap-4 transition-opacity ${isActive ? "opacity-100" : isDone ? "opacity-60" : "opacity-30"}`}>
                 <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 transition-all ${
                   isDone
-                    ? "border-green-500 bg-green-50 text-green-600"
+                    ? "border-green-500 dark:border-green-700 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400"
                     : isActive
-                    ? "border-kolia-green bg-kolia-mint text-kolia-green"
-                    : "border-slate-200 bg-slate-50 text-slate-400"
+                    ? "border-kolia-green bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green"
+                    : "border-slate-200 dark:border-slate-800 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 dark:bg-slate-900/50 text-slate-400"
                 }`}>
                   {isDone ? (
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -69,11 +69,11 @@ function ViralLoadingProgress() {
                   )}
                 </div>
                 <div className="flex-1">
-                  <p className={`text-sm font-semibold ${isDone ? "text-green-700" : isActive ? "text-kolia-ink" : "text-slate-400"}`}>
+                  <p className={`text-sm font-semibold ${isDone ? "text-green-700" : isActive ? "text-kolia-ink dark:text-slate-100 dark:text-slate-100" : "text-slate-400"}`}>
                     {step.label}
                   </p>
                   {isActive && (
-                    <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                    <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800 dark:bg-slate-800">
                       <div className="h-full animate-[progress_2s_ease-in-out_infinite] rounded-full bg-kolia-green" />
                     </div>
                   )}
@@ -125,35 +125,35 @@ export function ViralPatternsPanel() {
       {isPending ? (
         <ViralLoadingProgress />
       ) : !hasRun ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-kolia-line bg-slate-50 py-20 text-center">
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-kolia-line dark:border-slate-800 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 dark:bg-slate-900/50 py-20 text-center">
           <BrainCircuit className="mb-4 h-12 w-12 text-slate-300" />
-          <p className="font-semibold text-slate-500">Chọn khoảng thời gian và nhấn <span className="text-kolia-green">Phân tích</span></p>
+          <p className="font-semibold text-slate-500 dark:text-slate-400 dark:text-slate-400">Chọn khoảng thời gian và nhấn <span className="text-kolia-green">Phân tích</span></p>
           <p className="mt-1 text-sm text-slate-400">AI sẽ quét dữ liệu và phát hiện các pattern viral đang hoạt động.</p>
         </div>
       ) : !data ? null : (
         <>
           {/* Viral Patterns */}
           {data.patterns.length > 0 && (
-            <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
-              <h2 className="font-bold text-kolia-ink">🔥 Viral Patterns</h2>
+            <section className="rounded border border-kolia-line dark:border-slate-800 dark:border-slate-800 bg-white dark:bg-slate-900 dark:bg-slate-900 p-5 shadow-sm">
+              <h2 className="font-bold text-kolia-ink dark:text-slate-100 dark:text-slate-100">🔥 Viral Patterns</h2>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 {data.patterns.map((p) => {
                   const Icon = typeIcons[p.type] ?? TrendingUp;
                   return (
-                    <div key={p.id} className="rounded border border-kolia-line bg-slate-50 p-4">
+                    <div key={p.id} className="rounded border border-kolia-line dark:border-slate-800 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 dark:bg-slate-900/50 p-4">
                       <div className="flex items-center gap-2">
                         <Icon className="h-4 w-4 text-kolia-green" />
                         <span className="rounded bg-kolia-mint px-1.5 py-0.5 text-[10px] font-semibold text-kolia-green">{p.type}</span>
                       </div>
-                      <h3 className="mt-2 font-semibold text-kolia-ink">{p.name}</h3>
-                      <p className="mt-1 text-sm text-slate-600">{p.description}</p>
-                      <div className="mt-2 flex flex-wrap gap-3 text-xs text-slate-500">
+                      <h3 className="mt-2 font-semibold text-kolia-ink dark:text-slate-100 dark:text-slate-100">{p.name}</h3>
+                      <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 dark:text-slate-400">{p.description}</p>
+                      <div className="mt-2 flex flex-wrap gap-3 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-400">
                         <span>📈 Engagement: <strong>{(p.avgEngagement * 100).toFixed(1)}%</strong></span>
                         <span>📊 Mẫu: <strong>{p.sampleCount}</strong></span>
                         <span>🎯 Độ tin cậy: <strong>{(p.confidence * 100).toFixed(0)}%</strong></span>
                       </div>
                       {p.examplePost && (
-                        <div className="mt-2 rounded bg-white p-2 text-xs text-slate-500">
+                        <div className="mt-2 rounded bg-white dark:bg-slate-900 dark:bg-slate-900 p-2 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-400">
                           🏆 {p.examplePost.competitor}: "{p.examplePost.title.slice(0, 60)}"
                         </div>
                       )}
@@ -166,14 +166,14 @@ export function ViralPatternsPanel() {
 
           {/* Emerging Trends */}
           {data.emergingTrends.length > 0 && (
-            <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
-              <h2 className="font-bold text-kolia-ink">📈 Emerging Trends</h2>
+            <section className="rounded border border-kolia-line dark:border-slate-800 dark:border-slate-800 bg-white dark:bg-slate-900 dark:bg-slate-900 p-5 shadow-sm">
+              <h2 className="font-bold text-kolia-ink dark:text-slate-100 dark:text-slate-100">📈 Emerging Trends</h2>
               <div className="mt-4 space-y-3">
                 {data.emergingTrends.map((t, i) => (
-                  <div key={i} className="flex items-center justify-between rounded border border-kolia-line p-4">
+                  <div key={i} className="flex items-center justify-between rounded border border-kolia-line dark:border-slate-800 dark:border-slate-800 p-4">
                     <div>
-                      <p className="font-semibold text-kolia-ink">{t.topic}</p>
-                      <p className="text-sm text-slate-500">{t.description}</p>
+                      <p className="font-semibold text-kolia-ink dark:text-slate-100 dark:text-slate-100">{t.topic}</p>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-400">{t.description}</p>
                     </div>
                     <div className="text-right">
                       <p className={`text-lg font-bold ${t.growthRate > 50 ? "text-green-600" : "text-amber-600"}`}>
@@ -189,15 +189,15 @@ export function ViralPatternsPanel() {
 
           {/* Clusters */}
           {data.clusters.length > 0 && (
-            <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
-              <h2 className="font-bold text-kolia-ink">📊 Content Clusters</h2>
+            <section className="rounded border border-kolia-line dark:border-slate-800 dark:border-slate-800 bg-white dark:bg-slate-900 dark:bg-slate-900 p-5 shadow-sm">
+              <h2 className="font-bold text-kolia-ink dark:text-slate-100 dark:text-slate-100">📊 Content Clusters</h2>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 {data.clusters.map((c) => (
-                  <div key={c.id} className="rounded border border-kolia-line p-4">
-                    <h3 className="font-semibold text-kolia-ink">{c.label}</h3>
-                    <p className="text-xs text-slate-500">{c.size} bài · engagement BQ {(c.avgEngagement * 100).toFixed(1)}%</p>
+                  <div key={c.id} className="rounded border border-kolia-line dark:border-slate-800 dark:border-slate-800 p-4">
+                    <h3 className="font-semibold text-kolia-ink dark:text-slate-100 dark:text-slate-100">{c.label}</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-400">{c.size} bài · engagement BQ {(c.avgEngagement * 100).toFixed(1)}%</p>
                     {c.commonPatterns.length > 0 && (
-                      <ul className="mt-2 space-y-1 text-xs text-slate-600">
+                      <ul className="mt-2 space-y-1 text-xs text-slate-600 dark:text-slate-400 dark:text-slate-400">
                         {c.commonPatterns.map((pat, i) => <li key={i}>• {pat}</li>)}
                       </ul>
                     )}

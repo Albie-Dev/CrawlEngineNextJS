@@ -91,10 +91,10 @@ export function PostTable({
 
   // ── Render ─────────────────────────────────────────────────────────────
   return (
-    <div className="overflow-hidden rounded border border-kolia-line bg-white shadow-sm">
+    <div className="overflow-hidden rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
       {/* Header + Search */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-kolia-line px-5 py-4">
-        <h2 className="text-base font-bold text-kolia-ink">{title}</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-kolia-line dark:border-slate-800 px-5 py-4">
+        <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">{title}</h2>
         <div className="relative min-w-[220px] max-w-sm">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
@@ -102,7 +102,7 @@ export function PostTable({
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(0); }}
             placeholder="Tìm kiếm nội dung..."
-            className="h-9 w-full rounded-lg border border-kolia-line bg-white pl-9 pr-3 text-sm outline-none transition focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
+            className="h-9 w-full rounded-lg border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 pl-9 pr-3 text-sm outline-none transition focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
           />
         </div>
       </div>
@@ -110,30 +110,30 @@ export function PostTable({
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="min-w-[1180px] divide-y divide-kolia-line text-sm">
-          <thead className="bg-slate-50">
-            <tr className="text-left text-xs font-bold uppercase tracking-[0.08em] text-slate-500">
+          <thead className="bg-slate-50 dark:bg-slate-950">
+            <tr className="text-left text-xs font-bold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
               <th className="px-5 py-3">Bài/video</th>
               <th className="w-44 min-w-[11rem] px-5 py-3">Đối thủ</th>
               <th className="w-72 min-w-[18rem] px-5 py-3">Phân loại</th>
               <th className="w-48 min-w-[12rem] px-5 py-3">Hook/Tone</th>
-              <th className="cursor-pointer px-5 py-3 text-right select-none hover:text-slate-700" onClick={() => toggleSort("views")}>
+              <th className="cursor-pointer px-5 py-3 text-right select-none hover:text-slate-700 dark:text-slate-300" onClick={() => toggleSort("views")}>
                 Lượt xem <SortIcon col="views" />
               </th>
-              <th className="cursor-pointer px-5 py-3 text-right select-none hover:text-slate-700" onClick={() => toggleSort("likes")}>
+              <th className="cursor-pointer px-5 py-3 text-right select-none hover:text-slate-700 dark:text-slate-300" onClick={() => toggleSort("likes")}>
                 Like <SortIcon col="likes" />
               </th>
-              <th className="cursor-pointer px-5 py-3 text-right select-none hover:text-slate-700" onClick={() => toggleSort("comments")}>
+              <th className="cursor-pointer px-5 py-3 text-right select-none hover:text-slate-700 dark:text-slate-300" onClick={() => toggleSort("comments")}>
                 Comment <SortIcon col="comments" />
               </th>
               {!hideShare && (
-              <th className="cursor-pointer px-5 py-3 text-right select-none hover:text-slate-700" onClick={() => toggleSort("shares")}>
+              <th className="cursor-pointer px-5 py-3 text-right select-none hover:text-slate-700 dark:text-slate-300" onClick={() => toggleSort("shares")}>
                 Share <SortIcon col="shares" />
               </th>
               )}
-              <th className="cursor-pointer px-5 py-3 text-right select-none hover:text-slate-700" onClick={() => toggleSort("engagementRate")}>
+              <th className="cursor-pointer px-5 py-3 text-right select-none hover:text-slate-700 dark:text-slate-300" onClick={() => toggleSort("engagementRate")}>
                 Tỷ lệ tương tác <SortIcon col="engagementRate" />
               </th>
-              <th className="cursor-pointer px-5 py-3 select-none hover:text-slate-700" onClick={() => toggleSort("publishedAt")}>
+              <th className="cursor-pointer px-5 py-3 select-none hover:text-slate-700 dark:text-slate-300" onClick={() => toggleSort("publishedAt")}>
                 Ngày <SortIcon col="publishedAt" />
               </th>
             </tr>
@@ -153,14 +153,14 @@ export function PostTable({
                       href={post.postUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="font-semibold text-kolia-ink hover:text-kolia-green"
+                      className="font-semibold text-kolia-ink dark:text-slate-100 hover:text-kolia-green"
                     >
                       {post.title}
                     </a>
-                    <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-500">{post.caption}</p>
+                    <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-500 dark:text-slate-400">{post.caption}</p>
                   </td>
                   <td className="w-44 min-w-[11rem] px-5 py-4">
-                    <p className="font-semibold text-slate-800">{post.competitor.name}</p>
+                    <p className="font-semibold text-slate-800 dark:text-slate-200">{post.competitor.name}</p>
                     <span
                       className={`mt-2 inline-flex rounded px-2 py-1 text-xs font-bold ring-1 ${getPlatformBadgeClass(post.platform)}`}
                     >
@@ -168,22 +168,22 @@ export function PostTable({
                     </span>
                   </td>
                   <td className="px-5 py-4">
-                    <p className="font-medium text-slate-800">{post.contentPillar}</p>
-                    <p className="mt-1 text-xs text-slate-500">
+                    <p className="font-medium text-slate-800 dark:text-slate-200">{post.contentPillar}</p>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                       {formatLabels[post.format] ?? post.format} · {post.promotionType}
                     </p>
                     <p className="mt-1 text-xs text-kolia-green">{post.mainTopic}</p>
                   </td>
                   <td className="px-5 py-4">
-                    <p className="font-medium text-slate-800">{post.hookType}</p>
-                    <p className="mt-1 text-xs text-slate-500">{post.toneOfVoice}</p>
+                    <p className="font-medium text-slate-800 dark:text-slate-200">{post.hookType}</p>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{post.toneOfVoice}</p>
                   </td>
                   <td className="px-5 py-4 text-right">{formatNumber(post.views)}</td>
                   <td className="px-5 py-4 text-right">{formatNumber(post.likes)}</td>
                   <td className="px-5 py-4 text-right">{formatNumber(post.comments)}</td>
                   {!hideShare && <td className="px-5 py-4 text-right">{formatNumber(post.shares)}</td>}
                   <td className="px-5 py-4 text-right font-bold text-kolia-green">{formatPercent(post.engagementRate)}</td>
-                  <td className="px-5 py-4 text-slate-600">{formatDate(post.publishedAt)}</td>
+                  <td className="px-5 py-4 text-slate-600 dark:text-slate-400">{formatDate(post.publishedAt)}</td>
                 </tr>
               ))
             )}
@@ -192,7 +192,7 @@ export function PostTable({
       </div>
 
       {/* Pagination Footer */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-kolia-line px-5 py-3 text-xs text-slate-500">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-kolia-line dark:border-slate-800 px-5 py-3 text-xs text-slate-500 dark:text-slate-400">
         <div className="flex items-center gap-2">
           <span>
             Hiển thị {sorted.length === 0 ? 0 : safePage * pageSize + 1}–
@@ -201,7 +201,7 @@ export function PostTable({
           <select
             value={pageSize}
             onChange={(e) => { setPageSize(Number(e.target.value)); setPage(0); }}
-            className="h-7 rounded border border-kolia-line bg-white px-2 text-xs outline-none focus:border-kolia-green"
+            className="h-7 rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 px-2 text-xs outline-none focus:border-kolia-green"
           >
             <option value={10}>10 / trang</option>
             <option value={20}>20 / trang</option>
@@ -213,7 +213,7 @@ export function PostTable({
           <button
             onClick={() => setPage((p) => Math.max(0, p - 1))}
             disabled={safePage === 0}
-            className="flex h-7 w-7 items-center justify-center rounded border border-kolia-line disabled:opacity-30"
+            className="flex h-7 w-7 items-center justify-center rounded border border-kolia-line dark:border-slate-800 disabled:opacity-30"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -233,7 +233,7 @@ export function PostTable({
                 className={`flex h-7 min-w-[28px] items-center justify-center rounded px-1.5 text-xs font-semibold ${
                   pageNum === safePage
                     ? "bg-kolia-green text-white"
-                    : "border border-kolia-line hover:bg-slate-100"
+                    : "border border-kolia-line dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
                 }`}
               >
                 {pageNum + 1}
@@ -243,7 +243,7 @@ export function PostTable({
           <button
             onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
             disabled={safePage >= totalPages - 1}
-            className="flex h-7 w-7 items-center justify-center rounded border border-kolia-line disabled:opacity-30"
+            className="flex h-7 w-7 items-center justify-center rounded border border-kolia-line dark:border-slate-800 disabled:opacity-30"
           >
             <ChevronRight className="h-4 w-4" />
           </button>

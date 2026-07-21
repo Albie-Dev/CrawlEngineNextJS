@@ -59,7 +59,7 @@ function StudioLoadingProgress() {
 
   return (
     <div className="mx-auto max-w-lg py-16">
-      <div className="rounded-xl border border-kolia-line bg-white p-8 shadow-sm">
+      <div className="rounded-xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-sm">
         <div className="mb-8 flex justify-center">
           <FileText className="h-16 w-16 animate-pulse text-kolia-green" />
         </div>
@@ -76,10 +76,10 @@ function StudioLoadingProgress() {
                 <div
                   className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 ${
                     isDone
-                      ? "border-green-500 bg-green-50 text-green-600"
+                      ? "border-green-500 dark:border-green-700 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400"
                       : isActive
-                        ? "border-kolia-green bg-kolia-mint text-kolia-green"
-                        : "border-slate-200 bg-slate-50 text-slate-400"
+                        ? "border-kolia-green bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green"
+                        : "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-400"
                   }`}
                 >
                   {isDone ? (
@@ -103,7 +103,7 @@ function StudioLoadingProgress() {
                   )}
                 </div>
                 <p
-                  className={`text-sm font-semibold ${isDone ? "text-green-700" : isActive ? "text-kolia-ink" : "text-slate-400"}`}
+                  className={`text-sm font-semibold ${isDone ? "text-green-700" : isActive ? "text-kolia-ink dark:text-slate-100" : "text-slate-400"}`}
                 >
                   {step.label}
                 </p>

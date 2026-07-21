@@ -35,18 +35,18 @@ function FilterSelect({
   const selectedOption = options.find((o) => o.value === value) || options[0];
 
   return (
-    <div ref={ref} className={`relative h-10 w-full rounded border border-kolia-line bg-white shadow-sm flex flex-col justify-center cursor-pointer select-none transition ${disabled ? "opacity-50 pointer-events-none bg-slate-50" : "hover:border-kolia-green"}`} onClick={() => !disabled && setOpen(!open)}>
+    <div ref={ref} className={`relative h-10 w-full rounded border border-borderColor bg-bgSecondary flex flex-col justify-center cursor-pointer select-none transition ${disabled ? "opacity-50 pointer-events-none bg-bgTertiary" : "hover:border-kolia-green"}`} onClick={() => !disabled && setOpen(!open)}>
       <input type="hidden" name={name} value={selectedOption?.value ?? ""} />
       <div className="flex items-center justify-between gap-2 px-3">
-        <span className="text-sm font-medium text-slate-700 line-clamp-1">{selectedOption?.label ?? ""}</span>
-        <ChevronDown className={`h-4 w-4 shrink-0 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`} />
+        <span className="text-sm font-medium text-textSecondary line-clamp-1">{selectedOption?.label ?? ""}</span>
+        <ChevronDown className={`h-4 w-4 shrink-0 text-textMuted transition-transform ${open ? "rotate-180" : ""}`} />
       </div>
       {open && (
-        <div className="absolute left-0 top-[calc(100%+4px)] z-50 max-h-60 w-full min-w-[150px] overflow-auto rounded border border-kolia-line bg-white py-1 shadow-lg">
+        <div className="absolute left-0 top-[calc(100%+4px)] z-50 max-h-60 w-full min-w-[150px] overflow-auto rounded border border-borderColor bg-bgSecondary py-1 shadow-lg">
           {options.map((opt) => (
             <div
               key={opt.value}
-              className={`px-3 py-2 text-sm cursor-pointer transition-colors hover:bg-slate-50 ${value === opt.value ? "bg-slate-50 font-semibold text-kolia-green" : "text-slate-700"}`}
+              className={`px-3 py-2 text-sm cursor-pointer transition-colors hover:bg-bgTertiary ${value === opt.value ? "bg-bgTertiary font-semibold text-kolia-green" : "text-textSecondary"}`}
               onClick={() => { onChange(opt.value); setOpen(false); }}
             >
               {opt.label}
@@ -121,7 +121,7 @@ export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
   }, [isYoutube, selectedSortBy]);
 
   return (
-    <form className="rounded border border-kolia-line bg-white p-4 shadow-sm">
+    <form className="rounded border border-borderColor bg-bgSecondary p-4">
       <div className={`grid gap-3 ${isTiktok ? "grid-cols-1 sm:grid-cols-3" : "md:grid-cols-2 xl:grid-cols-4"}`}>
         <FilterSelect
           name="platform"
@@ -160,7 +160,7 @@ export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
               shouldDisableDate={(date) => date > new Date()}
             />
           ) : (
-            <div className="h-10 rounded border border-kolia-line bg-white px-3 text-sm font-medium text-slate-700 flex items-center">
+            <div className="h-10 rounded border border-borderColor bg-bgSecondary px-3 text-sm font-medium text-textSecondary flex items-center">
               {filters.startDate && filters.endDate
                 ? `${filters.startDate.split("-").reverse().join("/")} → ${filters.endDate.split("-").reverse().join("/")}`
                 : "Chọn khoảng thời gian"}
@@ -231,10 +231,10 @@ export function FilterBar({ filters, lockPlatform }: FilterBarProps) {
         )}
       </div>
       <div className="mt-3 flex justify-end gap-2">
-        <a href="?" className="rounded border border-kolia-line px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50">
+        <a href="?" className="rounded border border-borderColor px-4 py-2 text-sm font-semibold text-textSecondary hover:bg-bgTertiary">
           Xóa lọc
         </a>
-        <button type="submit" className="rounded bg-kolia-ink px-4 py-2 text-sm font-bold text-white hover:bg-kolia-midnight">
+        <button type="submit" className="rounded bg-textPrimary px-4 py-2 text-sm font-bold text-bgSecondary hover:opacity-90 transition-opacity">
           Áp dụng
         </button>
       </div>

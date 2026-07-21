@@ -83,10 +83,10 @@ export function CompetitorTable({ summaries, lockPlatform }: { summaries: Compet
 
   return (
     <div>
-      <div className="border-b border-kolia-line px-5 py-4">
+      <div className="border-b border-kolia-line dark:border-slate-800 px-5 py-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-sm leading-6 text-slate-500">
+            <p className="text-sm leading-6 text-slate-500 dark:text-slate-400">
               So sánh sản lượng nội dung, quy mô tiếp cận và chất lượng tương tác để xác định đối thủ cần theo dõi sát hơn.
             </p>
           </div>
@@ -102,7 +102,7 @@ export function CompetitorTable({ summaries, lockPlatform }: { summaries: Compet
                   type="button"
                   onClick={() => setPlatformFilter(item.value)}
                   className={`rounded px-3 py-2 text-sm font-bold transition ${
-                    platformFilter === item.value ? "bg-kolia-ink text-white" : "border border-kolia-line text-slate-600 hover:bg-kolia-mint"
+                    platformFilter === item.value ? "bg-kolia-ink text-white" : "border border-kolia-line dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-kolia-mint"
                   }`}
                 >
                   {item.label}
@@ -121,7 +121,7 @@ export function CompetitorTable({ summaries, lockPlatform }: { summaries: Compet
               list="competitor-options"
               aria-label="Lọc theo tên đối thủ"
               placeholder="Lọc theo tên đối thủ"
-              className="h-10 w-full rounded border border-kolia-line bg-white pl-9 pr-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
+              className="h-10 w-full rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 pl-9 pr-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
             />
             <datalist id="competitor-options">
               {competitorOptions.map((name) => (
@@ -132,7 +132,7 @@ export function CompetitorTable({ summaries, lockPlatform }: { summaries: Compet
           <select
             value={sortMetric}
             onChange={(event) => setSortMetric(event.target.value as SortMetric)}
-            className="h-10 rounded border border-kolia-line bg-white px-3 text-sm font-medium outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
+            className="h-10 rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 px-3 text-sm font-medium outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
           >
             {Object.entries(sortMetricLabels).map(([value, label]) => (
               <option key={value} value={value}>
@@ -143,7 +143,7 @@ export function CompetitorTable({ summaries, lockPlatform }: { summaries: Compet
           <button
             type="button"
             onClick={() => setSortDirection(sortDirection === "desc" ? "asc" : "desc")}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded border border-kolia-line bg-white px-3 text-sm font-bold text-kolia-ink hover:bg-kolia-mint"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 px-3 text-sm font-bold text-kolia-ink dark:text-slate-100 hover:bg-kolia-mint"
           >
             {sortDirection === "desc" ? <ArrowDown className="h-4 w-4" /> : <ArrowUp className="h-4 w-4" />}
             {sortDirection === "desc" ? "Cao xuống thấp" : "Thấp lên cao"}
@@ -156,7 +156,7 @@ export function CompetitorTable({ summaries, lockPlatform }: { summaries: Compet
               setSortMetric("avgEngagement");
               setSortDirection("desc");
             }}
-            className="h-10 rounded border border-kolia-line bg-white px-3 text-sm font-bold text-slate-600 hover:bg-slate-50"
+            className="h-10 rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 px-3 text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             Đặt lại bộ lọc
           </button>
@@ -165,8 +165,8 @@ export function CompetitorTable({ summaries, lockPlatform }: { summaries: Compet
 
       <div className="overflow-x-auto">
         <table className="min-w-[1180px] divide-y divide-kolia-line text-sm">
-          <thead className="bg-slate-50">
-            <tr className="text-left text-xs font-bold uppercase tracking-[0.08em] text-slate-500">
+          <thead className="bg-slate-50 dark:bg-slate-950">
+            <tr className="text-left text-xs font-bold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
               <th className="w-12 px-3 py-3 text-center">#</th>
               <th className="px-5 py-3">Đối thủ</th>
               <th className="px-5 py-3">Nền tảng</th>
@@ -185,19 +185,19 @@ export function CompetitorTable({ summaries, lockPlatform }: { summaries: Compet
               return (
               <tr key={item.competitor.id} className="hover:bg-kolia-mint/35">
                 <td className="w-12 px-3 py-4 text-center text-sm font-bold text-slate-400">{rank}</td>
-                <td className="px-5 py-4 font-semibold text-kolia-ink">
+                <td className="px-5 py-4 font-semibold text-kolia-ink dark:text-slate-100">
                   <a href={item.competitor.channelUrl} target="_blank" rel="noreferrer" className="hover:text-kolia-green">
                     {item.competitor.name}
                   </a>
                 </td>
-                <td className="px-5 py-4 text-slate-600">{platformLabels[item.competitor.platform as keyof typeof platformLabels]}</td>
-                <td className="px-5 py-4 text-slate-600">{sourceLabels[item.competitor.source as keyof typeof sourceLabels]}</td>
+                <td className="px-5 py-4 text-slate-600 dark:text-slate-400">{platformLabels[item.competitor.platform as keyof typeof platformLabels]}</td>
+                <td className="px-5 py-4 text-slate-600 dark:text-slate-400">{sourceLabels[item.competitor.source as keyof typeof sourceLabels]}</td>
                 <td className="px-5 py-4 text-right font-semibold">{formatNumber(item.postCount)}</td>
                 <td className="px-5 py-4 text-right">{formatNumber(item.totalViews)}</td>
                 <td className="px-5 py-4 text-right">{formatNumber(item.totalInteractions)}</td>
                 <td className="px-5 py-4 text-right font-semibold text-kolia-green">{formatPercent(item.avgEngagement)}</td>
-                <td className="px-5 py-4 text-slate-700">{item.topPillar}</td>
-                <td className="px-5 py-4 text-slate-600">{item.latestPublishedAt ? formatDate(item.latestPublishedAt) : "Chưa có"}</td>
+                <td className="px-5 py-4 text-slate-700 dark:text-slate-300">{item.topPillar}</td>
+                <td className="px-5 py-4 text-slate-600 dark:text-slate-400">{item.latestPublishedAt ? formatDate(item.latestPublishedAt) : "Chưa có"}</td>
               </tr>
             );
           })}
@@ -207,8 +207,8 @@ export function CompetitorTable({ summaries, lockPlatform }: { summaries: Compet
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between border-t border-kolia-line px-5 py-3">
-          <p className="text-xs text-slate-500">
+        <div className="flex items-center justify-between border-t border-kolia-line dark:border-slate-800 px-5 py-3">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Hiển thị {(safePage - 1) * PAGE_SIZE + 1}–
             {Math.min(safePage * PAGE_SIZE, filteredSummaries.length)} của {filteredSummaries.length} đối thủ
           </p>
@@ -216,7 +216,7 @@ export function CompetitorTable({ summaries, lockPlatform }: { summaries: Compet
             <button
               disabled={safePage <= 1}
               onClick={() => goToPage(safePage - 1)}
-              className="rounded border border-kolia-line px-3 py-1.5 text-sm font-semibold text-slate-600 transition hover:bg-kolia-mint disabled:opacity-40 disabled:hover:bg-transparent"
+              className="rounded border border-kolia-line dark:border-slate-800 px-3 py-1.5 text-sm font-semibold text-slate-600 dark:text-slate-400 transition hover:bg-kolia-mint disabled:opacity-40 disabled:hover:bg-transparent"
             >
               ← Trước
             </button>
@@ -232,7 +232,7 @@ export function CompetitorTable({ summaries, lockPlatform }: { summaries: Compet
                     className={`min-w-[32px] rounded px-2 py-1.5 text-sm font-semibold transition ${
                       p === safePage
                         ? "bg-kolia-ink text-white"
-                        : "text-slate-600 hover:bg-kolia-mint"
+                        : "text-slate-600 dark:text-slate-400 hover:bg-kolia-mint"
                     }`}
                   >
                     {p}
@@ -242,7 +242,7 @@ export function CompetitorTable({ summaries, lockPlatform }: { summaries: Compet
             <button
               disabled={safePage >= totalPages}
               onClick={() => goToPage(safePage + 1)}
-              className="rounded border border-kolia-line px-3 py-1.5 text-sm font-semibold text-slate-600 transition hover:bg-kolia-mint disabled:opacity-40 disabled:hover:bg-transparent"
+              className="rounded border border-kolia-line dark:border-slate-800 px-3 py-1.5 text-sm font-semibold text-slate-600 dark:text-slate-400 transition hover:bg-kolia-mint disabled:opacity-40 disabled:hover:bg-transparent"
             >
               Sau →
             </button>

@@ -79,9 +79,9 @@ export function LazyContentGapPanel({ platform, hasData }: Props) {
   // ── No data ──
   if (!hasData) {
     return (
-      <section className="rounded-2xl border border-kolia-line bg-white p-5 shadow-sm">
-        <h2 className="text-base font-bold text-kolia-ink">Content gap đối thủ trong nước</h2>
-        <p className="mt-3 text-sm text-slate-500">
+      <section className="rounded-2xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+        <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">Content gap đối thủ trong nước</h2>
+        <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
           Chưa có đủ dữ liệu đối thủ trong nước để phân tích.
         </p>
       </section>
@@ -91,8 +91,8 @@ export function LazyContentGapPanel({ platform, hasData }: Props) {
   // ── Loading ──
   if (loading) {
     return (
-      <section className="rounded-2xl border border-kolia-line bg-white p-5 shadow-sm">
-        <h2 className="text-base font-bold text-kolia-ink">Content gap đối thủ trong nước</h2>
+      <section className="rounded-2xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+        <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">Content gap đối thủ trong nước</h2>
         <p className="mt-1 text-sm text-slate-400">Đang tải dữ liệu content gap...</p>
         <div className="mt-6 space-y-4">
           {LOADING_STEPS.map((step, i) => {
@@ -109,10 +109,10 @@ export function LazyContentGapPanel({ platform, hasData }: Props) {
                 <div
                   className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 ${
                     isDone
-                      ? "border-green-500 bg-green-50 text-green-600"
+                      ? "border-green-500 dark:border-green-700 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400"
                       : isActive
-                      ? "border-kolia-green bg-kolia-mint text-kolia-green"
-                      : "border-slate-200 bg-slate-50 text-slate-400"
+                      ? "border-kolia-green bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green"
+                      : "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-400"
                   }`}
                 >
                   {isDone ? (
@@ -125,7 +125,7 @@ export function LazyContentGapPanel({ platform, hasData }: Props) {
                 </div>
                 <p
                   className={`text-sm ${
-                    isDone ? "text-green-700" : isActive ? "font-semibold text-kolia-ink" : "text-slate-400"
+                    isDone ? "text-green-700" : isActive ? "font-semibold text-kolia-ink dark:text-slate-100" : "text-slate-400"
                   }`}
                 >
                   {step.label}
@@ -143,12 +143,12 @@ export function LazyContentGapPanel({ platform, hasData }: Props) {
   // ── Missing Snapshot ──
   if (noDataMsg && !data) {
     return (
-      <section className="rounded-2xl border border-kolia-line bg-white p-5 shadow-sm text-center py-10">
+      <section className="rounded-2xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm text-center py-10">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-kolia-mint">
           <ScanSearch className="h-7 w-7 text-kolia-green" />
         </div>
-        <h2 className="text-base font-bold text-kolia-ink">Chưa có snapshot Content Gap</h2>
-        <p className="mt-2 text-sm text-slate-500 max-w-sm mx-auto">
+        <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">Chưa có snapshot Content Gap</h2>
+        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
           {noDataMsg} Vui lòng truy cập trang Content Gap chính để xem tiến trình phân tích.
         </p>
         <a
@@ -164,8 +164,8 @@ export function LazyContentGapPanel({ platform, hasData }: Props) {
   // ── Error ──
   if (error || !data) {
     return (
-      <section className="rounded-2xl border border-kolia-line bg-white p-5 shadow-sm">
-        <h2 className="text-base font-bold text-kolia-ink">Content gap đối thủ trong nước</h2>
+      <section className="rounded-2xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+        <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">Content gap đối thủ trong nước</h2>
         <p className="mt-3 text-sm text-red-500">
           Không thể tải dữ liệu content gap. Đảm bảo bạn đã chạy migration database (`npx prisma migrate dev`) và Sync dữ liệu.
         </p>

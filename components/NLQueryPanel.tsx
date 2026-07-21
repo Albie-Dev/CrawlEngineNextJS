@@ -41,7 +41,7 @@ function parseMarkdownToHtml(text: string): string {
   html = html.replace(/_(.*?)_/g, "<em>$1</em>");
 
   // Code inline
-  html = html.replace(/`(.*?)`/g, "<code class='bg-slate-100 px-1 py-0.5 rounded text-xs font-mono'>$1</code>");
+  html = html.replace(/`(.*?)`/g, "<code class='bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded text-xs font-mono'>$1</code>");
 
   // Process lists and paragraphs line by line
   const lines = html.split("\n");
@@ -50,22 +50,22 @@ function parseMarkdownToHtml(text: string): string {
     const trimmed = line.trim();
     if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
       const listContent = trimmed.slice(2);
-      return `<li class="ml-4 list-disc text-slate-700">${listContent}</li>`;
+      return `<li class="ml-4 list-disc text-slate-700 dark:text-slate-300">${listContent}</li>`;
     }
     if (/^\d+\.\s/.test(trimmed)) {
       const listContent = trimmed.replace(/^\d+\.\s/, "");
-      return `<li class="ml-4 list-decimal text-slate-700">${listContent}</li>`;
+      return `<li class="ml-4 list-decimal text-slate-700 dark:text-slate-300">${listContent}</li>`;
     }
     if (trimmed.startsWith("### ")) {
-      return `<h4 class="text-sm font-bold mt-2 mb-1 text-slate-800">${trimmed.slice(4)}</h4>`;
+      return `<h4 class="text-sm font-bold mt-2 mb-1 text-slate-800 dark:text-slate-200">${trimmed.slice(4)}</h4>`;
     }
     if (trimmed.startsWith("## ")) {
-      return `<h3 class="text-base font-bold mt-3 mb-1 text-slate-800">${trimmed.slice(3)}</h3>`;
+      return `<h3 class="text-base font-bold mt-3 mb-1 text-slate-800 dark:text-slate-200">${trimmed.slice(3)}</h3>`;
     }
     if (trimmed.startsWith("# ")) {
-      return `<h2 class="text-lg font-bold mt-4 mb-2 text-slate-800">${trimmed.slice(2)}</h2>`;
+      return `<h2 class="text-lg font-bold mt-4 mb-2 text-slate-800 dark:text-slate-200">${trimmed.slice(2)}</h2>`;
     }
-    return trimmed ? `<p class="mb-2 text-slate-700">${trimmed}</p>` : '<div class="h-1"></div>';
+    return trimmed ? `<p class="mb-2 text-slate-700 dark:text-slate-300">${trimmed}</p>` : '<div class="h-1"></div>';
   });
 
   const parsed = processedLines.join("\n");
@@ -184,11 +184,11 @@ export function NLQueryPanel() {
   const confidenceBadge = (c?: string) => {
     if (c === "high") return <span className="rounded bg-green-100 px-1.5 py-0.5 text-[10px] font-semibold text-green-700">Chính xác cao</span>;
     if (c === "medium") return <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700">Trung bình</span>;
-    return <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-500">Tham khảo</span>;
+    return <span className="rounded bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[10px] font-semibold text-slate-500 dark:text-slate-400">Tham khảo</span>;
   };
 
   return (
-    <div className="flex flex-col overflow-hidden rounded border border-kolia-line bg-white shadow-sm">
+    <div className="flex flex-col overflow-hidden rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
       {/* Chat Messages */}
       <div className="flex-1 space-y-4 overflow-y-auto p-5" style={{ maxHeight: "600px" }}>
         {messages.map((msg, i) => (
@@ -203,7 +203,7 @@ export function NLQueryPanel() {
                 className={`rounded-2xl px-4 py-3 text-sm leading-6 ${
                   msg.role === "user"
                     ? "bg-kolia-ink text-white"
-                    : "bg-slate-50 text-slate-700"
+                    : "bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300"
                 }`}
               >
                 <div
@@ -224,7 +224,7 @@ export function NLQueryPanel() {
                       key={ai}
                       type="button"
                       onClick={() => ask(action)}
-                      className="rounded bg-kolia-amber/50 px-2 py-0.5 text-[10px] text-slate-600 hover:bg-kolia-amber transition-colors"
+                      className="rounded bg-kolia-amber/50 px-2 py-0.5 text-[10px] text-slate-600 dark:text-slate-400 hover:bg-kolia-amber transition-colors"
                     >
                       {action.length > 40 ? action.slice(0, 40) + "..." : action}
                     </button>
@@ -244,7 +244,7 @@ export function NLQueryPanel() {
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-kolia-mint">
               <Loader2 className="h-4 w-4 animate-spin text-kolia-green" />
             </div>
-            <div className="flex items-center gap-2 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-400">
+            <div className="flex items-center gap-2 rounded-2xl bg-slate-50 dark:bg-slate-950 px-4 py-3 text-sm text-slate-400">
               <span>{loadingStep}</span>
               <button
                 type="button"
@@ -261,7 +261,7 @@ export function NLQueryPanel() {
       </div>
 
       {/* Suggested Questions */}
-      <div className="border-t border-kolia-line bg-slate-50 px-5 py-3">
+      <div className="border-t border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-5 py-3">
         <div className="flex flex-wrap gap-2">
           {SUGGESTED_QUESTIONS.map((sq) => (
             <button
@@ -269,7 +269,7 @@ export function NLQueryPanel() {
               type="button"
               onClick={() => ask(sq)}
               disabled={isPending}
-              className="rounded-full border border-kolia-line bg-white px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-kolia-mint hover:text-kolia-green disabled:opacity-50 transition-colors"
+              className="rounded-full border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-kolia-mint hover:text-kolia-green disabled:opacity-50 transition-colors"
             >
               {sq}
             </button>
@@ -278,7 +278,7 @@ export function NLQueryPanel() {
       </div>
 
       {/* Input */}
-      <div className="border-t border-kolia-line p-4">
+      <div className="border-t border-kolia-line dark:border-slate-800 p-4">
         <div className="flex gap-3">
           <input
             type="text"
@@ -287,7 +287,7 @@ export function NLQueryPanel() {
             onKeyDown={(e) => e.key === "Enter" && ask(question)}
             placeholder="Hỏi bất cứ điều gì về dữ liệu đối thủ..."
             disabled={isPending}
-            className="min-w-0 flex-1 rounded-lg border border-kolia-line px-4 py-2.5 text-sm outline-none focus:border-kolia-green focus:ring-1 focus:ring-kolia-green disabled:opacity-50"
+            className="min-w-0 flex-1 rounded-lg border border-kolia-line dark:border-slate-800 px-4 py-2.5 text-sm outline-none focus:border-kolia-green focus:ring-1 focus:ring-kolia-green disabled:opacity-50"
           />
           {isPending ? (
             <button

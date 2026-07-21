@@ -48,7 +48,7 @@ function StatCard({
   const isDown = trend < 0;
 
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5">
+    <div className="group relative overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5">
       {/* Decorative gradient bar */}
       <div className={`absolute inset-x-0 top-0 h-1 ${iconBg.replace('bg-', 'bg-')} opacity-60`} />
 
@@ -56,16 +56,16 @@ function StatCard({
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">{label}</p>
           <div className="mt-3 flex items-baseline gap-2.5">
-            <span className="text-4xl font-extrabold text-kolia-ink leading-none tabular-nums">{value}</span>
+            <span className="text-4xl font-extrabold text-kolia-ink dark:text-slate-100 leading-none tabular-nums">{value}</span>
             {trend === 0 ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500">
+              <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 dark:bg-slate-700 px-2 py-0.5 text-[10px] font-bold text-slate-500 dark:text-slate-300">
                 Lần đầu
               </span>
             ) : (
               <span className={`inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[10px] font-bold ${
                 isUp
-                  ? "bg-emerald-50 text-emerald-600"
-                  : "bg-red-50 text-red-500"
+                  ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
+                  : "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400"
               }`}>
                 <svg className={`h-3 w-3 ${isDown ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M18 15l-6-6-6 6" />
@@ -88,9 +88,9 @@ function StatCard({
 
 function PriorityBadge({ priority }: { priority: TopicRow["priority"] }) {
   const styles = {
-    Cao: "bg-red-50 text-red-600",
-    "Trung bình": "bg-orange-50 text-orange-500",
-    Thấp: "bg-kolia-mint text-kolia-green",
+    Cao: "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400",
+    "Trung bình": "bg-orange-50 dark:bg-orange-900/30 text-orange-500 dark:text-orange-400",
+    Thấp: "bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green",
   };
   return (
     <span className={`inline-flex items-center justify-center rounded px-2.5 py-0.5 text-[11px] font-bold ${styles[priority]}`}>
@@ -147,11 +147,11 @@ function TopicDetailPanel({
       : "text-red-500";
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-2xl border border-kolia-line shadow-sm p-6 relative">
+    <div className="flex flex-col h-full bg-white dark:bg-slate-900 rounded-2xl border border-kolia-line dark:border-slate-800 shadow-sm p-6 relative">
       {/* Back button (Mobile/Tablet) */}
       <button
         onClick={onBack}
-        className="lg:hidden absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600"
+        className="lg:hidden absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:text-slate-400"
       >
         <ArrowLeft className="h-5 w-5" />
       </button>
@@ -163,32 +163,32 @@ function TopicDetailPanel({
       </div>
 
       <div className="flex items-start gap-4 mb-5">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-kolia-mint">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-kolia-mint dark:bg-emerald-900/40">
           <TrendingUp className="h-6 w-6 text-kolia-green" />
         </div>
         <div className="flex-1 min-w-0 pt-1">
-          <h3 className="text-xl font-bold text-kolia-ink leading-tight mb-2">{topic.name}</h3>
+          <h3 className="text-xl font-bold text-kolia-ink dark:text-slate-100 leading-tight mb-2">{topic.name}</h3>
           {detail && (
             <div className="flex items-center gap-2">
               <span
                 className={`inline-block rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
                   detail.badge === "Cơ hội cao"
-                    ? "bg-kolia-mint text-kolia-green"
+                    ? "bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green"
                     : detail.badge === "Cạnh tranh cao"
-                    ? "bg-red-50 text-red-600"
-                    : "bg-orange-50 text-orange-500"
+                    ? "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400"
+                    : "bg-orange-50 dark:bg-orange-900/30 text-orange-500 dark:text-orange-400"
                 }`}
               >
                 {detail.badge}
               </span>
-              <p className="text-xs text-slate-500">{detail.tagline}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{detail.tagline}</p>
             </div>
           )}
         </div>
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-4 divide-x divide-slate-100 border border-slate-100 rounded-xl py-4 mb-6">
+      <div className="grid grid-cols-4 divide-x divide-slate-100 border border-slate-100 dark:border-slate-800/60 rounded-xl py-4 mb-6">
         {[
           { label: "Số video", value: topic.videoCount },
           { label: "Số kênh", value: topic.channelCount },
@@ -197,7 +197,7 @@ function TopicDetailPanel({
         ].map(({ label, value, colored }, i) => (
           <div key={i} className="text-center px-2">
             <p className="text-[11px] text-slate-400 mb-1">{label}</p>
-            <p className={`text-lg font-bold ${colored ? competitionColor : "text-kolia-ink"}`}>
+            <p className={`text-lg font-bold ${colored ? competitionColor : "text-kolia-ink dark:text-slate-100"}`}>
               {value}
             </p>
           </div>
@@ -208,25 +208,25 @@ function TopicDetailPanel({
       <div className="flex-1 overflow-y-auto pr-1">
         <div className="flex items-center gap-2 mb-4">
           <Sparkles className="h-4 w-4 text-kolia-green" />
-          <p className="text-sm font-bold text-kolia-ink">AI gợi ý</p>
+          <p className="text-sm font-bold text-kolia-ink dark:text-slate-100">AI gợi ý</p>
         </div>
 
         <div className="space-y-5">
           {/* Các kênh đang làm */}
           <div className="flex items-start gap-3">
-            <div className="flex h-7 w-7 shrink-0 rounded-lg bg-kolia-mint items-center justify-center mt-0.5">
+            <div className="flex h-7 w-7 shrink-0 rounded-lg bg-kolia-mint dark:bg-emerald-900/40 items-center justify-center mt-0.5">
               <Users className="h-3.5 w-3.5 text-kolia-green" />
             </div>
             <div className="flex-1">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-slate-700">Các kênh đang làm</p>
+                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Các kênh đang làm</p>
                 {detail?.channels?.length ? (
-                  <span className="bg-kolia-mint text-kolia-green text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  <span className="bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green text-[10px] font-bold px-2 py-0.5 rounded-full">
                     {detail.channels.length} kênh
                   </span>
                 ) : null}
               </div>
-              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                 {detail?.channels?.length ? detail.channels.join(", ") + "..." : "Chưa có dữ liệu"}
               </p>
             </div>
@@ -234,19 +234,19 @@ function TopicDetailPanel({
 
           {/* Hook phổ biến */}
           <div className="flex items-start gap-3">
-            <div className="flex h-7 w-7 shrink-0 rounded-lg bg-kolia-mint items-center justify-center mt-0.5">
+            <div className="flex h-7 w-7 shrink-0 rounded-lg bg-kolia-mint dark:bg-emerald-900/40 items-center justify-center mt-0.5">
               <Hash className="h-3.5 w-3.5 text-kolia-green" />
             </div>
             <div className="flex-1">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-slate-700">Hook phổ biến</p>
+                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Hook phổ biến</p>
                 {detail?.hooks?.length ? (
-                  <span className="bg-kolia-mint text-kolia-green text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  <span className="bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green text-[10px] font-bold px-2 py-0.5 rounded-full">
                     {detail.hooks.length} hook
                   </span>
                 ) : null}
               </div>
-              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                 {detail?.hooks?.length ? detail.hooks.map((h) => `"${h}"`).join(", ") + "..." : "Chưa có dữ liệu"}
               </p>
             </div>
@@ -254,19 +254,19 @@ function TopicDetailPanel({
 
           {/* Góc nội dung còn trống */}
           <div className="flex items-start gap-3">
-            <div className="flex h-7 w-7 shrink-0 rounded-lg bg-kolia-mint items-center justify-center mt-0.5">
+            <div className="flex h-7 w-7 shrink-0 rounded-lg bg-kolia-mint dark:bg-emerald-900/40 items-center justify-center mt-0.5">
               <BookOpen className="h-3.5 w-3.5 text-kolia-green" />
             </div>
             <div className="flex-1">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-slate-700">Góc nội dung còn trống</p>
+                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Góc nội dung còn trống</p>
                 {detail?.contentAngles?.length ? (
-                  <span className="bg-kolia-mint text-kolia-green text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  <span className="bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green text-[10px] font-bold px-2 py-0.5 rounded-full">
                     {detail.contentAngles.length} góc
                   </span>
                 ) : null}
               </div>
-              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                 {detail?.contentAngles?.length ? detail.contentAngles.join(", ") : "Chưa có gợi ý"}
               </p>
             </div>
@@ -275,7 +275,7 @@ function TopicDetailPanel({
 
         {/* Deep analysis result */}
         {deepDetail && (
-          <div className="rounded-xl border border-kolia-green/20 bg-kolia-mint/30 p-4 space-y-3 mt-6">
+          <div className="rounded-xl border border-kolia-green/20 bg-kolia-mint/30 dark:bg-emerald-900/20 p-4 space-y-3 mt-6">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="h-4 w-4 text-kolia-green" />
               <p className="text-xs font-bold text-kolia-green uppercase tracking-widest">
@@ -287,13 +287,13 @@ function TopicDetailPanel({
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-0.5">
                   Tổng quan
                 </p>
-                <p className="text-xs text-slate-700 leading-relaxed">{deepDetail.summary}</p>
+                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">{deepDetail.summary}</p>
               </div>
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-0.5">
                   Cơ hội
                 </p>
-                <p className="text-xs text-slate-700 leading-relaxed">{deepDetail.opportunity}</p>
+                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">{deepDetail.opportunity}</p>
               </div>
               {deepDetail.risks?.length > 0 && (
                 <div>
@@ -302,7 +302,7 @@ function TopicDetailPanel({
                   </p>
                   <ul className="space-y-1 mt-1">
                     {deepDetail.risks.map((r, i) => (
-                      <li key={i} className="flex gap-2 text-xs text-slate-600">
+                      <li key={i} className="flex gap-2 text-xs text-slate-600 dark:text-slate-400">
                         <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-slate-300" />
                         {r}
                       </li>
@@ -317,7 +317,7 @@ function TopicDetailPanel({
                   </p>
                   <ul className="space-y-1 mt-1">
                     {deepDetail.tactics.map((t, i) => (
-                      <li key={i} className="flex gap-2 text-xs text-slate-600">
+                      <li key={i} className="flex gap-2 text-xs text-slate-600 dark:text-slate-400">
                         <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-kolia-green" />
                         {t}
                       </li>
@@ -330,7 +330,7 @@ function TopicDetailPanel({
         )}
 
         {/* Deep analyze button */}
-        <div className="mt-6 pt-4 border-t border-slate-100">
+        <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/60">
           {!deepDetail ? (
             <button
               onClick={handleDeepAnalyze}
@@ -353,7 +353,7 @@ function TopicDetailPanel({
             <button
               onClick={handleDeepAnalyze}
               disabled={isDeepAnalyzing}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-medium text-slate-500 hover:bg-slate-50 disabled:opacity-60 transition-colors"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2 text-xs font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60 transition-colors"
             >
               {isDeepAnalyzing ? (
                 <Loader2 className="h-3 w-3 animate-spin" />
@@ -409,12 +409,12 @@ export function ContentGapPanel({ domestic }: { domestic: DomesticGapSnapshot })
   const rowIcons = [Globe, BarChart2, BookOpen, Lightbulb];
 
   return (
-    <div className="space-y-6 bg-white">
+    <div className="space-y-6 bg-white dark:bg-slate-900">
       {/* ── Stat cards ── */}
       <div className="grid gap-4 sm:grid-cols-3">
         <StatCard
           icon={Star}
-          iconBg="bg-kolia-mint"
+          iconBg="bg-kolia-mint dark:bg-emerald-900/40"
           iconColor="text-kolia-green"
           label="Chủ đề nổi bật"
           value={domestic.stats.notableTopics}
@@ -423,8 +423,8 @@ export function ContentGapPanel({ domestic }: { domestic: DomesticGapSnapshot })
         />
         <StatCard
           icon={RefreshCw}
-          iconBg="bg-orange-50"
-          iconColor="text-orange-500"
+          iconBg="bg-orange-50 dark:bg-orange-900/30"
+          iconColor="text-orange-500 dark:text-orange-400"
           label="Chủ đề lặp lại"
           value={domestic.stats.repeatedTopics}
           trend={domestic.stats.repeatedTopicsTrend}
@@ -432,7 +432,7 @@ export function ContentGapPanel({ domestic }: { domestic: DomesticGapSnapshot })
         />
         <StatCard
           icon={Target}
-          iconBg="bg-kolia-mint"
+          iconBg="bg-kolia-mint dark:bg-emerald-900/40"
           iconColor="text-kolia-green"
           label="Khoảng trống phù hợp"
           value={domestic.stats.gaps}
@@ -443,7 +443,7 @@ export function ContentGapPanel({ domestic }: { domestic: DomesticGapSnapshot })
 
       <div className="grid gap-6 lg:grid-cols-[1fr_420px] h-full min-h-[600px]">
       {/* ── Left: topic list ── */}
-      <div className="overflow-y-auto pr-0 lg:pr-2 rounded-2xl border border-kolia-line bg-white p-5 shadow-sm">
+      <div className="overflow-y-auto pr-0 lg:pr-2 rounded-2xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <div className="space-y-8">
           {CATEGORY_META.map((cat) => {
             const topics = domestic[cat.key];
@@ -457,9 +457,9 @@ export function ContentGapPanel({ domestic }: { domestic: DomesticGapSnapshot })
                     <span className="flex h-6 w-6 items-center justify-center rounded-full bg-kolia-green text-xs font-bold text-white">
                       {cat.num}
                     </span>
-                    <span className="text-[15px] font-bold text-kolia-ink">{cat.title}</span>
+                    <span className="text-[15px] font-bold text-kolia-ink dark:text-slate-100">{cat.title}</span>
                   </div>
-                  <button className="text-[11px] font-semibold text-slate-400 hover:text-slate-600">
+                  <button className="text-[11px] font-semibold text-slate-400 hover:text-slate-600 dark:text-slate-400">
                     Xem tất cả
                   </button>
                 </div>
@@ -494,24 +494,24 @@ export function ContentGapPanel({ domestic }: { domestic: DomesticGapSnapshot })
                           key={topic.slug}
                           onClick={() => setSelectedTopic(isSelected ? null : topic)}
                           className={`cursor-pointer transition-colors ${
-                            isSelected ? "bg-slate-50" : "hover:bg-slate-50/50"
+                            isSelected ? "bg-slate-50 dark:bg-slate-950" : "hover:bg-slate-50 dark:hover:bg-slate-800"
                           }`}
                         >
                           <td className="py-3 pl-3 pr-2">
                             <div className="flex items-center gap-3">
                               <RowIcon className={`h-4 w-4 ${cat.iconColor}`} />
-                              <span className="text-[13px] font-semibold text-slate-700 leading-tight">
+                              <span className="text-[13px] font-semibold text-slate-700 dark:text-slate-300 leading-tight">
                                 {topic.name}
                               </span>
                             </div>
                           </td>
-                          <td className="py-3 px-2 text-center text-[13px] font-medium text-slate-600">
+                          <td className="py-3 px-2 text-center text-[13px] font-medium text-slate-600 dark:text-slate-400">
                             {topic.videoCount}
                           </td>
-                          <td className="py-3 px-2 text-center text-[13px] font-medium text-slate-600">
+                          <td className="py-3 px-2 text-center text-[13px] font-medium text-slate-600 dark:text-slate-400">
                             {topic.channelCount}
                           </td>
-                          <td className="py-3 px-2 text-center text-[13px] font-medium text-slate-600">
+                          <td className="py-3 px-2 text-center text-[13px] font-medium text-slate-600 dark:text-slate-400">
                             {fv(topic.medianViews)}
                           </td>
                           <td className="py-3 pl-2 pr-4 text-right whitespace-nowrap">
@@ -528,8 +528,8 @@ export function ContentGapPanel({ domestic }: { domestic: DomesticGapSnapshot })
         </div>
 
         {/* Data note */}
-        <div className="flex items-center gap-2 mt-8 py-3 border-t border-slate-100">
-          <div className="flex h-4 w-4 items-center justify-center rounded-full border border-slate-300 text-[10px] font-bold text-slate-400">
+        <div className="flex items-center gap-2 mt-8 py-3 border-t border-slate-100 dark:border-slate-800/60">
+          <div className="flex h-4 w-4 items-center justify-center rounded-full border border-slate-300 dark:border-slate-700 text-[10px] font-bold text-slate-400">
             i
           </div>
           <p className="text-[11px] text-slate-400">{domestic.stats.dataNote}</p>
@@ -545,12 +545,12 @@ export function ContentGapPanel({ domestic }: { domestic: DomesticGapSnapshot })
             onBack={() => setSelectedTopic(null)}
           />
         ) : (
-          <div className="flex h-full flex-col items-center justify-center gap-3 text-center py-12 rounded-2xl border border-kolia-line bg-slate-50/50">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+          <div className="flex h-full flex-col items-center justify-center gap-3 text-center py-12 rounded-2xl border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
               <TrendingUp className="h-6 w-6 text-slate-400" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-600">Chi tiết chủ đề</p>
+              <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">Chi tiết chủ đề</p>
               <p className="mt-1 text-xs text-slate-400 max-w-[180px]">
                 Chọn một chủ đề bên trái để xem phân tích AI và gợi ý nội dung
               </p>

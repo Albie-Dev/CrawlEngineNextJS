@@ -9,15 +9,15 @@ type MetricCardProps = {
 
 export function MetricCard({ title, value, detail, icon }: MetricCardProps) {
   return (
-    <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
+    <section className="rounded border border-borderColor bg-bgSecondary p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-medium text-slate-500">{title}</p>
-          <p className="mt-2 text-2xl font-bold text-kolia-ink">{value}</p>
+          <p className="text-sm font-medium text-textMuted">{title}</p>
+          <p className="mt-2 text-2xl font-bold text-textPrimary">{value}</p>
         </div>
-        <div className="flex h-11 w-11 items-center justify-center rounded bg-kolia-mint text-kolia-green">{icon}</div>
+        <div className="flex h-11 w-11 items-center justify-center rounded bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green">{icon}</div>
       </div>
-      <p className="mt-4 text-sm leading-6 text-slate-600">{detail}</p>
+      <p className="mt-4 text-sm leading-6 text-textSecondary">{detail}</p>
     </section>
   );
 }

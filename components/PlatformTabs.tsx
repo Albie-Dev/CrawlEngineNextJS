@@ -11,14 +11,16 @@ const tabs: Array<{ href: string; platform: Platform }> = [
 
 export function PlatformTabs({ active }: { active: Platform }) {
   return (
-    <div className="inline-flex rounded border border-kolia-line bg-white p-1">
+    <div className="inline-flex rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-1">
       {tabs.map((tab) => (
         <Link
           key={tab.platform}
           href={tab.href}
           className={cn(
             "rounded px-4 py-2 text-sm font-bold",
-            active === tab.platform ? "bg-kolia-ink text-white" : "text-slate-600 hover:bg-kolia-mint"
+            active === tab.platform 
+              ? "bg-kolia-ink text-white dark:bg-slate-100 dark:text-slate-900" 
+              : "text-slate-600 dark:text-slate-400 hover:bg-kolia-mint dark:hover:bg-slate-800"
           )}
         >
           {platformLabels[tab.platform]}

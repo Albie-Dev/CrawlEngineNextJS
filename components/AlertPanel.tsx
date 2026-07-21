@@ -28,10 +28,10 @@ function Modal({ open, onClose, title, children }: { open: boolean; onClose: () 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="w-full max-w-lg rounded-xl bg-white dark:bg-slate-900 p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-bold text-kolia-ink">{title}</h3>
-          <button onClick={onClose} className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+          <h3 className="text-lg font-bold text-kolia-ink dark:text-slate-100">{title}</h3>
+          <button onClick={onClose} className="rounded p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800 hover:text-slate-600 dark:text-slate-400">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -53,8 +53,8 @@ function SlackForm({ config, onChange }: AlertFormProps) {
   return (
     <div className="space-y-4">
       <div>
-        <label className="text-sm font-semibold text-kolia-ink">Slack Webhook URL</label>
-        <div className="mt-1 flex items-center gap-2 rounded-lg border border-kolia-line bg-slate-50 px-3 py-2 text-xs text-slate-500">
+        <label className="text-sm font-semibold text-kolia-ink dark:text-slate-100">Slack Webhook URL</label>
+        <div className="mt-1 flex items-center gap-2 rounded-lg border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-500 dark:text-slate-400">
           <HelpCircle className="h-3.5 w-3.5 shrink-0" />
           <span>
             Vào Slack → Apps → Incoming Webhooks → Add → Copy Webhook URL
@@ -65,7 +65,7 @@ function SlackForm({ config, onChange }: AlertFormProps) {
           placeholder="https://hooks.slack.com/services/..."
           value={config.webhookUrl ?? ""}
           onChange={(e) => onChange("webhookUrl", e.target.value)}
-          className="mt-2 w-full rounded-lg border border-kolia-line px-3 py-2.5 text-sm outline-none focus:border-kolia-green focus:ring-1 focus:ring-kolia-green"
+          className="mt-2 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 py-2.5 text-sm outline-none focus:border-kolia-green focus:ring-1 focus:ring-kolia-green"
         />
       </div>
     </div>
@@ -75,17 +75,17 @@ function SlackForm({ config, onChange }: AlertFormProps) {
 function EmailForm({ config, onChange }: AlertFormProps) {
   return (
     <div className="space-y-4">
-      <p className="text-sm leading-6 text-slate-600">
+      <p className="text-sm leading-6 text-slate-600 dark:text-slate-400">
         Cấu hình SMTP trong <strong>Settings → Cấu hình & Bảo mật</strong> trước. Sau đó nhập email nhận thông báo.
       </p>
       <div>
-        <label className="text-sm font-semibold text-kolia-ink">Email nhận thông báo</label>
+        <label className="text-sm font-semibold text-kolia-ink dark:text-slate-100">Email nhận thông báo</label>
         <input
           type="email"
           placeholder="team@company.com"
           value={config.email ?? ""}
           onChange={(e) => onChange("email", e.target.value)}
-          className="mt-1.5 w-full rounded-lg border border-kolia-line px-3 py-2.5 text-sm outline-none focus:border-kolia-green focus:ring-1 focus:ring-kolia-green"
+          className="mt-1.5 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 py-2.5 text-sm outline-none focus:border-kolia-green focus:ring-1 focus:ring-kolia-green"
         />
       </div>
     </div>
@@ -96,15 +96,15 @@ function TelegramForm({ config, onChange }: AlertFormProps) {
   return (
     <div className="space-y-4">
       <div>
-        <label className="text-sm font-semibold text-kolia-ink">Telegram Bot Token</label>
-        <div className="mt-1 flex items-center gap-2 rounded-lg border border-kolia-line bg-slate-50 px-3 py-2 text-xs text-slate-500">
+        <label className="text-sm font-semibold text-kolia-ink dark:text-slate-100">Telegram Bot Token</label>
+        <div className="mt-1 flex items-center gap-2 rounded-lg border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-500 dark:text-slate-400">
           <HelpCircle className="h-3.5 w-3.5 shrink-0" />
           <span>Cấu hình trong Settings → Cấu hình & Bảo mật → Telegram</span>
         </div>
       </div>
       <div>
-        <label className="text-sm font-semibold text-kolia-ink">Chat ID</label>
-        <div className="mt-1 flex items-center gap-2 rounded-lg border border-kolia-line bg-slate-50 px-3 py-2 text-xs text-slate-500">
+        <label className="text-sm font-semibold text-kolia-ink dark:text-slate-100">Chat ID</label>
+        <div className="mt-1 flex items-center gap-2 rounded-lg border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-500 dark:text-slate-400">
           <HelpCircle className="h-3.5 w-3.5 shrink-0" />
           <span>Gửi tin nhắn đến bot, rồi truy cập <code className="rounded bg-slate-200 px-1">https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates</code> để lấy Chat ID</span>
         </div>
@@ -113,7 +113,7 @@ function TelegramForm({ config, onChange }: AlertFormProps) {
           placeholder="123456789"
           value={config.chatId ?? ""}
           onChange={(e) => onChange("chatId", e.target.value)}
-          className="mt-2 w-full rounded-lg border border-kolia-line px-3 py-2.5 text-sm outline-none focus:border-kolia-green focus:ring-1 focus:ring-kolia-green"
+          className="mt-2 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 py-2.5 text-sm outline-none focus:border-kolia-green focus:ring-1 focus:ring-kolia-green"
         />
       </div>
     </div>
@@ -290,15 +290,15 @@ export function AlertPanel() {
   return (
     <div className="space-y-6">
       {/* Alerts */}
-      <section className="rounded-xl border border-kolia-line bg-white p-6 shadow-sm">
+      <section className="rounded-xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-100">
               <Bell className="h-5 w-5 text-amber-600" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-kolia-ink">Kênh thông báo</h2>
-              <p className="text-xs text-slate-500">Nhận thông báo qua Slack, Email hoặc Telegram</p>
+              <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">Kênh thông báo</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Nhận thông báo qua Slack, Email hoặc Telegram</p>
             </div>
           </div>
         </div>
@@ -309,11 +309,11 @@ export function AlertPanel() {
             <button
               key={ch}
               onClick={() => openAlertModal(ch)}
-              className="flex flex-col items-center gap-2 rounded-xl border-2 border-dashed border-kolia-line p-4 transition hover:border-kolia-green hover:bg-kolia-mint/30"
+              className="flex flex-col items-center gap-2 rounded-xl border-2 border-dashed border-kolia-line dark:border-slate-800 p-4 transition hover:border-kolia-green hover:bg-kolia-mint/30"
             >
               <span className="text-2xl">{info.icon}</span>
-              <span className="text-sm font-bold text-kolia-ink">{info.label}</span>
-              <span className="text-center text-[11px] leading-4 text-slate-500">{info.desc}</span>
+              <span className="text-sm font-bold text-kolia-ink dark:text-slate-100">{info.label}</span>
+              <span className="text-center text-[11px] leading-4 text-slate-500 dark:text-slate-400">{info.desc}</span>
             </button>
           ))}
         </div>
@@ -322,30 +322,30 @@ export function AlertPanel() {
         {alerts.length > 0 && (
           <div className="mt-5 space-y-2">
             {alerts.map((a) => {
-              const info = CHANNEL_INFO[a.channel] ?? { label: a.channel, icon: "📡", color: "bg-slate-100 text-slate-700" };
+              const info = CHANNEL_INFO[a.channel] ?? { label: a.channel, icon: "📡", color: "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300" };
               return (
-                <div key={a.id} className="flex items-center justify-between rounded-lg border border-kolia-line p-3 transition hover:border-kolia-green/40">
+                <div key={a.id} className="flex items-center justify-between rounded-lg border border-kolia-line dark:border-slate-800 p-3 transition hover:border-kolia-green/40">
                   <div className="flex items-center gap-3">
                     <span className="flex h-9 w-9 items-center justify-center rounded-lg text-lg shadow-sm">
                       {info.icon}
                     </span>
                     <div>
                       <div className="flex items-center gap-2">
-                        <p className="text-sm font-bold text-kolia-ink">{info.label}</p>
+                        <p className="text-sm font-bold text-kolia-ink dark:text-slate-100">{info.label}</p>
                         {a.isActive && (
                           <span className="rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-700">
                             Đang hoạt động
                           </span>
                         )}
                       </div>
-                      <p className="mt-0.5 text-xs text-slate-500">
+                      <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                         {Object.values(a.config).join(", ")}
                       </p>
                       <div className="mt-1 flex flex-wrap gap-1">
                         {a.events.map((ev) => {
                           const opt = EVENT_OPTIONS.find((o) => o.value === ev);
                           return opt ? (
-                            <span key={ev} className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600">
+                            <span key={ev} className="rounded bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[10px] text-slate-600 dark:text-slate-400">
                               {opt.label}
                             </span>
                           ) : null;
@@ -363,7 +363,7 @@ export function AlertPanel() {
         )}
 
         {alerts.length === 0 && (
-          <div className="mt-4 rounded-lg border border-dashed border-kolia-line py-10 text-center">
+          <div className="mt-4 rounded-lg border border-dashed border-kolia-line dark:border-slate-800 py-10 text-center">
             <Bell className="mx-auto h-8 w-8 text-slate-300" />
             <p className="mt-2 text-sm text-slate-400">Chưa có kênh thông báo nào</p>
             <p className="text-xs text-slate-300">Chọn một kênh bên trên để bắt đầu</p>
@@ -372,15 +372,15 @@ export function AlertPanel() {
       </section>
 
       {/* Webhooks */}
-      <section className="rounded-xl border border-kolia-line bg-white p-6 shadow-sm">
+      <section className="rounded-xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100">
               <Globe className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-kolia-ink">Webhook</h2>
-              <p className="text-xs text-slate-500">Tích hợp với Zapier, Make, n8n hoặc hệ thống bên thứ ba</p>
+              <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">Webhook</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Tích hợp với Zapier, Make, n8n hoặc hệ thống bên thứ ba</p>
             </div>
           </div>
           <button
@@ -390,7 +390,7 @@ export function AlertPanel() {
             <Plus className="h-4 w-4" /> Thêm Webhook
           </button>
         </div>
-        <p className="mt-3 text-xs leading-5 text-slate-500">
+        <p className="mt-3 text-xs leading-5 text-slate-500 dark:text-slate-400">
           Webhook tự động gửi POST request đến URL của bạn khi có sự kiện (sync hoàn tất, content generated, lỗi crawl...).
           Payload mẫu bên dưới.
         </p>
@@ -398,15 +398,15 @@ export function AlertPanel() {
         {webhooks.length > 0 && (
           <div className="mt-4 space-y-2">
             {webhooks.map((w) => (
-              <div key={w.id} className="flex items-center justify-between rounded-lg border border-kolia-line p-3 transition hover:border-blue-300">
+              <div key={w.id} className="flex items-center justify-between rounded-lg border border-kolia-line dark:border-slate-800 p-3 transition hover:border-blue-300">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100">
-                    <Webhook className="h-5 w-5 text-slate-500" />
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800">
+                    <Webhook className="h-5 w-5 text-slate-500 dark:text-slate-400" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-kolia-ink">{w.url}</p>
+                    <p className="text-sm font-semibold text-kolia-ink dark:text-slate-100">{w.url}</p>
                     <div className="mt-1 flex items-center gap-2">
-                      <span className="text-xs text-slate-500">{w.events.length} sự kiện</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">{w.events.length} sự kiện</span>
                       <span className="text-slate-300">·</span>
                       <span className={cn("text-xs font-medium", w.isActive ? "text-green-600" : "text-slate-400")}>
                         {w.isActive ? "🟢 Hoạt động" : "⚪ Tắt"}
@@ -414,7 +414,7 @@ export function AlertPanel() {
                       {w.lastTriggedAt && (
                         <>
                           <span className="text-slate-300">·</span>
-                          <span className="text-xs text-slate-500">
+                          <span className="text-xs text-slate-500 dark:text-slate-400">
                             Gần nhất: {new Date(w.lastTriggedAt).toLocaleDateString("vi-VN")}
                           </span>
                         </>
@@ -431,7 +431,7 @@ export function AlertPanel() {
         )}
 
         {webhooks.length === 0 && (
-          <div className="mt-4 rounded-lg border border-dashed border-kolia-line py-10 text-center">
+          <div className="mt-4 rounded-lg border border-dashed border-kolia-line dark:border-slate-800 py-10 text-center">
             <Globe className="mx-auto h-8 w-8 text-slate-300" />
             <p className="mt-2 text-sm text-slate-400">Chưa có webhook nào</p>
             <p className="text-xs text-slate-300">Nhấn "Thêm Webhook" để kết nối với Zapier, Make hoặc n8n</p>
@@ -440,32 +440,32 @@ export function AlertPanel() {
       </section>
 
       {/* Public API Usage */}
-      <section className="rounded-xl border border-kolia-line bg-white p-6 shadow-sm">
+      <section className="rounded-xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-100">
             <ExternalLink className="h-5 w-5 text-kolia-green" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-kolia-ink">Public API Endpoints</h2>
-            <p className="text-xs text-slate-500">Tích hợp dữ liệu với hệ thống bên ngoài</p>
+            <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">Public API Endpoints</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Tích hợp dữ liệu với hệ thống bên ngoài</p>
           </div>
         </div>
         <div className="mt-4 space-y-3 text-sm leading-6">
-          <div className="rounded-lg bg-slate-50 p-3 font-mono text-xs">
+          <div className="rounded-lg bg-slate-50 dark:bg-slate-950 p-3 font-mono text-xs">
             <p><span className="font-bold text-green-600">GET</span> /api/v1?path=posts&amp;platform=youtube&amp;days=30&amp;limit=10</p>
             <p><span className="font-bold text-green-600">GET</span> /api/v1?path=competitors</p>
             <p><span className="font-bold text-green-600">GET</span> /api/v1?path=content&amp;status=draft</p>
             <p><span className="font-bold text-green-600">GET</span> /api/v1?path=stats</p>
           </div>
-          <p className="text-xs text-slate-500">
-            ⚡ Xác thực qua header <code className="rounded bg-slate-100 px-1">Authorization: Bearer sk-...</code><br />
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            ⚡ Xác thực qua header <code className="rounded bg-slate-100 dark:bg-slate-800 px-1">Authorization: Bearer sk-...</code><br />
             ⚡ Rate limit: 100 requests/phút mỗi API key
           </p>
           <details className="group">
-            <summary className="cursor-pointer text-xs font-semibold text-slate-500 hover:text-kolia-ink">
+            <summary className="cursor-pointer text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-kolia-ink dark:text-slate-100">
               📦 Xem payload webhook mẫu
             </summary>
-            <pre className="mt-2 rounded-lg bg-slate-50 p-3 text-xs leading-5">
+            <pre className="mt-2 rounded-lg bg-slate-50 dark:bg-slate-950 p-3 text-xs leading-5">
             {`{
               "event": "sync.completed",
               "title": "✅ Đồng bộ hoàn tất",
@@ -491,10 +491,10 @@ export function AlertPanel() {
               return <Form channel={alertModal} config={alertConfig} onChange={handleAlertConfigChange} />;
             })()}
 
-            <div className="mt-6 flex items-center justify-between border-t border-kolia-line pt-4">
+            <div className="mt-6 flex items-center justify-between border-t border-kolia-line dark:border-slate-800 pt-4">
               <button
                 onClick={() => setAlertModal(null)}
-                className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
+                className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
               >
                 Huỷ
               </button>
@@ -528,8 +528,8 @@ export function AlertPanel() {
       >
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-semibold text-kolia-ink">Webhook URL</label>
-            <div className="mt-1 flex items-center gap-2 rounded-lg border border-kolia-line bg-slate-50 px-3 py-2 text-xs text-slate-500">
+            <label className="text-sm font-semibold text-kolia-ink dark:text-slate-100">Webhook URL</label>
+            <div className="mt-1 flex items-center gap-2 rounded-lg border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-500 dark:text-slate-400">
               <HelpCircle className="h-3.5 w-3.5 shrink-0" />
               <span>Copy URL từ Zapier, Make (Integromat) hoặc n8n</span>
             </div>
@@ -538,15 +538,15 @@ export function AlertPanel() {
               placeholder="https://hooks.zapier.com/hooks/catch/..."
               value={webhookUrl}
               onChange={(e) => setWebhookUrl(e.target.value)}
-              className="mt-2 w-full rounded-lg border border-kolia-line px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="mt-2 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             />
           </div>
         </div>
 
-        <div className="mt-6 flex items-center justify-between border-t border-kolia-line pt-4">
+        <div className="mt-6 flex items-center justify-between border-t border-kolia-line dark:border-slate-800 pt-4">
           <button
             onClick={() => setWebhookModal(false)}
-            className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
+            className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
           >
             Huỷ
           </button>
@@ -571,14 +571,14 @@ export function AlertPanel() {
         onClose={() => setDeleteTarget(null)}
         title="🗑️ Xác nhận xoá"
       >
-        <p className="text-sm leading-6 text-slate-600">
+        <p className="text-sm leading-6 text-slate-600 dark:text-slate-400">
           Bạn có chắc muốn xoá {deleteTarget?.type === "alert" ? "kênh thông báo" : "webhook"} này?
           Hành động này không thể hoàn tác.
         </p>
-        <div className="mt-6 flex items-center justify-end gap-3 border-t border-kolia-line pt-4">
+        <div className="mt-6 flex items-center justify-end gap-3 border-t border-kolia-line dark:border-slate-800 pt-4">
           <button
             onClick={() => setDeleteTarget(null)}
-            className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
+            className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
           >
             Giữ lại
           </button>

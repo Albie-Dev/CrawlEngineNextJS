@@ -94,15 +94,15 @@ export function YouTubeIntegration() {
   const channels = status?.channels ?? [];
 
   return (
-    <section className="rounded-xl border border-kolia-line bg-white p-6 shadow-sm">
+    <section className="rounded-xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${isConnected ? "bg-red-100" : isConfigured ? "bg-amber-100" : "bg-slate-100"}`}>
+          <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${isConnected ? "bg-red-100" : isConfigured ? "bg-amber-100" : "bg-slate-100 dark:bg-slate-800"}`}>
             <Youtube className={`h-5 w-5 ${isConnected ? "text-red-600" : isConfigured ? "text-amber-600" : "text-slate-400"}`} />
           </div>
           <div>
-            <h2 className="text-base font-bold text-kolia-ink">YouTube Integration</h2>
-            <p className="text-xs text-slate-500">Đăng bài tự động lên kênh YouTube</p>
+            <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">YouTube Integration</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Đăng bài tự động lên kênh YouTube</p>
           </div>
         </div>
 
@@ -112,7 +112,7 @@ export function YouTubeIntegration() {
             ? "bg-green-100 text-green-700"
             : isConfigured
             ? "bg-amber-100 text-amber-700"
-            : "bg-slate-100 text-slate-500"
+            : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
         }`}>
           {isConnected ? "🟢 Đã kết nối" : isConfigured ? "🟡 Chưa cấp quyền" : "⚪ Chưa cấu hình"}
         </span>
@@ -121,8 +121,8 @@ export function YouTubeIntegration() {
       {/* Progress steps */}
       <div className="mt-6 space-y-3">
         {/* Step 1: API Keys */}
-        <div className={`flex items-center gap-3 rounded-lg border p-3 ${isConfigured ? "border-green-200 bg-green-50" : "border-kolia-line bg-slate-50"}`}>
-          <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${isConfigured ? "bg-green-200 text-green-700" : "bg-slate-200 text-slate-500"}`}>
+        <div className={`flex items-center gap-3 rounded-lg border p-3 ${isConfigured ? "border-green-200 bg-green-50" : "border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950"}`}>
+          <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${isConfigured ? "bg-green-200 text-green-700" : "bg-slate-200 text-slate-500 dark:text-slate-400"}`}>
             {isConfigured ? (
               <CheckCircle className="h-4 w-4" />
             ) : (
@@ -130,10 +130,10 @@ export function YouTubeIntegration() {
             )}
           </div>
           <div className="flex-1">
-            <p className={`text-sm font-semibold ${isConfigured ? "text-green-700" : "text-slate-500"}`}>
+            <p className={`text-sm font-semibold ${isConfigured ? "text-green-700" : "text-slate-500 dark:text-slate-400"}`}>
               Cấu hình Google OAuth
             </p>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               {isConfigured
                 ? "Client ID + Client Secret đã được cấu hình ✅"
                 : "Cần nhập Google Client ID và Secret ở mục 🔑 Google / YouTube bên trên"}
@@ -142,8 +142,8 @@ export function YouTubeIntegration() {
         </div>
 
         {/* Step 2: OAuth Consent */}
-        <div className={`flex items-center gap-3 rounded-lg border p-3 ${isConnected ? "border-green-200 bg-green-50" : isConfigured ? "border-amber-200 bg-amber-50" : "border-kolia-line bg-slate-50"}`}>
-          <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${isConnected ? "bg-green-200 text-green-700" : isConfigured ? "bg-amber-200 text-amber-700" : "bg-slate-200 text-slate-500"}`}>
+        <div className={`flex items-center gap-3 rounded-lg border p-3 ${isConnected ? "border-green-200 bg-green-50" : isConfigured ? "border-amber-200 bg-amber-50" : "border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950"}`}>
+          <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${isConnected ? "bg-green-200 text-green-700" : isConfigured ? "bg-amber-200 text-amber-700" : "bg-slate-200 text-slate-500 dark:text-slate-400"}`}>
             {isConnected ? (
               <CheckCircle className="h-4 w-4" />
             ) : (
@@ -151,10 +151,10 @@ export function YouTubeIntegration() {
             )}
           </div>
           <div className="flex-1">
-            <p className={`text-sm font-semibold ${isConnected ? "text-green-700" : isConfigured ? "text-amber-700" : "text-slate-500"}`}>
+            <p className={`text-sm font-semibold ${isConnected ? "text-green-700" : isConfigured ? "text-amber-700" : "text-slate-500 dark:text-slate-400"}`}>
               Cấp quyền truy cập YouTube
             </p>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               {isConnected
                 ? `Đã kết nối ${channels.length} kênh YouTube ✅`
                 : isConfigured
@@ -182,9 +182,9 @@ export function YouTubeIntegration() {
       {/* Connected channels */}
       {isConnected && channels.length > 0 && (
         <div className="mt-4 space-y-2">
-          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Kênh đã kết nối</p>
+          <p className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">Kênh đã kết nối</p>
           {channels.map((ch) => (
-            <div key={ch.id} className="flex items-center gap-3 rounded-lg border border-kolia-line bg-slate-50 p-3">
+            <div key={ch.id} className="flex items-center gap-3 rounded-lg border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
               {ch.thumbnail ? (
                 <img src={ch.thumbnail} alt={ch.name} className="h-10 w-10 rounded-full" />
               ) : (
@@ -193,8 +193,8 @@ export function YouTubeIntegration() {
                 </div>
               )}
               <div className="flex-1">
-                <p className="text-sm font-semibold text-kolia-ink">{ch.name}</p>
-                <p className="text-xs text-slate-500">Sẵn sàng đăng bài tự động</p>
+                <p className="text-sm font-semibold text-kolia-ink dark:text-slate-100">{ch.name}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Sẵn sàng đăng bài tự động</p>
               </div>
               <a
                 href={`https://youtube.com/channel/${ch.id}`}
@@ -268,7 +268,7 @@ export function YouTubeIntegration() {
       {/* Message */}
       {message && (
         <div className={`mt-4 flex items-center justify-between rounded-lg border px-4 py-3 text-sm ${
-          message.type === "success" ? "border-green-200 bg-green-50 text-green-700" : "border-red-200 bg-red-50 text-red-700"
+          message.type === "success" ? "border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400" : "border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400"
         }`}>
           <span>{message.text}</span>
           <button onClick={() => setMessage(null)} className="text-current opacity-60 hover:opacity-100">
@@ -278,8 +278,8 @@ export function YouTubeIntegration() {
       )}
 
       {/* Refresh */}
-      <div className="mt-4 flex items-center justify-between border-t border-kolia-line pt-3">
-        <button onClick={fetchStatus} className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-kolia-ink">
+      <div className="mt-4 flex items-center justify-between border-t border-kolia-line dark:border-slate-800 pt-3">
+        <button onClick={fetchStatus} className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-kolia-ink dark:text-slate-100">
           <RefreshCw className="h-3 w-3" /> Kiểm tra lại trạng thái
         </button>
         {isConnected && (

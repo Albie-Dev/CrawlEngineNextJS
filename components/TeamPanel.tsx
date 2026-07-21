@@ -18,10 +18,10 @@ function Modal({ open, onClose, title, children }: { open: boolean; onClose: () 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="w-full max-w-md rounded-xl bg-white dark:bg-slate-900 p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-bold text-kolia-ink">{title}</h3>
-          <button onClick={onClose} className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+          <h3 className="text-lg font-bold text-kolia-ink dark:text-slate-100">{title}</h3>
+          <button onClick={onClose} className="rounded p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800 hover:text-slate-600 dark:text-slate-400">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -173,15 +173,15 @@ export function TeamPanel() {
   return (
     <div className="space-y-6">
       {/* Teams */}
-      <section className="rounded-xl border border-kolia-line bg-white p-6 shadow-sm">
+      <section className="rounded-xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-100">
               <Users className="h-5 w-5 text-kolia-green" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-kolia-ink">Teams & Members</h2>
-              <p className="text-xs text-slate-500">Quản lý team, phân quyền và API keys</p>
+              <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">Teams & Members</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Quản lý team, phân quyền và API keys</p>
             </div>
           </div>
           <button onClick={() => setCreateTeamOpen(true)} className="flex items-center gap-1.5 rounded-lg bg-kolia-green px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-700">
@@ -190,7 +190,7 @@ export function TeamPanel() {
         </div>
 
         {teams.length === 0 && (
-          <div className="mt-4 rounded-lg border border-dashed border-kolia-line py-12 text-center">
+          <div className="mt-4 rounded-lg border border-dashed border-kolia-line dark:border-slate-800 py-12 text-center">
             <Users className="mx-auto h-8 w-8 text-slate-300" />
             <p className="mt-2 text-sm text-slate-400">Chưa có team nào</p>
             <p className="text-xs text-slate-300">Tạo team đầu tiên để bắt đầu</p>
@@ -199,30 +199,30 @@ export function TeamPanel() {
 
         <div className="mt-4 space-y-3">
           {teams.map((team) => (
-            <div key={team.id} className="rounded-xl border border-kolia-line bg-slate-50 p-4 transition hover:border-kolia-green/40">
+            <div key={team.id} className="rounded-xl border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 transition hover:border-kolia-green/40">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold text-kolia-ink">{team.name}</h3>
-                  <p className="mt-0.5 text-xs text-slate-500">/{team.slug} · {team.members.length} thành viên</p>
+                  <h3 className="font-semibold text-kolia-ink dark:text-slate-100">{team.name}</h3>
+                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">/{team.slug} · {team.members.length} thành viên</p>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => { setInviteOpen(team.id); setInviteEmail(""); }} className="flex items-center gap-1.5 rounded-lg border border-kolia-line bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-kolia-mint hover:text-kolia-ink">
+                  <button onClick={() => { setInviteOpen(team.id); setInviteEmail(""); }} className="flex items-center gap-1.5 rounded-lg border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400 transition hover:bg-kolia-mint hover:text-kolia-ink dark:text-slate-100">
                     <UserPlus className="h-3.5 w-3.5" /> Mời
                   </button>
-                  <button onClick={() => loadKeys(team.id)} className="flex items-center gap-1.5 rounded-lg border border-kolia-line bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-kolia-mint hover:text-kolia-ink">
+                  <button onClick={() => loadKeys(team.id)} className="flex items-center gap-1.5 rounded-lg border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400 transition hover:bg-kolia-mint hover:text-kolia-ink dark:text-slate-100">
                     <Key className="h-3.5 w-3.5" /> API Keys
                   </button>
                 </div>
               </div>
               {team.members.length > 0 && (
-                <div className="mt-3 space-y-1.5 border-t border-kolia-line pt-3">
+                <div className="mt-3 space-y-1.5 border-t border-kolia-line dark:border-slate-800 pt-3">
                   {team.members.map((m) => (
-                    <div key={m.id} className="flex items-center gap-2.5 text-sm text-slate-600">
+                    <div key={m.id} className="flex items-center gap-2.5 text-sm text-slate-600 dark:text-slate-400">
                       <span className="flex h-7 w-7 items-center justify-center rounded-full bg-kolia-mint text-[10px] font-bold text-kolia-green">
                         {m.email[0].toUpperCase()}
                       </span>
                       <span>{m.email}</span>
-                      <span className="ml-auto rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-semibold text-slate-600">{m.role}</span>
+                      <span className="ml-auto rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:text-slate-400">{m.role}</span>
                     </div>
                   ))}
                 </div>
@@ -234,15 +234,15 @@ export function TeamPanel() {
 
       {/* API Keys */}
       {selectedTeam && (
-        <section className="rounded-xl border border-kolia-line bg-white p-6 shadow-sm">
+        <section className="rounded-xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100">
                 <Shield className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-kolia-ink">API Keys</h2>
-                <p className="text-xs text-slate-500">Quản lý keys cho team hiện tại</p>
+                <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">API Keys</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Quản lý keys cho team hiện tại</p>
               </div>
             </div>
             <button onClick={() => setCreateKeyOpen(true)} className="flex items-center gap-1.5 rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-700">
@@ -253,7 +253,7 @@ export function TeamPanel() {
           {newKeyRaw && (
             <div className="mt-4 rounded-xl border border-amber-300 bg-amber-50 p-4">
               <p className="text-sm font-bold text-amber-800">🔑 Key mới (chỉ hiện 1 lần)</p>
-              <div className="mt-2 flex items-center gap-2 rounded-lg bg-white p-2">
+              <div className="mt-2 flex items-center gap-2 rounded-lg bg-white dark:bg-slate-900 p-2">
                 <code className="flex-1 break-all text-xs">{newKeyRaw}</code>
                 <span className="text-xs font-semibold text-green-600">✅ Đã copy!</span>
               </div>
@@ -263,16 +263,16 @@ export function TeamPanel() {
 
           <div className="mt-4 space-y-2">
             {apiKeys.length === 0 && (
-              <div className="rounded-lg border border-dashed border-kolia-line py-10 text-center">
+              <div className="rounded-lg border border-dashed border-kolia-line dark:border-slate-800 py-10 text-center">
                 <Key className="mx-auto h-8 w-8 text-slate-300" />
                 <p className="mt-2 text-sm text-slate-400">Chưa có API Key nào</p>
               </div>
             )}
             {apiKeys.map((key) => (
-              <div key={key.id} className="flex items-center justify-between rounded-lg border border-kolia-line p-3 transition hover:border-purple-300">
+              <div key={key.id} className="flex items-center justify-between rounded-lg border border-kolia-line dark:border-slate-800 p-3 transition hover:border-purple-300">
                 <div>
-                  <p className="text-sm font-semibold text-kolia-ink">{key.label}</p>
-                  <div className="mt-0.5 flex items-center gap-2 text-xs text-slate-500">
+                  <p className="text-sm font-semibold text-kolia-ink dark:text-slate-100">{key.label}</p>
+                  <div className="mt-0.5 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                     <span className="font-mono">{key.keyPreview}</span>
                     <span className="text-slate-300">·</span>
                     <span className="font-medium">{key.scopes}</span>
@@ -296,27 +296,27 @@ export function TeamPanel() {
       <Modal open={createTeamOpen} onClose={() => setCreateTeamOpen(false)} title="➕ Tạo Team mới">
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-semibold text-kolia-ink">Tên team</label>
+            <label className="text-sm font-semibold text-kolia-ink dark:text-slate-100">Tên team</label>
             <input
               value={teamName}
               onChange={(e) => handleNameChange(e.target.value)}
               placeholder="VD: Content Team"
-              className="mt-1.5 w-full rounded-lg border border-kolia-line px-3 py-2.5 text-sm outline-none focus:border-kolia-green focus:ring-1 focus:ring-kolia-green"
+              className="mt-1.5 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 py-2.5 text-sm outline-none focus:border-kolia-green focus:ring-1 focus:ring-kolia-green"
             />
           </div>
           <div>
-            <label className="text-sm font-semibold text-kolia-ink">Slug</label>
-            <p className="text-xs text-slate-500">Không dấu, không khoảng trắng. Dùng trong URL và API.</p>
+            <label className="text-sm font-semibold text-kolia-ink dark:text-slate-100">Slug</label>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Không dấu, không khoảng trắng. Dùng trong URL và API.</p>
             <input
               value={teamSlug}
               onChange={(e) => setTeamSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
               placeholder="content-team"
-              className="mt-1.5 w-full rounded-lg border border-kolia-line px-3 py-2.5 text-sm font-mono outline-none focus:border-kolia-green focus:ring-1 focus:ring-kolia-green"
+              className="mt-1.5 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 py-2.5 text-sm font-mono outline-none focus:border-kolia-green focus:ring-1 focus:ring-kolia-green"
             />
           </div>
         </div>
-        <div className="mt-6 flex items-center justify-between border-t border-kolia-line pt-4">
-          <button onClick={() => setCreateTeamOpen(false)} className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100">Huỷ</button>
+        <div className="mt-6 flex items-center justify-between border-t border-kolia-line dark:border-slate-800 pt-4">
+          <button onClick={() => setCreateTeamOpen(false)} className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800">Huỷ</button>
           <button onClick={handleCreateTeam} disabled={!teamName.trim() || !teamSlug.trim() || saving}
             className="flex items-center gap-2 rounded-lg bg-kolia-green px-5 py-2 text-sm font-bold text-white transition hover:bg-green-700 disabled:opacity-50">
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
@@ -329,27 +329,27 @@ export function TeamPanel() {
       <Modal open={inviteOpen !== null} onClose={() => setInviteOpen(null)} title="📧 Mời thành viên">
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-semibold text-kolia-ink">Email</label>
+            <label className="text-sm font-semibold text-kolia-ink dark:text-slate-100">Email</label>
             <input
               type="email"
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
               placeholder="member@company.com"
-              className="mt-1.5 w-full rounded-lg border border-kolia-line px-3 py-2.5 text-sm outline-none focus:border-kolia-green focus:ring-1 focus:ring-kolia-green"
+              className="mt-1.5 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 py-2.5 text-sm outline-none focus:border-kolia-green focus:ring-1 focus:ring-kolia-green"
             />
           </div>
           <div>
-            <label className="text-sm font-semibold text-kolia-ink">Vai trò</label>
+            <label className="text-sm font-semibold text-kolia-ink dark:text-slate-100">Vai trò</label>
             <select value={inviteRole} onChange={(e) => setInviteRole(e.target.value)}
-              className="mt-1.5 w-full rounded-lg border border-kolia-line px-3 py-2.5 text-sm outline-none focus:border-kolia-green">
+              className="mt-1.5 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 py-2.5 text-sm outline-none focus:border-kolia-green">
               <option value="admin">Admin — toàn quyền</option>
               <option value="editor">Editor — xem và chỉnh sửa</option>
               <option value="viewer">Viewer — chỉ xem</option>
             </select>
           </div>
         </div>
-        <div className="mt-6 flex items-center justify-between border-t border-kolia-line pt-4">
-          <button onClick={() => setInviteOpen(null)} className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100">Huỷ</button>
+        <div className="mt-6 flex items-center justify-between border-t border-kolia-line dark:border-slate-800 pt-4">
+          <button onClick={() => setInviteOpen(null)} className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800">Huỷ</button>
           <button onClick={handleInvite} disabled={!inviteEmail.trim() || saving}
             className="flex items-center gap-2 rounded-lg bg-kolia-green px-5 py-2 text-sm font-bold text-white transition hover:bg-green-700 disabled:opacity-50">
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
@@ -362,26 +362,26 @@ export function TeamPanel() {
       <Modal open={createKeyOpen} onClose={() => setCreateKeyOpen(false)} title="🔑 Tạo API Key">
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-semibold text-kolia-ink">Tên API Key</label>
+            <label className="text-sm font-semibold text-kolia-ink dark:text-slate-100">Tên API Key</label>
             <input
               value={keyLabel}
               onChange={(e) => setKeyLabel(e.target.value)}
               placeholder="VD: Production API"
-              className="mt-1.5 w-full rounded-lg border border-kolia-line px-3 py-2.5 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+              className="mt-1.5 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 py-2.5 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
             />
           </div>
           <div>
-            <label className="text-sm font-semibold text-kolia-ink">Scope</label>
+            <label className="text-sm font-semibold text-kolia-ink dark:text-slate-100">Scope</label>
             <select value={keyScope} onChange={(e) => setKeyScope(e.target.value)}
-              className="mt-1.5 w-full rounded-lg border border-kolia-line px-3 py-2.5 text-sm outline-none focus:border-purple-500">
+              className="mt-1.5 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 py-2.5 text-sm outline-none focus:border-purple-500">
               <option value="read">Read — chỉ đọc dữ liệu</option>
               <option value="write">Write — đọc + ghi</option>
               <option value="admin">Admin — toàn quyền</option>
             </select>
           </div>
         </div>
-        <div className="mt-6 flex items-center justify-between border-t border-kolia-line pt-4">
-          <button onClick={() => setCreateKeyOpen(false)} className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100">Huỷ</button>
+        <div className="mt-6 flex items-center justify-between border-t border-kolia-line dark:border-slate-800 pt-4">
+          <button onClick={() => setCreateKeyOpen(false)} className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800">Huỷ</button>
           <button onClick={handleCreateKey} disabled={!keyLabel.trim() || saving}
             className="flex items-center gap-2 rounded-lg bg-purple-600 px-5 py-2 text-sm font-bold text-white transition hover:bg-purple-700 disabled:opacity-50">
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Key className="h-4 w-4" />}
@@ -392,11 +392,11 @@ export function TeamPanel() {
 
       {/* ─── CONFIRM DELETE MODAL ─── */}
       <Modal open={confirmDelete !== null} onClose={() => setConfirmDelete(null)} title="🗑️ Xác nhận xoá">
-        <p className="text-sm leading-6 text-slate-600">
+        <p className="text-sm leading-6 text-slate-600 dark:text-slate-400">
           Bạn có chắc muốn xoá API Key này? Các ứng dụng đang dùng key này sẽ mất quyền truy cập ngay lập tức.
         </p>
-        <div className="mt-6 flex items-center justify-end gap-3 border-t border-kolia-line pt-4">
-          <button onClick={() => setConfirmDelete(null)} className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100">Giữ lại</button>
+        <div className="mt-6 flex items-center justify-end gap-3 border-t border-kolia-line dark:border-slate-800 pt-4">
+          <button onClick={() => setConfirmDelete(null)} className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800">Giữ lại</button>
           <button onClick={handleDeleteKey} disabled={saving}
             className="flex items-center gap-2 rounded-lg bg-red-600 px-5 py-2 text-sm font-bold text-white transition hover:bg-red-700">
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}

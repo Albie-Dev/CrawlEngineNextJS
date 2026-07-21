@@ -61,7 +61,7 @@ export function MissingConfigBanner({
             <summary className="cursor-pointer text-xs font-semibold text-amber-700 hover:text-amber-900">
               📖 Cách cấu hình chi tiết
             </summary>
-            <div className="mt-2 rounded-lg bg-white/60 p-3 text-xs leading-6 text-amber-800">
+            <div className="mt-2 rounded-lg bg-white dark:bg-slate-900/60 p-3 text-xs leading-6 text-amber-800">
               <p><strong>Bước 1:</strong> Click nút <strong>"Đi đến Settings"</strong> bên trên.</p>
               <p><strong>Bước 2:</strong> Tìm đúng mục theo category (Google/OpenAI/Facebook...).</p>
               <p><strong>Bước 3:</strong> Click nút <strong>"Sửa"</strong> và nhập giá trị.</p>

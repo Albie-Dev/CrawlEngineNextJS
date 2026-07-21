@@ -35,30 +35,30 @@ export async function DashboardOverview({ filters }: DashboardOverviewProps) {
 
   return (
     <div className="space-y-6">
-      <section className="border-b border-kolia-line pb-5">
+      <section className="border-b border-kolia-line dark:border-slate-800 pb-5">
         <div className="flex flex-wrap items-start justify-between gap-5">
           <div>
             <p className="text-sm font-bold uppercase tracking-[0.16em] text-kolia-green">Social intelligence overview</p>
-            <h1 className="mt-2 max-w-4xl text-3xl font-bold leading-tight text-kolia-ink">
+            <h1 className="mt-2 max-w-4xl text-3xl font-bold leading-tight text-kolia-ink dark:text-slate-100">
               Bức tranh nghiên cứu đối thủ trên YouTube, TikTok và Facebook
             </h1>
-            <p className="mt-3 max-w-4xl text-sm leading-6 text-slate-600">
+            <p className="mt-3 max-w-4xl text-sm leading-6 text-slate-600 dark:text-slate-400">
               Dashboard này giúp đội marketing nhìn nhanh đối thủ đang tạo nội dung gì, nền tảng nào đang có lực kéo,
               trụ cột nội dung nào đáng học hỏi và khoảng trống nào Kolia có thể khai thác theo hướng giáo dục đầu tư
               trung lập, minh bạch.
             </p>
           </div>
-          <div className="grid min-w-[260px] gap-2 rounded border border-kolia-line bg-white p-4 text-sm shadow-sm">
+          <div className="grid min-w-[260px] gap-2 rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-4 text-sm shadow-sm">
             <div className="flex items-center justify-between gap-3">
-              <span className="text-slate-500">Nền tảng hiệu quả nhất</span>
+              <span className="text-slate-500 dark:text-slate-400">Nền tảng hiệu quả nhất</span>
               <strong className="text-kolia-green">{leadingPlatform ? platformName(leadingPlatform.platform) : "Chưa có dữ liệu"}</strong>
             </div>
             <div className="flex items-center justify-between gap-3">
-              <span className="text-slate-500">Nền tảng đăng nhiều nhất</span>
-              <strong className="text-kolia-ink">{mostActivePlatform ? platformName(mostActivePlatform.platform) : "Chưa có dữ liệu"}</strong>
+              <span className="text-slate-500 dark:text-slate-400">Nền tảng đăng nhiều nhất</span>
+              <strong className="text-kolia-ink dark:text-slate-100">{mostActivePlatform ? platformName(mostActivePlatform.platform) : "Chưa có dữ liệu"}</strong>
             </div>
             <div className="flex items-center justify-between gap-3">
-              <span className="text-slate-500">Trụ cột nổi bật</span>
+              <span className="text-slate-500 dark:text-slate-400">Trụ cột nổi bật</span>
               <strong className="max-w-[150px] truncate text-right text-kolia-gold">{overview.topPillars[0]?.name ?? "Chưa có dữ liệu"}</strong>
             </div>
           </div>
@@ -97,65 +97,65 @@ export async function DashboardOverview({ filters }: DashboardOverviewProps) {
       <PlatformEffectivenessBubbleChart data={overview.platformEffectiveness} />
 
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
+        <section className="rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-kolia-mint text-kolia-green">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green">
               <Compass className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-kolia-ink">Nhận định nhanh cho người làm research</h2>
-              <p className="mt-1 text-sm leading-6 text-slate-500">
+              <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">Nhận định nhanh cho người làm research</h2>
+              <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
                 Các điểm dưới đây được rút từ sản lượng nội dung, tương tác và phân bố chủ đề trong tập dữ liệu hiện tại.
               </p>
             </div>
           </div>
           <div className="mt-5 grid gap-3 md:grid-cols-2">
             {researchPriorities.map((item) => (
-              <div key={item.title} className="rounded border border-kolia-line bg-slate-50 p-4">
+              <div key={item.title} className="rounded border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4">
                 <div className="flex items-center gap-2">
                   <item.icon className="h-4 w-4 text-kolia-green" />
-                  <h3 className="font-bold text-kolia-ink">{item.title}</h3>
+                  <h3 className="font-bold text-kolia-ink dark:text-slate-100">{item.title}</h3>
                 </div>
-                <p className="mt-2 text-sm leading-6 text-slate-600">{item.body}</p>
+                <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">{item.body}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
-          <h2 className="text-base font-bold text-kolia-ink">Đối thủ cần theo dõi sát</h2>
-          <p className="mt-1 text-sm leading-6 text-slate-500">
+        <section className="rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">Đối thủ cần theo dõi sát</h2>
+          <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
             Ưu tiên theo tổng tương tác, điểm lan tỏa và mức độ đều đặn nội dung.
           </p>
           <div className="mt-4 space-y-3">
             {watchlist.map((item, index) => (
-              <div key={item.competitor.id} className="rounded border border-kolia-line bg-slate-50 p-3">
+              <div key={item.competitor.id} className="rounded border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-xs font-bold uppercase tracking-[0.12em] text-kolia-gold">#{index + 1} · {platformName(item.competitor.platform)}</p>
-                    <a href={item.competitor.channelUrl} target="_blank" rel="noreferrer" className="mt-1 block font-bold text-kolia-ink hover:text-kolia-green">
+                    <a href={item.competitor.channelUrl} target="_blank" rel="noreferrer" className="mt-1 block font-bold text-kolia-ink dark:text-slate-100 hover:text-kolia-green">
                       {item.competitor.name}
                     </a>
                   </div>
-                  <span className="rounded bg-white px-2 py-1 text-xs font-bold text-kolia-green">
+                  <span className="rounded bg-white dark:bg-slate-900 px-2 py-1 text-xs font-bold text-kolia-green">
                     {formatPercent(item.avgEngagement)}
                   </span>
                 </div>
                 <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
-                  <div className="rounded bg-white p-2">
-                    <p className="font-bold text-kolia-ink">{formatNumber(item.postCount)}</p>
-                    <p className="text-slate-500">bài/video</p>
+                  <div className="rounded bg-white dark:bg-slate-900 p-2">
+                    <p className="font-bold text-kolia-ink dark:text-slate-100">{formatNumber(item.postCount)}</p>
+                    <p className="text-slate-500 dark:text-slate-400">bài/video</p>
                   </div>
-                  <div className="rounded bg-white p-2">
-                    <p className="font-bold text-kolia-ink">{formatNumber(item.totalInteractions)}</p>
-                    <p className="text-slate-500">tương tác</p>
+                  <div className="rounded bg-white dark:bg-slate-900 p-2">
+                    <p className="font-bold text-kolia-ink dark:text-slate-100">{formatNumber(item.totalInteractions)}</p>
+                    <p className="text-slate-500 dark:text-slate-400">tương tác</p>
                   </div>
-                  <div className="rounded bg-white p-2">
+                  <div className="rounded bg-white dark:bg-slate-900 p-2">
                     <p className="font-bold text-kolia-gold">{item.avgVirality.toFixed(1)}</p>
-                    <p className="text-slate-500">lan tỏa</p>
+                    <p className="text-slate-500 dark:text-slate-400">lan tỏa</p>
                   </div>
                 </div>
-                <p className="mt-3 text-sm leading-6 text-slate-600">
+                <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
                   Trụ cột đang nổi bật: <strong>{item.topPillar}</strong>
                 </p>
               </div>
@@ -166,9 +166,9 @@ export async function DashboardOverview({ filters }: DashboardOverviewProps) {
 
       <div className="grid gap-6 xl:grid-cols-[1fr_420px]">
         <ContentPillarChart data={overview.topPillars} />
-        <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
-          <h2 className="text-base font-bold text-kolia-ink">Nội dung thắng cần phân tích sâu</h2>
-          <p className="mt-1 text-sm leading-6 text-slate-500">
+        <section className="rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">Nội dung thắng cần phân tích sâu</h2>
+          <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
             Mở từng link để bóc tách hook, cấu trúc lập luận, bằng chứng và lời kêu gọi hành động.
           </p>
           <div className="mt-4 space-y-3">
@@ -179,14 +179,14 @@ export async function DashboardOverview({ filters }: DashboardOverviewProps) {
         </section>
       </div>
 
-      <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
+      <section className="rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <div className="flex items-start gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-kolia-amber text-kolia-gold">
             <Target className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-kolia-ink">Khoảng trống có thể chuyển thành tuyến nội dung Kolia</h2>
-            <p className="mt-1 text-sm leading-6 text-slate-500">
+            <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">Khoảng trống có thể chuyển thành tuyến nội dung Kolia</h2>
+            <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
               Tập trung vào chủ đề có tín hiệu tương tác tốt nhưng chưa bị nhiều đối thủ khai thác sâu.
             </p>
           </div>
@@ -220,24 +220,24 @@ function MetricCard({
   icon: ReactNode;
 }) {
   return (
-    <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
+    <section className="rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-medium text-slate-500">{title}</p>
-          <p className="mt-2 text-2xl font-bold text-kolia-ink">{value}</p>
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{title}</p>
+          <p className="mt-2 text-2xl font-bold text-kolia-ink dark:text-slate-100">{value}</p>
         </div>
-        <div className="flex h-11 w-11 items-center justify-center rounded bg-kolia-mint text-kolia-green">{icon}</div>
+        <div className="flex h-11 w-11 items-center justify-center rounded bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green">{icon}</div>
       </div>
-      <p className="mt-4 text-sm leading-6 text-slate-600">{detail}</p>
+      <p className="mt-4 text-sm leading-6 text-slate-600 dark:text-slate-400">{detail}</p>
     </section>
   );
 }
 
 function InsightList({ title, items }: { title: string; items: string[] }) {
   return (
-    <div className="rounded border border-kolia-line bg-slate-50 p-4">
-      <h3 className="font-bold text-kolia-ink">{title}</h3>
-      <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
+    <div className="rounded border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4">
+      <h3 className="font-bold text-kolia-ink dark:text-slate-100">{title}</h3>
+      <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
         {items.map((item) => (
           <li key={item} className="flex gap-2">
             <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-kolia-green" />

@@ -174,11 +174,11 @@ function CollapsibleSection({
 }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   return (
-    <div className="rounded border border-kolia-line bg-slate-50">
+    <div className="rounded border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between p-3 text-left text-sm font-bold text-kolia-ink hover:bg-slate-100"
+        className="flex w-full items-center justify-between p-3 text-left text-sm font-bold text-kolia-ink dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
       >
         <span className="flex items-center gap-2">
           <Icon className="h-4 w-4 text-kolia-green" />
@@ -191,7 +191,7 @@ function CollapsibleSection({
         )}
       </button>
       {isOpen && (
-        <div className="border-t border-kolia-line p-4">{children}</div>
+        <div className="border-t border-kolia-line dark:border-slate-800 p-4">{children}</div>
       )}
     </div>
   );
@@ -248,27 +248,27 @@ function QualityMetrics({
           </div>
         )}
         {Boolean(qualityChecklist?.estimatedDuration) && (
-          <div className="rounded-lg border border-kolia-line bg-white p-3 text-center">
-            <div className="text-2xl font-extrabold text-kolia-ink">
+          <div className="rounded-lg border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-3 text-center">
+            <div className="text-2xl font-extrabold text-kolia-ink dark:text-slate-100">
               {String(qualityChecklist?.estimatedDuration)}
             </div>
-            <div className="mt-1 text-xs font-bold uppercase tracking-wider text-slate-500">
+            <div className="mt-1 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Thời lượng
             </div>
           </div>
         )}
         {Boolean(qualityChecklist?.hookStrength) && (
-          <div className="rounded-lg border border-kolia-line bg-white p-3 text-center">
-            <div className="text-2xl font-extrabold text-kolia-ink">
+          <div className="rounded-lg border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-3 text-center">
+            <div className="text-2xl font-extrabold text-kolia-ink dark:text-slate-100">
               {String(qualityChecklist?.hookStrength)}
             </div>
-            <div className="mt-1 text-xs font-bold uppercase tracking-wider text-slate-500">
+            <div className="mt-1 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Hook Strength
             </div>
           </div>
         )}
         {qualityChecklist && (
-          <div className="rounded-lg border border-kolia-line bg-white p-3">
+          <div className="rounded-lg border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-3">
             <div className="space-y-1 text-xs">
               {qualityChecklist.hasDataPoints != null && (
                 <div className="flex items-center gap-1.5">
@@ -351,7 +351,7 @@ function QualityMetrics({
                 </div>
               )}
               {typeof qualityChecklist.readabilityLevel === "string" && qualityChecklist.readabilityLevel && (
-                <div className="flex items-center gap-1.5 text-slate-600">
+                <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
                   <span>Readability: {qualityChecklist.readabilityLevel}</span>
                 </div>
               )}
@@ -367,7 +367,7 @@ function QualityMetrics({
             {titleVariants.map((v, i) => (
               <li
                 key={i}
-                className="flex items-start gap-2 text-sm leading-6 text-slate-700"
+                className="flex items-start gap-2 text-sm leading-6 text-slate-700 dark:text-slate-300"
               >
                 <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-kolia-mint text-xs font-bold text-kolia-green">
                   {i + 1}
@@ -386,7 +386,7 @@ function QualityMetrics({
             {alternativeHooks.map((hook, i) => (
               <li
                 key={i}
-                className="rounded border border-kolia-line bg-white p-3 text-sm leading-6 text-slate-700"
+                className="rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-3 text-sm leading-6 text-slate-700 dark:text-slate-300"
               >
                 <span className="mr-2 font-bold text-kolia-green">
                   Hook {i + 1}:
@@ -424,16 +424,16 @@ function QualityMetrics({
           <div className="space-y-3 text-sm">
             {seoTitle && (
               <div>
-                <span className="font-bold text-kolia-ink">SEO Title: </span>
-                <span className="text-slate-600">{seoTitle}</span>
+                <span className="font-bold text-kolia-ink dark:text-slate-100">SEO Title: </span>
+                <span className="text-slate-600 dark:text-slate-400">{seoTitle}</span>
               </div>
             )}
             {seoDescription && (
               <div>
-                <span className="font-bold text-kolia-ink">
+                <span className="font-bold text-kolia-ink dark:text-slate-100">
                   SEO Description:{" "}
                 </span>
-                <span className="text-slate-600">{seoDescription}</span>
+                <span className="text-slate-600 dark:text-slate-400">{seoDescription}</span>
               </div>
             )}
             {hashtags && hashtags.length > 0 && (
@@ -488,7 +488,7 @@ function StepProgress({
                   ? "border-kolia-green bg-kolia-mint"
                   : isPast
                     ? "border-green-200 bg-green-50"
-                    : "border-slate-200 bg-slate-50"
+                    : "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950"
               }`}
             >
               {/* Step indicator */}
@@ -498,7 +498,7 @@ function StepProgress({
                     ? "bg-kolia-green text-white"
                     : isPast
                       ? "bg-green-500 text-white"
-                      : "bg-slate-200 text-slate-500"
+                      : "bg-slate-200 text-slate-500 dark:text-slate-400"
                 }`}
               >
                 {isPast ? (
@@ -515,7 +515,7 @@ function StepProgress({
                 <div className="flex items-center justify-between">
                   <p
                     className={`text-sm font-bold ${
-                      isFuture ? "text-slate-400" : "text-kolia-ink"
+                      isFuture ? "text-slate-400" : "text-kolia-ink dark:text-slate-100"
                     }`}
                   >
                     Bước {stepNum}: {name}
@@ -525,7 +525,7 @@ function StepProgress({
                       <button
                         type="button"
                         onClick={() => setVisiblePrompt(showPrompt ? null : stepNum)}
-                        className="flex items-center gap-1 rounded border border-slate-300 bg-white px-2 py-1 text-[10px] font-semibold text-slate-500 hover:bg-slate-100"
+                        className="flex items-center gap-1 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1 text-[10px] font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
                       >
                         <Code className="h-3 w-3" />
                         {showPrompt ? "Ẩn prompt" : "Xem raw prompt"}
@@ -540,7 +540,7 @@ function StepProgress({
                 </div>
                 <p
                   className={`mt-0.5 text-xs leading-5 ${
-                    isFuture ? "text-slate-300" : "text-slate-500"
+                    isFuture ? "text-slate-300" : "text-slate-500 dark:text-slate-400"
                   }`}
                 >
                   {isActive
@@ -564,13 +564,13 @@ function StepProgress({
                     onClick={() => {
                       navigator.clipboard.writeText(completed.prompt || "");
                     }}
-                    className="flex items-center gap-1 rounded border border-indigo-200 bg-white px-2 py-1 text-[10px] font-semibold text-indigo-600 hover:bg-indigo-100"
+                    className="flex items-center gap-1 rounded border border-indigo-200 bg-white dark:bg-slate-900 px-2 py-1 text-[10px] font-semibold text-indigo-600 hover:bg-indigo-100"
                   >
                     <Copy className="h-3 w-3" />
                     Copy
                   </button>
                 </div>
-                <pre className="max-h-96 overflow-auto whitespace-pre-wrap rounded border border-indigo-100 bg-white p-3 font-mono text-[11px] leading-6 text-slate-700">
+                <pre className="max-h-96 overflow-auto whitespace-pre-wrap rounded border border-indigo-100 bg-white dark:bg-slate-900 p-3 font-mono text-[11px] leading-6 text-slate-700 dark:text-slate-300">
                   {completed.prompt}
                 </pre>
               </div>
@@ -1017,14 +1017,14 @@ export function ContentPromptStudio({
   return (
     <div className="space-y-6">
       {/* ─── Header ─────────────────────────────────────────────── */}
-      <section className="border-b border-kolia-line pb-5">
+      <section className="border-b border-kolia-line dark:border-slate-800 pb-5">
         <p className="text-sm font-bold uppercase tracking-[0.16em] text-kolia-green">
           Content prompt studio
         </p>
-        <h1 className="mt-2 max-w-4xl text-3xl font-bold leading-tight text-kolia-ink">
+        <h1 className="mt-2 max-w-4xl text-3xl font-bold leading-tight text-kolia-ink dark:text-slate-100">
           Biến insight đối thủ thành kịch bản sản xuất nội dung đẳng cấp
         </h1>
-        <p className="mt-3 max-w-4xl text-sm leading-6 text-slate-600">
+        <p className="mt-3 max-w-4xl text-sm leading-6 text-slate-600 dark:text-slate-400">
           Engine 5 bước chuyên biệt: Deep Research → Angle Blueprint → Scene
           Outline → Script Writer → QA Agent. Mỗi bước là một AI agent riêng,
           chỉ nhận đúng data cần thiết — web search + smart context + word-for-word.
@@ -1035,16 +1035,16 @@ export function ContentPromptStudio({
         {/* ─── Sidebar ───────────────────────────────────────────── */}
         <aside className="space-y-4">
           {/* Step 1: Platform */}
-          <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
+          <section className="rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
             <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded bg-kolia-mint text-kolia-green">
+              <div className="flex h-10 w-10 items-center justify-center rounded bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green">
                 <Sparkles className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="font-bold text-kolia-ink">
+                <h2 className="font-bold text-kolia-ink dark:text-slate-100">
                   1. Chọn kênh triển khai
                 </h2>
-                <p className="mt-1 text-sm leading-6 text-slate-500">
+                <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
                   Mỗi kênh có cấu trúc prompt và đầu ra khác nhau.
                 </p>
               </div>
@@ -1064,17 +1064,17 @@ export function ContentPromptStudio({
                     }}
                     className={`rounded border p-3 text-left transition ${
                       active
-                        ? "border-kolia-green bg-kolia-mint text-kolia-ink"
+                        ? "border-kolia-green bg-kolia-mint text-kolia-ink dark:text-slate-100"
                         : count === 0
-                          ? "border-kolia-line bg-slate-50 text-slate-400 opacity-60"
-                          : "border-kolia-line bg-white text-slate-600 hover:bg-slate-50"
+                          ? "border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-400 opacity-60"
+                          : "border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
                     }`}
                   >
                     <span className="flex items-center gap-2 font-bold">
                       <Icon className="h-4 w-4" />
                       {item.label}
                       <span className={`ml-auto rounded-full px-2 py-0.5 text-xs font-bold ${
-                        count > 0 ? "bg-kolia-mint text-kolia-green" : "bg-slate-100 text-slate-400"
+                        count > 0 ? "bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green" : "bg-slate-100 dark:bg-slate-800 text-slate-400"
                       }`}>
                         {count} bài
                       </span>
@@ -1089,11 +1089,11 @@ export function ContentPromptStudio({
           </section>
 
           {/* Step 2: Content Gaps */}
-          <section className={`rounded border border-kolia-line bg-white p-5 shadow-sm transition ${isDataLoading ? "opacity-50 pointer-events-none" : ""}`}>
-            <h2 className="font-bold text-kolia-ink">
+          <section className={`rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm transition ${isDataLoading ? "opacity-50 pointer-events-none" : ""}`}>
+            <h2 className="font-bold text-kolia-ink dark:text-slate-100">
               2. Chọn khoảng trống nội dung
             </h2>
-            <p className="mt-1 text-sm leading-6 text-slate-500">
+            <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
               Ưu tiên các khoảng trống có khả năng tạo khác biệt cho Kolia.
             </p>
             <div className="mt-4 space-y-2">
@@ -1112,15 +1112,15 @@ export function ContentPromptStudio({
                     }
                     className={`flex w-full items-start gap-3 rounded border p-3 text-left text-sm leading-6 transition ${
                       selectedGaps.includes(item)
-                        ? "border-kolia-green bg-kolia-mint text-kolia-ink"
-                        : "border-kolia-line bg-slate-50 text-slate-600 hover:bg-white"
+                        ? "border-kolia-green bg-kolia-mint text-kolia-ink dark:text-slate-100"
+                        : "border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:bg-white dark:bg-slate-900"
                     }`}
                   >
                     <span
                       className={`mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded border ${
                         selectedGaps.includes(item)
                           ? "border-kolia-green bg-kolia-green text-white"
-                          : "border-slate-300"
+                          : "border-slate-300 dark:border-slate-700"
                       }`}
                     >
                       {selectedGaps.includes(item) ? (
@@ -1135,11 +1135,11 @@ export function ContentPromptStudio({
 
           {/* 🔥 Xu hướng đang nổi */}
           {dynamicTrends && (dynamicTrends.hotTopicsThisWeek.length > 0 || dynamicTrends.emergingTrends.length > 0) && (
-            <section className={`rounded border border-orange-200 bg-gradient-to-br from-orange-50 to-white p-5 shadow-sm transition ${isDataLoading ? "opacity-50 pointer-events-none" : ""}`}>
-              <h2 className="font-bold text-kolia-ink flex items-center gap-2">
+            <section className={`rounded border border-orange-200 bg-gradient-to-br from-orange-50 to-white dark:to-slate-900 p-5 shadow-sm transition ${isDataLoading ? "opacity-50 pointer-events-none" : ""}`}>
+              <h2 className="font-bold text-kolia-ink dark:text-slate-100 flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-orange-500" /> 🔥 Xu hướng đang nổi
               </h2>
-              <p className="mt-1 text-sm text-slate-500">Phát hiện tự động từ dữ liệu crawl 7 ngày qua</p>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Phát hiện tự động từ dữ liệu crawl 7 ngày qua</p>
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 {dynamicTrends.hotTopicsThisWeek.slice(0, 4).map((topic) => (
                   <button
@@ -1148,12 +1148,12 @@ export function ContentPromptStudio({
                     onClick={() => toggle(topic.topic, selectedGaps, setSelectedGaps)}
                     className={`rounded border p-3 text-left text-sm transition ${
                       selectedGaps.includes(topic.topic)
-                        ? "border-orange-400 bg-orange-100 text-kolia-ink"
-                        : "border-orange-100 bg-white text-slate-600 hover:bg-orange-50"
+                        ? "border-orange-400 bg-orange-100 text-kolia-ink dark:text-slate-100"
+                        : "border-orange-100 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-orange-50"
                     }`}
                   >
                     <div className="font-bold">{topic.topic}</div>
-                    <div className="mt-1 flex gap-3 text-xs text-slate-500">
+                    <div className="mt-1 flex gap-3 text-xs text-slate-500 dark:text-slate-400">
                       <span>{topic.postCount} bài/tuần</span>
                       <span>Eng: {(topic.avgEngagement * 100).toFixed(1)}%</span>
                     </div>
@@ -1163,7 +1163,7 @@ export function ContentPromptStudio({
               {dynamicTrends.suggestedAngles.length > 0 && (
                 <div className="mt-3 space-y-1">
                   {dynamicTrends.suggestedAngles.slice(0, 3).map((angle, i) => (
-                    <p key={i} className="text-xs leading-5 text-slate-500">💡 {angle}</p>
+                    <p key={i} className="text-xs leading-5 text-slate-500 dark:text-slate-400">💡 {angle}</p>
                   ))}
                 </div>
               )}
@@ -1174,13 +1174,13 @@ export function ContentPromptStudio({
         {/* ─── Main Content ──────────────────────────────────────── */}
         <main className="space-y-4">
           {/* Step 3: Lesson Posts with Engagement Data */}
-          <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
+          <section className="rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <h2 className="font-bold text-kolia-ink">
+                <h2 className="font-bold text-kolia-ink dark:text-slate-100">
                   3. Chọn bài học từ nội dung đối thủ
                 </h2>
-                <p className="mt-1 text-sm leading-6 text-slate-500">
+                <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
                   Chọn các pattern đáng học: hook, chủ đề, tone, cách giải thích
                   hoặc công thức nội dung.
                 </p>
@@ -1191,10 +1191,10 @@ export function ContentPromptStudio({
             </div>
 
             {/* Bộ lọc nguồn đối thủ & Thời gian */}
-            <div className="mt-4 border-t border-b border-slate-100 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div className="mt-4 border-t border-b border-slate-100 dark:border-slate-800/60 py-3 flex flex-wrap items-center justify-between gap-3">
               <div className="flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-slate-500">Hiển thị bài đối thủ từ:</span>
+                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Hiển thị bài đối thủ từ:</span>
                   <div className="flex flex-wrap gap-1.5">
                     {["youtube", "tiktok", "facebook"].map((src) => {
                       const isSelected = sources.includes(src);
@@ -1215,13 +1215,13 @@ export function ContentPromptStudio({
                           }}
                           className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold transition ${
                             isSelected
-                              ? "border-kolia-green bg-kolia-mint text-kolia-green"
-                              : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                              ? "border-kolia-green bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green"
+                              : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
                           }`}
                         >
                           <span className="capitalize">{src === "youtube" ? "YouTube" : src === "tiktok" ? "TikTok" : "Facebook"}</span>
                           <span className={`rounded-full px-1.5 py-0.2 text-[9px] ${
-                            isSelected ? "bg-white text-kolia-green" : "bg-slate-100 text-slate-500"
+                            isSelected ? "bg-white dark:bg-slate-900 text-kolia-green" : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
                           }`}>
                             {count}
                           </span>
@@ -1231,8 +1231,8 @@ export function ContentPromptStudio({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 border-l border-slate-200 pl-4">
-                  <span className="text-xs font-bold text-slate-500">Thời gian phân tích:</span>
+                <div className="flex items-center gap-2 border-l border-slate-200 dark:border-slate-800 pl-4">
+                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Thời gian phân tích:</span>
                   <div className="flex gap-1.5">
                     {[7, 14, 30, 90].map((d) => (
                       <button
@@ -1242,7 +1242,7 @@ export function ContentPromptStudio({
                         className={`rounded px-2 py-1 text-xs font-bold transition ${
                           days === d
                             ? "bg-kolia-green text-white"
-                            : "bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100"
+                            : "bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
                         }`}
                       >
                         {d} ngày
@@ -1285,11 +1285,11 @@ export function ContentPromptStudio({
                     className={`rounded border p-4 text-left transition ${
                       selectedLessons.includes(post.title)
                         ? "border-kolia-green bg-kolia-mint"
-                        : "border-kolia-line bg-slate-50 hover:bg-white"
+                        : "border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 hover:bg-white dark:bg-slate-900"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <p className="font-bold leading-6 text-kolia-ink">
+                      <p className="font-bold leading-6 text-kolia-ink dark:text-slate-100">
                         {post.title}
                       </p>
                       {selectedLessons.includes(post.title) ? (
@@ -1299,13 +1299,13 @@ export function ContentPromptStudio({
                     <p className="mt-2 text-xs font-bold uppercase tracking-[0.12em] text-kolia-gold">
                       {post.competitor} · {post.platform}
                     </p>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">
+                    <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
                       {post.hookType} · {post.contentPillar} ·{" "}
                       {post.toneOfVoice}
                     </p>
                     {/* Engagement metrics row */}
                     {(post.views != null && post.views > 0) && (
-                      <div className="mt-2 flex flex-wrap gap-3 border-t border-kolia-line pt-2 text-xs text-slate-500">
+                      <div className="mt-2 flex flex-wrap gap-3 border-t border-kolia-line dark:border-slate-800 pt-2 text-xs text-slate-500 dark:text-slate-400">
                         <span className="flex items-center gap-1">
                           <Eye className="h-3 w-3" />
                           {formatNumber(post.views ?? 0)}
@@ -1328,22 +1328,22 @@ export function ContentPromptStudio({
           </section>
 
           {/* Market Context + Formula */}
-          <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
+          <section className="rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
             <div className="grid gap-4 xl:grid-cols-[1fr_340px]">
               <div>
                 <label className="block">
-                  <span className="font-bold text-kolia-ink">
+                  <span className="font-bold text-kolia-ink dark:text-slate-100">
                     📊 Bối cảnh thị trường
                   </span>
-                  <p className="text-xs text-slate-500 mt-1">Dữ liệu real-time đã tự động cập nhật. Bổ sung thêm context nếu cần.</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Dữ liệu real-time đã tự động cập nhật. Bổ sung thêm context nếu cần.</p>
                 </label>
                 {/* Market Data Cards */}
                 {marketSnapshot && (
                   <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
                     {marketSnapshot.gold && (
-                      <div className="rounded border border-kolia-line bg-gradient-to-br from-yellow-50 to-white p-3">
+                      <div className="rounded border border-kolia-line dark:border-slate-800 bg-gradient-to-br from-yellow-50 to-white dark:to-slate-900 p-3">
                         <div className="text-xs font-bold uppercase tracking-wider text-yellow-600">Vàng XAU</div>
-                        <div className="mt-1 text-lg font-extrabold text-kolia-ink">${marketSnapshot.gold.price.toLocaleString("en-US", {maximumFractionDigits: 0})}</div>
+                        <div className="mt-1 text-lg font-extrabold text-kolia-ink dark:text-slate-100">${marketSnapshot.gold.price.toLocaleString("en-US", {maximumFractionDigits: 0})}</div>
                         {marketSnapshot.gold.change24h != null && (
                           <div className={`text-xs font-bold ${marketSnapshot.gold.change24h >= 0 ? "text-green-600" : "text-red-600"}`}>
                             {marketSnapshot.gold.change24h >= 0 ? "+" : ""}{marketSnapshot.gold.change24h.toFixed(1)}%
@@ -1352,27 +1352,27 @@ export function ContentPromptStudio({
                       </div>
                     )}
                     {marketSnapshot.crypto?.btc && (
-                      <div className="rounded border border-kolia-line bg-gradient-to-br from-orange-50 to-white p-3">
+                      <div className="rounded border border-kolia-line dark:border-slate-800 bg-gradient-to-br from-orange-50 to-white dark:to-slate-900 p-3">
                         <div className="text-xs font-bold uppercase tracking-wider text-orange-600">Bitcoin</div>
-                        <div className="mt-1 text-lg font-extrabold text-kolia-ink">${marketSnapshot.crypto.btc.price.toLocaleString("en-US", {maximumFractionDigits: 0})}</div>
+                        <div className="mt-1 text-lg font-extrabold text-kolia-ink dark:text-slate-100">${marketSnapshot.crypto.btc.price.toLocaleString("en-US", {maximumFractionDigits: 0})}</div>
                         <div className={`text-xs font-bold ${marketSnapshot.crypto.btc.change24h >= 0 ? "text-green-600" : "text-red-600"}`}>
                           {marketSnapshot.crypto.btc.change24h >= 0 ? "+" : ""}{marketSnapshot.crypto.btc.change24h.toFixed(1)}%
                         </div>
                       </div>
                     )}
                     {marketSnapshot.crypto?.eth && (
-                      <div className="rounded border border-kolia-line bg-gradient-to-br from-indigo-50 to-white p-3">
+                      <div className="rounded border border-kolia-line dark:border-slate-800 bg-gradient-to-br from-indigo-50 to-white dark:to-slate-900 p-3">
                         <div className="text-xs font-bold uppercase tracking-wider text-indigo-600">Ethereum</div>
-                        <div className="mt-1 text-lg font-extrabold text-kolia-ink">${marketSnapshot.crypto.eth.price.toLocaleString("en-US", {maximumFractionDigits: 0})}</div>
+                        <div className="mt-1 text-lg font-extrabold text-kolia-ink dark:text-slate-100">${marketSnapshot.crypto.eth.price.toLocaleString("en-US", {maximumFractionDigits: 0})}</div>
                         <div className={`text-xs font-bold ${marketSnapshot.crypto.eth.change24h >= 0 ? "text-green-600" : "text-red-600"}`}>
                           {marketSnapshot.crypto.eth.change24h >= 0 ? "+" : ""}{marketSnapshot.crypto.eth.change24h.toFixed(1)}%
                         </div>
                       </div>
                     )}
                     {marketSnapshot.vnindex && (
-                      <div className="rounded border border-kolia-line bg-gradient-to-br from-emerald-50 to-white p-3">
+                      <div className="rounded border border-kolia-line dark:border-slate-800 bg-gradient-to-br from-emerald-50 to-white dark:to-slate-900 p-3">
                         <div className="text-xs font-bold uppercase tracking-wider text-emerald-600">VN-Index</div>
-                        <div className="mt-1 text-lg font-extrabold text-kolia-ink">{marketSnapshot.vnindex.price.toLocaleString("vi-VN")}</div>
+                        <div className="mt-1 text-lg font-extrabold text-kolia-ink dark:text-slate-100">{marketSnapshot.vnindex.price.toLocaleString("vi-VN")}</div>
                         <div className={`text-xs font-bold ${marketSnapshot.vnindex.changePercent >= 0 ? "text-green-600" : "text-red-600"}`}>
                           {marketSnapshot.vnindex.changePercent >= 0 ? "+" : ""}{marketSnapshot.vnindex.changePercent}%
                         </div>
@@ -1403,11 +1403,11 @@ export function ContentPromptStudio({
                 )}
                 {/* News Headlines */}
                 {marketSnapshot?.newsHeadlines && marketSnapshot.newsHeadlines.length > 0 && (
-                  <div className="mt-2 rounded border border-kolia-line bg-slate-50 p-3">
-                    <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">📰 Tin tức tài chính</div>
+                  <div className="mt-2 rounded border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
+                    <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">📰 Tin tức tài chính</div>
                     <div className="space-y-1">
                       {marketSnapshot.newsHeadlines.slice(0, 4).map((news, i) => (
-                        <p key={i} className="text-xs leading-5 text-slate-600 truncate">
+                        <p key={i} className="text-xs leading-5 text-slate-600 dark:text-slate-400 truncate">
                           <span className="font-bold text-slate-400">[{news.source}]</span> {news.title}
                         </p>
                       ))}
@@ -1419,17 +1419,17 @@ export function ContentPromptStudio({
                   onChange={(event) => setMarketContext(event.target.value)}
                   rows={3}
                   placeholder="Bổ sung bối cảnh thêm nếu cần (dữ liệu thị trường đã tự động cập nhật ở trên)..."
-                  className="mt-2 w-full rounded border border-kolia-line p-3 text-sm leading-6 outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
+                  className="mt-2 w-full rounded border border-kolia-line dark:border-slate-800 p-3 text-sm leading-6 outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
                 />
               </div>
-              <div className={`rounded border border-kolia-line bg-slate-50 p-4 transition ${isDataLoading ? "opacity-50 pointer-events-none" : ""}`}>
+              <div className={`rounded border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 transition ${isDataLoading ? "opacity-50 pointer-events-none" : ""}`}>
                 <div className="flex items-center gap-2">
                   <BarChart3 className="h-4 w-4 text-kolia-green" />
-                  <h3 className="font-bold text-kolia-ink">
+                  <h3 className="font-bold text-kolia-ink dark:text-slate-100">
                     Công thức tham chiếu
                   </h3>
                 </div>
-                <p className="mt-2 text-sm leading-6 text-slate-600">
+                <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
                   {dynamicFormulas[0]?.formula ??
                     "Hook → Market tension → Simple explanation → Visual proof → CTA"}
                 </p>
@@ -1448,26 +1448,26 @@ export function ContentPromptStudio({
           </section>
 
           {/* ─── AI Generate Button ─────────────────────────────── */}
-          <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
+          <section className="rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="font-bold text-kolia-ink">
+                <h2 className="font-bold text-kolia-ink dark:text-slate-100">
                   AI Content Generator Pro
                 </h2>
-                <p className="mt-1 text-sm leading-6 text-slate-500">
+                <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
                   Engine 5 bước: Deep Research → Blueprint → Scene Outline →
                   Script Writer → QA Agent. Mỗi bước là AI agent riêng biệt.
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <div className="flex items-center rounded-lg border border-kolia-line bg-slate-100 p-0.5">
+                <div className="flex items-center rounded-lg border border-kolia-line dark:border-slate-800 bg-slate-100 dark:bg-slate-800 p-0.5">
                   <button
                     type="button"
                     onClick={() => setOutputMode('video')}
                     className={`rounded-md px-3 py-1.5 text-xs font-bold transition ${
                       outputMode === 'video'
-                        ? 'bg-white text-kolia-ink shadow-sm'
-                        : 'text-slate-500 hover:text-kolia-ink'
+                        ? 'bg-white dark:bg-slate-900 text-kolia-ink dark:text-slate-100 shadow-sm'
+                        : 'text-slate-500 dark:text-slate-400 hover:text-kolia-ink dark:text-slate-100'
                     }`}
                   >
                     Video Mode
@@ -1477,8 +1477,8 @@ export function ContentPromptStudio({
                     onClick={() => setOutputMode('post')}
                     className={`rounded-md px-3 py-1.5 text-xs font-bold transition ${
                       outputMode === 'post'
-                        ? 'bg-white text-kolia-ink shadow-sm'
-                        : 'text-slate-500 hover:text-kolia-ink'
+                        ? 'bg-white dark:bg-slate-900 text-kolia-ink dark:text-slate-100 shadow-sm'
+                        : 'text-slate-500 dark:text-slate-400 hover:text-kolia-ink dark:text-slate-100'
                     }`}
                   >
                     Post Mode
@@ -1486,14 +1486,14 @@ export function ContentPromptStudio({
                 </div>
 
                 {/* Mode Toggle */}
-                <div className="flex items-center rounded-lg border border-kolia-line bg-slate-100 p-0.5">
+                <div className="flex items-center rounded-lg border border-kolia-line dark:border-slate-800 bg-slate-100 dark:bg-slate-800 p-0.5">
                   <button
                     type="button"
                     onClick={() => { setMode('auto'); setManualReset(false); }}
                     className={`rounded-md px-3 py-1.5 text-xs font-bold transition ${
                       mode === 'auto'
-                        ? 'bg-white text-kolia-ink shadow-sm'
-                        : 'text-slate-500 hover:text-kolia-ink'
+                        ? 'bg-white dark:bg-slate-900 text-kolia-ink dark:text-slate-100 shadow-sm'
+                        : 'text-slate-500 dark:text-slate-400 hover:text-kolia-ink dark:text-slate-100'
                     }`}
                   >
                     Auto
@@ -1503,8 +1503,8 @@ export function ContentPromptStudio({
                     onClick={() => { setMode('manual'); }}
                     className={`rounded-md px-3 py-1.5 text-xs font-bold transition ${
                       mode === 'manual'
-                        ? 'bg-white text-kolia-ink shadow-sm'
-                        : 'text-slate-500 hover:text-kolia-ink'
+                        ? 'bg-white dark:bg-slate-900 text-kolia-ink dark:text-slate-100 shadow-sm'
+                        : 'text-slate-500 dark:text-slate-400 hover:text-kolia-ink dark:text-slate-100'
                     }`}
                   >
                     Manual
@@ -1561,10 +1561,10 @@ export function ContentPromptStudio({
                           : isPast
                             ? 'border-green-200 bg-green-50/50'
                             : isLocked
-                              ? 'border-slate-200 bg-slate-50 opacity-50'
+                              ? 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 opacity-50'
                               : stepResult
                                 ? 'border-green-200 bg-green-50/50'
-                                : 'border-slate-200 bg-slate-50'
+                                : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-3">
@@ -1574,7 +1574,7 @@ export function ContentPromptStudio({
                               ? 'bg-green-500 text-white'
                               : isCurrent
                                 ? 'bg-kolia-green text-white'
-                                : 'bg-slate-200 text-slate-500'
+                                : 'bg-slate-200 text-slate-500 dark:text-slate-400'
                           }`}>
                             {isPast || stepResult ? (
                               <Check className="h-3.5 w-3.5" />
@@ -1582,7 +1582,7 @@ export function ContentPromptStudio({
                               stepNum
                             )}
                           </div>
-                          <h3 className="text-sm font-bold text-kolia-ink">
+                          <h3 className="text-sm font-bold text-kolia-ink dark:text-slate-100">
                             Bước {stepNum}: {STEP_NAMES[stepNum - 1]}
                           </h3>
                         </div>
@@ -1634,7 +1634,7 @@ export function ContentPromptStudio({
                                   value={manualSystemInstruction[stepNum] || ''}
                                   onChange={(e) => setManualSystemInstruction(prev => ({ ...prev, [stepNum]: e.target.value }))}
                                   rows={6}
-                                  className="mt-1 w-full rounded border border-indigo-200 bg-white p-3 text-xs leading-5 font-mono text-slate-700 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                                  className="mt-1 w-full rounded border border-indigo-200 bg-white dark:bg-slate-900 p-3 text-xs leading-5 font-mono text-slate-700 dark:text-slate-300 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
                                 />
                               </label>
                               <label className="block">
@@ -1645,7 +1645,7 @@ export function ContentPromptStudio({
                                   value={manualPromptText[stepNum] || ''}
                                   onChange={(e) => setManualPromptText(prev => ({ ...prev, [stepNum]: e.target.value }))}
                                   rows={10}
-                                  className="mt-1 w-full rounded border border-indigo-200 bg-white p-3 text-xs leading-5 font-mono text-slate-700 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                                  className="mt-1 w-full rounded border border-indigo-200 bg-white dark:bg-slate-900 p-3 text-xs leading-5 font-mono text-slate-700 dark:text-slate-300 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
                                 />
                               </label>
 
@@ -1682,13 +1682,13 @@ export function ContentPromptStudio({
                               onClick={() => {
                                 navigator.clipboard.writeText(stepResult.output);
                               }}
-                              className="flex items-center gap-1 rounded border border-green-200 bg-white px-2 py-1 text-[10px] font-semibold text-green-600 hover:bg-green-50"
+                              className="flex items-center gap-1 rounded border border-green-200 bg-white dark:bg-slate-900 px-2 py-1 text-[10px] font-semibold text-green-600 hover:bg-green-50"
                             >
                               <Copy className="h-3 w-3" />
                               Copy
                             </button>
                           </div>
-                          <div className="max-h-60 overflow-y-auto whitespace-pre-wrap rounded border border-green-100 bg-white p-3 font-mono text-[11px] leading-6 text-slate-700">
+                          <div className="max-h-60 overflow-y-auto whitespace-pre-wrap rounded border border-green-100 bg-white dark:bg-slate-900 p-3 font-mono text-[11px] leading-6 text-slate-700 dark:text-slate-300">
                             {stepResult.output}
                           </div>
                         </div>
@@ -1704,7 +1704,7 @@ export function ContentPromptStudio({
                             // to avoid silent token consumption on nav clicks.
                             setManualCurrentStep((stepNum + 1) as 1 | 2 | 3 | 4 | 5);
                           }}
-                          className="mt-3 inline-flex items-center gap-1.5 rounded border border-kolia-green bg-white px-4 py-2 text-xs font-bold text-kolia-green hover:bg-kolia-mint"
+                          className="mt-3 inline-flex items-center gap-1.5 rounded border border-kolia-green bg-white dark:bg-slate-900 px-4 py-2 text-xs font-bold text-kolia-green hover:bg-kolia-mint"
                         >
                           Tiếp tục bước {stepNum + 1}
                           <ChevronRight className="h-3.5 w-3.5" />
@@ -1724,7 +1724,7 @@ export function ContentPromptStudio({
               </div>
             )}
 
-            <p className="mt-3 text-xs leading-5 text-slate-500">
+            <p className="mt-3 text-xs leading-5 text-slate-500 dark:text-slate-400">
               Model: <strong>{model}</strong> · Dữ liệu tham khảo:{" "}
               <strong>{lessonPosts.length} bài đối thủ</strong> ·{" "}
               {selectedGaps.length} gap · Engine 5 bước: web search + smart context + word-for-word script + QA agent
@@ -1782,8 +1782,8 @@ export function ContentPromptStudio({
               )}
 
               {/* Quality Metrics */}
-              <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
-                <h2 className="mb-4 flex items-center gap-2 font-bold text-kolia-ink">
+              <section className="rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+                <h2 className="mb-4 flex items-center gap-2 font-bold text-kolia-ink dark:text-slate-100">
                   <Star className="h-5 w-5 text-kolia-green" />
                   Đánh giá chất lượng
                 </h2>
@@ -1802,12 +1802,12 @@ export function ContentPromptStudio({
 
               {/* Research Brief (Step 1) */}
               {item.researchBrief && (
-                <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
+                <section className="rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
                   <CollapsibleSection
                     title="🔍 Step 1: Deep Research Brief"
                     icon={BarChart3}
                   >
-                    <div className="whitespace-pre-wrap font-mono text-sm leading-7 text-slate-700">
+                    <div className="whitespace-pre-wrap font-mono text-sm leading-7 text-slate-700 dark:text-slate-300">
                       {item.researchBrief}
                     </div>
                   </CollapsibleSection>
@@ -1816,12 +1816,12 @@ export function ContentPromptStudio({
 
               {/* Blueprint (Step 2) */}
               {item.blueprint && (
-                <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
+                <section className="rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
                   <CollapsibleSection
                     title="🎯 Step 2: Angle & Blueprint"
                     icon={Sparkles}
                   >
-                    <div className="whitespace-pre-wrap font-mono text-sm leading-7 text-slate-700">
+                    <div className="whitespace-pre-wrap font-mono text-sm leading-7 text-slate-700 dark:text-slate-300">
                       {item.blueprint}
                     </div>
                   </CollapsibleSection>
@@ -1830,12 +1830,12 @@ export function ContentPromptStudio({
 
               {/* Scene Outline (Step 3) */}
               {item.outline && (
-                <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
+                <section className="rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
                   <CollapsibleSection
                     title="📋 Step 3: Scene-by-Scene Outline"
                     icon={Clipboard}
                   >
-                    <div className="whitespace-pre-wrap font-mono text-sm leading-7 text-slate-700">
+                    <div className="whitespace-pre-wrap font-mono text-sm leading-7 text-slate-700 dark:text-slate-300">
                       {item.outline}
                     </div>
                   </CollapsibleSection>
@@ -1843,18 +1843,18 @@ export function ContentPromptStudio({
               )}
 
               {/* Main Script */}
-              <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
+              <section className="rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Clipboard className="h-5 w-5 text-kolia-green" />
-                    <h2 className="font-bold text-kolia-ink">
+                    <h2 className="font-bold text-kolia-ink dark:text-slate-100">
                       Kịch bản từ Pro Engine
                     </h2>
                   </div>
                   <button
                     type="button"
                     onClick={handleCopy}
-                    className="flex items-center gap-1.5 rounded border px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                    className="flex items-center gap-1.5 rounded border px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
                   >
                     {copied ? (
                       <Check className="h-3 w-3 text-green-500" />
@@ -1864,15 +1864,15 @@ export function ContentPromptStudio({
                     {copied ? "Đã copy!" : "Copy"}
                   </button>
                 </div>
-                <div className="mt-4 max-h-[800px] overflow-y-auto whitespace-pre-wrap rounded bg-slate-50 p-4 font-mono text-sm leading-7 text-slate-700">
+                <div className="mt-4 max-h-[800px] overflow-y-auto whitespace-pre-wrap rounded bg-slate-50 dark:bg-slate-950 p-4 font-mono text-sm leading-7 text-slate-700 dark:text-slate-300">
                   {item.script}
                 </div>
               </section>
 
               {/* Completed Steps Summary (after generation) */}
               {stepEvents.length > 0 && !isPending && (
-                <section className="rounded border border-kolia-line bg-white p-5 shadow-sm">
-                  <h2 className="mb-3 font-bold text-kolia-ink">
+                <section className="rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+                  <h2 className="mb-3 font-bold text-kolia-ink dark:text-slate-100">
                     ⚡ Pipeline hoàn thành
                   </h2>
                   <div className="flex flex-wrap gap-3">

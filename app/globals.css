@@ -9,7 +9,28 @@
 }
 
 :root {
+  --bg-primary: #f4f6f8;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f8fafc;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --kolia-green: #0F8C6F;
+
   color-scheme: light;
+}
+
+.dark {
+  --bg-primary: #0b0f19;
+  --bg-secondary: #111827;
+  --bg-tertiary: #1f2937;
+  --text-primary: #f3f4f6;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
+  --border-color: #374151;
+
+  color-scheme: dark;
 }
 
 * {
@@ -22,9 +43,8 @@ html {
 
 body {
   margin: 0;
-  background:
-    linear-gradient(180deg, #f7faf8 0%, #eef4f2 42%, #f8fafc 100%);
-  color: #102033;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   font-family:
     Inter,
     ui-sans-serif,
@@ -33,6 +53,7 @@ body {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 a {
@@ -49,20 +70,12 @@ button {
 
 .financial-grid {
   background-image:
-    linear-gradient(rgba(15, 140, 111, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15, 140, 111, 0.07) 1px, transparent 1px);
+    linear-gradient(rgba(15, 140, 111, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 140, 111, 0.04) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
-/* Override rsuite popup z-index to appear above modal backdrops */
-.rs-picker-popup {
-  z-index: 101 !important;
-}
-.rs-picker-popup-daterange {
-  z-index: 101 !important;
-}
-
-/* Custom Scrollbar */
+/* Custom Scrollbar theme-aware */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -71,9 +84,151 @@ button {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
+  background-color: var(--border-color);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #94a3b8;
+  background-color: var(--text-muted);
 }
+
+/* Override rsuite popup z-index to appear above modal backdrops */
+.rs-picker-popup, .rs-picker-popup-daterange, .rs-picker-menu {
+  z-index: 101 !important;
+}
+
+/* Dark mode overrides for RSuite elements — use html.dark to cover portal-rendered popups */
+html.dark .rs-picker-menu,
+html.dark .rs-picker-popup,
+html.dark .rs-picker-popup-daterange,
+html.dark .rs-calendar {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+html.dark .rs-picker-daterange-header {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+html.dark .rs-calendar-header,
+html.dark .rs-calendar-header-title,
+html.dark .rs-calendar-show-month-wrapper,
+html.dark .rs-calendar-table-header-row {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+html.dark .rs-calendar-table-cell-content {
+  background-color: transparent !important;
+  color: var(--text-primary) !important;
+}
+
+/* Days of other months - muted */
+html.dark .rs-calendar-table-cell-un-same-month .rs-calendar-table-cell-content {
+  color: var(--text-muted) !important;
+  opacity: 0.45 !important;
+}
+
+html.dark .rs-calendar-table-cell-in-range .rs-calendar-table-cell-content {
+  background-color: rgba(15, 140, 111, 0.25) !important;
+  color: white !important;
+}
+
+/* Active or selected date cells */
+html.dark .rs-calendar-table-cell-selected .rs-calendar-table-cell-content,
+html.dark .rs-calendar-table-cell-active .rs-calendar-table-cell-content {
+  background-color: var(--kolia-green) !important;
+  color: white !important;
+}
+
+html.dark .rs-calendar-table-cell-is-today .rs-calendar-table-cell-content {
+  border-color: var(--kolia-green) !important;
+}
+
+html.dark .rs-calendar-action-bar,
+html.dark .rs-picker-menu-footer {
+  background-color: var(--bg-tertiary) !important;
+  border-top: 1px solid var(--border-color) !important;
+}
+
+html.dark .rs-btn {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+html.dark .rs-btn:hover {
+  background-color: var(--bg-tertiary) !important;
+}
+
+html.dark .rs-btn-primary {
+  background-color: var(--kolia-green) !important;
+  color: white !important;
+  border: none !important;
+}
+
+/* Selection and hover actions */
+html.dark .rs-picker-menu-item {
+  color: var(--text-primary) !important;
+  background-color: transparent !important;
+}
+
+html.dark .rs-picker-menu-item-active,
+html.dark .rs-picker-menu-item:hover,
+html.dark .rs-calendar-table-cell-hover .rs-calendar-table-cell-content {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--kolia-green) !important;
+}
+
+/* Toggles, input-groups, addons, and inputs */
+html.dark .rs-picker-toggle,
+html.dark .rs-picker-toggle-active,
+html.dark .rs-picker-toggle:hover,
+html.dark .rs-picker-toggle-value,
+html.dark .rs-picker-clean,
+html.dark .rs-picker-select,
+html.dark .rs-input-group,
+html.dark .rs-input-group-addon,
+html.dark .rs-input-group-btn,
+html.dark .rs-input {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+html.dark .rs-picker-toggle-placeholder {
+  color: var(--text-muted) !important;
+}
+html.dark .rs-calendar-header-backward,
+html.dark .rs-calendar-header-forward {
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+/* DateRangePicker specific */
+html.dark .rs-picker-daterange-panel {
+  background-color: var(--bg-secondary) !important;
+}
+html.dark .rs-picker-daterange-panel .rs-calendar {
+  background-color: var(--bg-secondary) !important;
+}
+html.dark .rs-picker-date-menu {
+  background-color: var(--bg-secondary) !important;
+}
+html.dark .rs-picker-daterange-header,
+html.dark .rs-picker-daterange-header-partial {
+  color: var(--text-primary) !important;
+  background-color: var(--bg-secondary) !important;
+}
+html.dark .rs-picker-toolbar {
+  background-color: var(--bg-secondary) !important;
+  border-top: 1px solid var(--border-color) !important;
+}
+html.dark .rs-picker-toolbar-right .rs-btn {
+  background-color: var(--kolia-green) !important;
+  color: white !important;
+  border: none !important;
+}
+
+
+

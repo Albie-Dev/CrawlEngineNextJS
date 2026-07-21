@@ -30,7 +30,7 @@ const TABS: { id: TabId; label: string; icon: React.ComponentType<{ className?: 
 
 const CAT_ICON: Record<string, string> = { google: "🔑", openai: "🤖", facebook: "📘", tiktok: "🎵", smtp: "📧", telegram: "✈️", general: "⚙️" };
 const CAT_LABEL: Record<string, string> = { google: "Google / YouTube", openai: "AI Provider", facebook: "Facebook", tiktok: "TikTok", smtp: "SMTP", telegram: "Telegram", general: "General" };
-const CAT_COLOR: Record<string, string> = { google: "border-blue-200 bg-blue-50/50", openai: "border-emerald-200 bg-emerald-50/50", facebook: "border-indigo-200 bg-indigo-50/50", tiktok: "border-zinc-200 bg-zinc-50/50", smtp: "border-orange-200 bg-orange-50/50", telegram: "border-sky-200 bg-sky-50/50", general: "border-slate-200 bg-slate-50/50" };
+const CAT_COLOR: Record<string, string> = { google: "border-blue-200 bg-blue-50/50", openai: "border-emerald-200 bg-emerald-50/50", facebook: "border-indigo-200 bg-indigo-50/50", tiktok: "border-zinc-200 bg-zinc-50/50", smtp: "border-orange-200 bg-orange-50/50", telegram: "border-sky-200 bg-sky-50/50", general: "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950" };
 
 const CONFIG_HELP: Record<string, { steps: string[]; url?: string; urlLabel?: string }> = {
   google_client_id: { steps: ["Mở console.cloud.google.com", "APIs & Services → Credentials", "Create Credentials → OAuth client ID"], url: "https://console.cloud.google.com/apis/credentials", urlLabel: "Google Cloud Console" },
@@ -66,26 +66,26 @@ export function SettingsPageClient() {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.16em] text-kolia-green">Quản trị hệ thống</p>
-          <h1 className="mt-1 text-2xl font-bold text-kolia-ink">Cấu hình & Bảo mật</h1>
-          <p className="mt-1 text-sm text-slate-500">API keys, crawl providers, đối thủ và tích hợp.</p>
+          <h1 className="mt-1 text-2xl font-bold text-kolia-ink dark:text-slate-100">Cấu hình & Bảo mật</h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">API keys, crawl providers, đối thủ và tích hợp.</p>
         </div>
       </div>
 
       {msg && (
-        <div className={cn("flex items-center justify-between rounded-lg border px-4 py-3 text-sm", msg.type === "success" ? "border-green-200 bg-green-50 text-green-700" : "border-red-200 bg-red-50 text-red-700")}>
+        <div className={cn("flex items-center justify-between rounded-lg border px-4 py-3 text-sm", msg.type === "success" ? "border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400" : "border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400")}>
           <span>{msg.text}</span>
           <button onClick={() => setMsg(null)}><X className="h-4 w-4" /></button>
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-1 border-b border-kolia-line pb-0">
+      <div className="flex flex-wrap gap-1 border-b border-kolia-line dark:border-slate-800 pb-0">
         {TABS.map((t) => {
           const Icon = t.icon;
           return (
             <button key={t.id} onClick={() => setTab(t.id)}
               className={cn("inline-flex items-center gap-1.5 rounded-t-lg px-4 py-2.5 text-sm font-bold transition -mb-px",
-                tab === t.id ? "bg-white text-kolia-green shadow-sm border border-b-white border-kolia-line" : "text-slate-500 hover:text-slate-700 hover:bg-slate-50 border border-transparent"
+                tab === t.id ? "bg-white dark:bg-slate-900 text-kolia-green shadow-sm border border-b-white border-kolia-line dark:border-slate-800" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent"
               )}>
               <Icon className="h-4 w-4" />{t.label}
             </button>
@@ -272,9 +272,9 @@ function ApiKeysTab({ onMsg }: { onMsg: (m: any) => void }) {
           <section key={cat} className={cn("rounded-xl border overflow-hidden", CAT_COLOR[cat] || "")}>
             {/* Collapsible header */}
             <button type="button" onClick={() => setCollapsed({ ...collapsed, [cat]: !isCollapsed })}
-              className="flex w-full items-center gap-2 px-5 py-3 border-b bg-white/80 hover:bg-white transition text-left">
+              className="flex w-full items-center gap-2 px-5 py-3 border-b bg-white dark:bg-slate-900/80 hover:bg-white dark:bg-slate-900 transition text-left">
               <span className="text-base">{CAT_ICON[cat] || "⚙️"}</span>
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-600 flex-1">{CAT_LABEL[cat] || cat}</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 flex-1">{CAT_LABEL[cat] || cat}</span>
               {cat === "openai" && activeAiProvider ? (
                 <span className="text-[10px] font-semibold text-kolia-green mr-2">({({ openai: "OpenAI", gemini: "Gemini", groq: "Groq", openrouter: "OpenRouter", huggingface: "HuggingFace" } as Record<string, string>)[activeAiProvider] || activeAiProvider})</span>
               ) : null}
@@ -309,9 +309,9 @@ function ApiKeysTab({ onMsg }: { onMsg: (m: any) => void }) {
 
             {/* Body */}
             {!isCollapsed && (
-              <div className="bg-white">
+              <div className="bg-white dark:bg-slate-900">
                 {/* Column headers */}
-                <div className="hidden md:grid grid-cols-[1fr_2fr_auto] gap-3 px-5 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-kolia-line/30">
+                <div className="hidden md:grid grid-cols-[1fr_2fr_auto] gap-3 px-5 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-kolia-line dark:border-slate-800/30">
                   <span>Config</span>
                   <span>Giá trị</span>
                   <span>Actions</span>
@@ -328,7 +328,7 @@ function ApiKeysTab({ onMsg }: { onMsg: (m: any) => void }) {
                         <div className="grid md:grid-cols-[1fr_2fr_auto] gap-2 md:gap-3 px-5 py-2.5 items-center min-h-[44px]">
                           {/* Col 1: Label + badge */}
                           <div className="flex items-center gap-1.5 min-w-0">
-                            <span className="text-sm font-semibold text-kolia-ink whitespace-nowrap">{item.label}</span>
+                            <span className="text-sm font-semibold text-kolia-ink dark:text-slate-100 whitespace-nowrap">{item.label}</span>
                             {item.hasValue ? (
                               <span className={cn("rounded px-1.5 py-0.5 text-[10px] font-semibold whitespace-nowrap", item.source === "env" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700")}>
                                 {item.source === "env" ? "Env" : "DB"}
@@ -344,7 +344,7 @@ function ApiKeysTab({ onMsg }: { onMsg: (m: any) => void }) {
                               <div className="flex items-center gap-1">
                                 {item.key === "ai_provider" ? (
                                   <select value={editVal} onChange={(e) => setEditVal(e.target.value)}
-                                    className="h-8 flex-1 rounded-lg border border-kolia-line px-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint w-full" autoFocus>
+                                    className="h-8 flex-1 rounded-lg border border-kolia-line dark:border-slate-800 px-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint w-full" autoFocus>
                                     <option value="openai">OpenAI</option>
                                     <option value="gemini">Google Gemini</option>
                                     <option value="groq">Groq</option>
@@ -358,7 +358,7 @@ function ApiKeysTab({ onMsg }: { onMsg: (m: any) => void }) {
                                     {modelLoadState[item.key] === "loading" && (
                                       <div className="flex items-center gap-2 flex-1">
                                         <Loader2 className="h-4 w-4 animate-spin text-kolia-green" />
-                                        <span className="text-xs text-slate-500">Đang tải danh sách model…</span>
+                                        <span className="text-xs text-slate-500 dark:text-slate-400">Đang tải danh sách model…</span>
                                       </div>
                                     )}
 
@@ -371,12 +371,12 @@ function ApiKeysTab({ onMsg }: { onMsg: (m: any) => void }) {
                                             value={editVal}
                                             onChange={(e) => setEditVal(e.target.value)}
                                             placeholder="Nhập tên model…"
-                                            className="h-8 flex-1 rounded-lg border border-kolia-line px-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
+                                            className="h-8 flex-1 rounded-lg border border-kolia-line dark:border-slate-800 px-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
                                             autoFocus
                                           />
                                           <button
                                             onClick={() => loadModels(providerFromModelKey(item.key), item.key)}
-                                            className="shrink-0 rounded-lg border border-kolia-line px-2 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100"
+                                            className="shrink-0 rounded-lg border border-kolia-line dark:border-slate-800 px-2 py-1 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
                                             title="Thử lại"
                                           >
                                             🔄
@@ -399,7 +399,7 @@ function ApiKeysTab({ onMsg }: { onMsg: (m: any) => void }) {
                                               setEditVal(v);
                                             }
                                           }}
-                                          className="h-8 flex-1 rounded-lg border border-kolia-line px-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint w-full"
+                                          className="h-8 flex-1 rounded-lg border border-kolia-line dark:border-slate-800 px-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint w-full"
                                           autoFocus
                                         >
                                           <option value="" disabled>Chọn model…</option>
@@ -414,7 +414,7 @@ function ApiKeysTab({ onMsg }: { onMsg: (m: any) => void }) {
                                             value={editVal}
                                             onChange={(e) => setEditVal(e.target.value)}
                                             placeholder="Nhập tên model…"
-                                            className="h-8 flex-1 rounded-lg border border-kolia-line px-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
+                                            className="h-8 flex-1 rounded-lg border border-kolia-line dark:border-slate-800 px-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
                                             autoFocus
                                           />
                                         )}
@@ -429,12 +429,12 @@ function ApiKeysTab({ onMsg }: { onMsg: (m: any) => void }) {
                                           value={editVal}
                                           onChange={(e) => setEditVal(e.target.value)}
                                           placeholder="Nhập tên model…"
-                                          className="h-8 flex-1 rounded-lg border border-kolia-line px-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
+                                          className="h-8 flex-1 rounded-lg border border-kolia-line dark:border-slate-800 px-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
                                           autoFocus
                                         />
                                         <button
                                           onClick={() => loadModels(providerFromModelKey(item.key), item.key)}
-                                          className="shrink-0 rounded-lg border border-kolia-line px-2.5 py-1 text-xs font-semibold text-kolia-green hover:bg-kolia-mint"
+                                          className="shrink-0 rounded-lg border border-kolia-line dark:border-slate-800 px-2.5 py-1 text-xs font-semibold text-kolia-green hover:bg-kolia-mint"
                                           title="Tải danh sách model từ API"
                                         >
                                           📡 Load
@@ -445,11 +445,11 @@ function ApiKeysTab({ onMsg }: { onMsg: (m: any) => void }) {
                                 ) : (
                                   <input type={item.isSecret && !isVisible ? "password" : "text"} value={editVal}
                                     onChange={(e) => setEditVal(e.target.value)}
-                                    className="h-8 flex-1 rounded-lg border border-kolia-line px-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint w-full" autoFocus />
+                                    className="h-8 flex-1 rounded-lg border border-kolia-line dark:border-slate-800 px-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint w-full" autoFocus />
                                 )}
                               </div>
                             ) : (
-                              <p className="text-sm font-mono text-slate-500 truncate">
+                              <p className="text-sm font-mono text-slate-500 dark:text-slate-400 truncate">
                                 {item.hasValue
                                   ? (item.isSecret
                                     ? (isVisible ? item.value : "••••••••••••")
@@ -466,21 +466,21 @@ function ApiKeysTab({ onMsg }: { onMsg: (m: any) => void }) {
                             {isEditing ? (
                               <>
                                 {item.isSecret && (
-                                  <button onClick={() => setShowSecret(isVisible ? null : item.key)} className="rounded p-1.5 text-slate-400 hover:text-slate-600" title={isVisible ? "Ẩn" : "Hiện"}>
+                                  <button onClick={() => setShowSecret(isVisible ? null : item.key)} className="rounded p-1.5 text-slate-400 hover:text-slate-600 dark:text-slate-400" title={isVisible ? "Ẩn" : "Hiện"}>
                                     {isVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                   </button>
                                 )}
                                 <button onClick={() => save(item.key)} className="rounded p-1.5 text-kolia-green hover:bg-kolia-mint" title="Lưu">
                                   {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
                                 </button>
-                                <button onClick={() => setEditing(null)} className="rounded p-1.5 text-slate-400 hover:bg-slate-100" title="Huỷ">
+                                <button onClick={() => setEditing(null)} className="rounded p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800" title="Huỷ">
                                   <X className="h-4 w-4" />
                                 </button>
                               </>
                             ) : (
                               <>
                                 {CONFIG_HELP[item.key] && (
-                                  <button onClick={() => setHelpKey(showHelp ? null : item.key)} className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-kolia-green" title="Hướng dẫn">
+                                  <button onClick={() => setHelpKey(showHelp ? null : item.key)} className="rounded p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800 hover:text-kolia-green" title="Hướng dẫn">
                                     <HelpCircle className="h-4 w-4" />
                                   </button>
                                 )}
@@ -490,14 +490,14 @@ function ApiKeysTab({ onMsg }: { onMsg: (m: any) => void }) {
                                       const prov = item.key.replace("_api_key", "");
                                       checkQuota(prov, true);
                                     }}
-                                    className="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-kolia-green"
+                                    className="rounded p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800 hover:text-kolia-green"
                                     title="Kiểm tra API key & quota"
                                   >
                                     {quotaLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
                                   </button>
                                 )}
                                 {item.isSecret && item.hasValue && (
-                                  <button onClick={() => setShowSecret(isVisible ? null : item.key)} className="rounded p-1.5 text-slate-400 hover:text-slate-600" title={isVisible ? "Ẩn" : "Hiện"}>
+                                  <button onClick={() => setShowSecret(isVisible ? null : item.key)} className="rounded p-1.5 text-slate-400 hover:text-slate-600 dark:text-slate-400" title={isVisible ? "Ẩn" : "Hiện"}>
                                     {isVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                   </button>
                                 )}
@@ -505,7 +505,7 @@ function ApiKeysTab({ onMsg }: { onMsg: (m: any) => void }) {
                                   setEditing(item.key);
                                   setEditVal(item.value || "");
                                   if (isModelKey(item.key)) loadModels(providerFromModelKey(item.key), item.key);
-                                }} className="rounded p-1.5 text-slate-500 hover:bg-slate-100 hover:text-kolia-ink" title="Sửa">
+                                }} className="rounded p-1.5 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800 hover:text-kolia-ink dark:text-slate-100" title="Sửa">
                                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                 </button>
                                 {item.source === "db" && (
@@ -520,11 +520,11 @@ function ApiKeysTab({ onMsg }: { onMsg: (m: any) => void }) {
 
                         {/* Help dropdown */}
                         {showHelp && CONFIG_HELP[item.key] && (
-                          <div className="mx-5 mb-3 rounded-lg border bg-slate-50 p-4">
+                          <div className="mx-5 mb-3 rounded-lg border bg-slate-50 dark:bg-slate-950 p-4">
                             <p className="text-xs font-bold uppercase tracking-wide text-kolia-green mb-2">📖 Hướng dẫn</p>
                             <ol className="space-y-1.5">
                               {CONFIG_HELP[item.key].steps.map((s, i) => (
-                                <li key={i} className="flex gap-2 text-xs leading-5 text-slate-600">
+                                <li key={i} className="flex gap-2 text-xs leading-5 text-slate-600 dark:text-slate-400">
                                   <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-kolia-mint text-[10px] font-bold text-kolia-green">{i + 1}</span>{s}
                                 </li>
                               ))}
@@ -687,27 +687,27 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
           {(["tiktok", "facebook", "youtube"] as const).map((p) => (
             <button key={p} onClick={() => setPlatform(p)}
               className={cn("inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-bold transition capitalize",
-                platform === p ? "border-kolia-green bg-kolia-mint text-kolia-green" : "border-kolia-line bg-white text-slate-600")}>
+                platform === p ? "border-kolia-green bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green" : "border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400")}>
               {p === "tiktok" ? <Music2 className="h-4 w-4" /> : p === "facebook" ? <BarChart3 className="h-4 w-4" /> : <Youtube className="h-4 w-4" />}{p}
             </button>
           ))}
         </div>
-        <div className="rounded-xl border border-kolia-line bg-white p-5">
+        <div className="rounded-xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
           <div className="flex items-center gap-3 mb-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-50 text-red-600"><Youtube className="h-5 w-5" /></div>
-            <div><h3 className="text-sm font-bold text-kolia-ink">YouTube Data API v3</h3><p className="text-xs text-slate-500">YouTube chỉ sử dụng YouTube Data API — không có provider crawl khác</p></div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400"><Youtube className="h-5 w-5" /></div>
+            <div><h3 className="text-sm font-bold text-kolia-ink dark:text-slate-100">YouTube Data API v3</h3><p className="text-xs text-slate-500 dark:text-slate-400">YouTube chỉ sử dụng YouTube Data API — không có provider crawl khác</p></div>
           </div>
-          <div className="rounded-lg border border-kolia-line bg-slate-50 p-4">
+          <div className="rounded-lg border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-kolia-ink">YouTube API Key</p>
-                <p className="text-xs text-slate-500 mt-0.5">API Key từ Google Cloud Console</p>
+                <p className="text-sm font-semibold text-kolia-ink dark:text-slate-100">YouTube API Key</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">API Key từ Google Cloud Console</p>
               </div>
               <span className={cn("rounded px-2 py-1 text-xs font-bold", youtubeStatus?.hasValue ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700")}>
                 {youtubeStatus?.hasValue ? "✅ Đã cấu hình" : "⚠️ Chưa có"}
               </span>
             </div>
-            <p className="mt-2 text-sm font-mono text-slate-500">
+            <p className="mt-2 text-sm font-mono text-slate-500 dark:text-slate-400">
               {youtubeStatus?.hasValue ? "••••••••••••" : <span className="italic">Chưa cấu hình — vào tab API Keys để thêm</span>}
             </p>
           </div>
@@ -716,7 +716,7 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
     );
   }
 
-  const inp = "mt-1 h-9 w-full rounded-lg border border-kolia-line px-3 text-sm outline-none focus:border-kolia-green";
+  const inp = "mt-1 h-9 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 text-sm outline-none focus:border-kolia-green";
 
   return (
     <div className="space-y-4">
@@ -724,7 +724,7 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
         {(["tiktok", "facebook", "youtube"] as const).map((p) => (
           <button key={p} onClick={() => setPlatform(p)}
             className={cn("inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-bold transition capitalize",
-              platform === p ? "border-kolia-green bg-kolia-mint text-kolia-green" : "border-kolia-line bg-white text-slate-600")}>
+              platform === p ? "border-kolia-green bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green" : "border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400")}>
             {p === "tiktok" ? <Music2 className="h-4 w-4" /> : p === "facebook" ? <BarChart3 className="h-4 w-4" /> : <Youtube className="h-4 w-4" />}{p}
           </button>
         ))}
@@ -741,15 +741,15 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
         ]).map((p: any) => (
           <button key={p.id} onClick={() => update({ activeProvider: p.id })}
             className={cn("relative flex flex-col gap-2 rounded-xl border-2 p-4 text-left transition",
-              cfg.activeProvider === p.id ? "border-kolia-green bg-gradient-to-br from-kolia-mint/40 to-white shadow-sm" : "border-kolia-line bg-white hover:border-kolia-green/50")}>
+              cfg.activeProvider === p.id ? "border-kolia-green bg-gradient-to-br from-kolia-mint/40 to-white dark:to-slate-900 shadow-sm" : "border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-kolia-green/50")}>
             {cfg.activeProvider === p.id && <span className="absolute right-2.5 top-2.5 rounded-full bg-kolia-green px-2 py-0.5 text-[10px] font-bold text-white">Active</span>}
-            <div className={cn("flex h-10 w-10 items-center justify-center rounded-lg", cfg.activeProvider === p.id ? "bg-kolia-green text-white" : "bg-slate-100 text-slate-500")}>{p.icon}</div>
-            <p className="text-sm font-bold text-kolia-ink">{p.title}</p>
-            <p className="text-xs text-slate-500">{p.desc}</p>
+            <div className={cn("flex h-10 w-10 items-center justify-center rounded-lg", cfg.activeProvider === p.id ? "bg-kolia-green text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400")}>{p.icon}</div>
+            <p className="text-sm font-bold text-kolia-ink dark:text-slate-100">{p.title}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{p.desc}</p>
           </button>
         ))}
       </div>
-      <div className="rounded-xl border border-kolia-line bg-white p-5">
+      <div className="rounded-xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
         <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.1em] text-kolia-green">
           {cfg.activeProvider === "playwright" ? "⚙️ Playwright" : cfg.activeProvider === "apify" ? "☁️ Apify" : "🌐 Social Crawler"}
         </h3>
@@ -759,21 +759,21 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
           </div>
         ) : cfg.activeProvider === "playwright" && (
           <div className="space-y-4">
-            <div className="rounded-lg border border-kolia-line bg-slate-50 p-4">
-              <h4 className="mb-2 text-xs font-bold text-kolia-ink">🔄 GraphQL Interception Crawler</h4>
-              <p className="text-xs text-slate-600 leading-relaxed">
+            <div className="rounded-lg border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4">
+              <h4 className="mb-2 text-xs font-bold text-kolia-ink dark:text-slate-100">🔄 GraphQL Interception Crawler</h4>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                 Crawler dùng <strong>Playwright</strong> mở browser, intercept <strong>GraphQL API</strong> responses của Facebook
                 để lấy dữ liệu — ổn định hơn DOM parsing rất nhiều vì cấu trúc JSON ít thay đổi hơn DOM.
               </p>
-              <p className="mt-1.5 text-[11px] text-slate-500 leading-relaxed">
-                Ported từ Python social-crawler (<code className="bg-slate-100 px-1 rounded">scrape_facebook.py</code>).
+              <p className="mt-1.5 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                Ported từ Python social-crawler (<code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">scrape_facebook.py</code>).
                 Hỗ trợ <strong>session cookies</strong> từ Facebook Account Manager, giả lập hành vi người dùng,
                 scroll tự động, chống phát hiện bot.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <label className="block">
-                <span className="text-xs font-semibold text-slate-600">Trình duyệt</span>
+                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Trình duyệt</span>
                 <p className="text-[10px] text-slate-400 leading-relaxed">Engine dùng để crawl.</p>
                 <select value={cfg.playwright.browserEngine}
                   onChange={(e) => update({ playwright: { ...cfg.playwright, browserEngine: e.target.value } })}
@@ -786,7 +786,7 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
                   ))}
                 </select>
               </label>
-              <label className="flex items-center gap-3 rounded-lg border border-kolia-line p-3 mt-5">
+              <label className="flex items-center gap-3 rounded-lg border border-kolia-line dark:border-slate-800 p-3 mt-5">
                 <input type="checkbox" checked={cfg.playwright.browserEngine === 'cloakbrowser' ? true : cfg.playwright.headless}
                   onChange={(e) => {
                     if (cfg.playwright.browserEngine === 'cloakbrowser') return;
@@ -794,20 +794,20 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
                   }}
                   disabled={cfg.playwright.browserEngine === 'cloakbrowser'}
                   className="h-4 w-4 accent-kolia-green" />
-                <span className="text-sm font-semibold text-slate-700">Headless</span>
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Headless</span>
                 {cfg.playwright.browserEngine === 'cloakbrowser' && (
                   <span className="text-[10px] text-slate-400 ml-1">(bắt buộc với CloakBrowser)</span>
                 )}
               </label>
               <label className="block">
-                <span className="text-xs font-semibold text-slate-600">Scroll min (ms)</span>
+                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Scroll min (ms)</span>
                 <input type="number" min={400} max={10000}
                   value={cfg.playwright.scrollDelayMin}
                   onChange={(e) => update({ playwright: { ...cfg.playwright, scrollDelayMin: Number(e.target.value) } })}
                   className={inp} />
               </label>
               <label className="block">
-                <span className="text-xs font-semibold text-slate-600">Scroll max (ms)</span>
+                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Scroll max (ms)</span>
                 <input type="number" min={400} max={10000}
                   value={cfg.playwright.scrollDelayMax}
                   onChange={(e) => update({ playwright: { ...cfg.playwright, scrollDelayMax: Number(e.target.value) } })}
@@ -818,21 +818,21 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
         )}
         {cfg.activeProvider === "apify" && (
           <div className="grid grid-cols-2 gap-4">
-            <label className="block col-span-2"><span className="text-xs font-semibold text-slate-600">API Token</span>
+            <label className="block col-span-2"><span className="text-xs font-semibold text-slate-600 dark:text-slate-400">API Token</span>
               <input type="password" value={cfg.apify.apiToken} onChange={(e) => update({ apify: { ...cfg.apify, apiToken: e.target.value } })} placeholder={cfg.apify.apiToken ? "••••••••" : "apify_api_xxx..."} className={inp} />
             </label>
-            <label className="block col-span-2"><span className="text-xs font-semibold text-slate-600">Actor ID</span>
+            <label className="block col-span-2"><span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Actor ID</span>
               <input type="text" value={cfg.apify.actorId} onChange={(e) => update({ apify: { ...cfg.apify, actorId: e.target.value } })} placeholder={platform === "tiktok" ? "clockworks/tiktok-scraper" : "apify/facebook-posts-scraper"} className={inp} />
             </label>
             {platform === "facebook" && (
-              <label className="block col-span-2"><span className="text-xs font-semibold text-slate-600">Actor ID (Group)</span>
+              <label className="block col-span-2"><span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Actor ID (Group)</span>
                 <input type="text" value={cfg.apify.groupActorId} onChange={(e) => update({ apify: { ...cfg.apify, groupActorId: e.target.value } })} placeholder="apify/facebook-groups-scraper" className={inp} />
               </label>
             )}
-            <label className="block"><span className="text-xs font-semibold text-slate-600">Max items</span>
+            <label className="block"><span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Max items</span>
               <input type="number" min={1} max={1000} value={cfg.apify.maxItems} onChange={(e) => update({ apify: { ...cfg.apify, maxItems: Number(e.target.value) } })} className={inp} />
             </label>
-            <label className="block"><span className="text-xs font-semibold text-slate-600">Timeout (s)</span>
+            <label className="block"><span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Timeout (s)</span>
               <input type="number" min={30} max={3600} value={cfg.apify.timeoutSecs} onChange={(e) => update({ apify: { ...cfg.apify, timeoutSecs: Number(e.target.value) } })} className={inp} />
             </label>
           </div>
@@ -842,7 +842,7 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
             {/* ── Base config (chung cho cả Facebook & TikTok) ── */}
             <div className="grid grid-cols-2 gap-4">
               <label className="block col-span-2">
-                <span className="text-xs font-semibold text-slate-600">API URL <span className="rounded bg-sky-100 px-1.5 py-0.5 text-[10px] font-bold text-sky-700">Mã hoá</span></span>
+                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">API URL <span className="rounded bg-sky-100 px-1.5 py-0.5 text-[10px] font-bold text-sky-700">Mã hoá</span></span>
                 <p className="text-[10px] text-slate-400 leading-relaxed">
                   Địa chỉ của Social Crawler service. Mặc định là server TMTCO.<br />
                   Chỉ thay đổi nếu bạn tự host service riêng.
@@ -853,7 +853,7 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
                   className={cn(inp, "font-mono")} />
               </label>
               <label className="block col-span-2">
-                <span className="text-xs font-semibold text-slate-600">API Key <span className="rounded bg-sky-100 px-1.5 py-0.5 text-[10px] font-bold text-sky-700">Mã hoá</span></span>
+                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">API Key <span className="rounded bg-sky-100 px-1.5 py-0.5 text-[10px] font-bold text-sky-700">Mã hoá</span></span>
                 <p className="text-[10px] text-slate-400 leading-relaxed">
                   API Key để xác thực với Social Crawler service. Liên hệ admin để lấy key.
                 </p>
@@ -863,7 +863,7 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
                   className={cn(inp, "font-mono")} />
               </label>
               <label className="block">
-                <span className="text-xs font-semibold text-slate-600">Max items</span>
+                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Max items</span>
                 <p className="text-[10px] text-slate-400 leading-relaxed">
                   Số item tối đa mỗi lần crawl (áp dụng cho TikTok).<br />
                   Facebook dùng <strong>Số bài viết tối đa</strong> bên dưới.
@@ -871,7 +871,7 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
                 <input type="number" min={1} max={1000} value={cfg.socialCrawler.maxItems} onChange={(e) => update({ socialCrawler: { ...cfg.socialCrawler, maxItems: Number(e.target.value) } })} className={inp} />
               </label>
               <label className="block">
-                <span className="text-xs font-semibold text-slate-600">Timeout (s)</span>
+                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Timeout (s)</span>
                 <p className="text-[10px] text-slate-400 leading-relaxed">
                   Thời gian tối đa chờ response từ service.<br />
                   Nếu quá thời gian này, request bị huỷ.<br />
@@ -884,20 +884,20 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
             {/* ── Facebook-specific scroll / anti-ban config ── */}
             {platform === "facebook" && (
               <>
-                <div className="border-t border-kolia-line pt-3">
+                <div className="border-t border-kolia-line dark:border-slate-800 pt-3">
                   <h4 className="mb-3 text-xs font-bold uppercase tracking-[0.1em] text-kolia-green">
                     🛡️ Scroll & Anti-ban (Facebook)
                   </h4>
-                  <p className="mb-3 text-[11px] text-slate-500 leading-relaxed">
+                  <p className="mb-3 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
                     Các tham số này kiểm soát cách crawler tương tác với Facebook để tránh bị phát hiện là bot.
-                    Giá trị <strong className="text-slate-700">càng cao</strong> → an toàn hơn (chống banned) nhưng <strong className="text-slate-700">chậm hơn</strong>.
+                    Giá trị <strong className="text-slate-700 dark:text-slate-300">càng cao</strong> → an toàn hơn (chống banned) nhưng <strong className="text-slate-700 dark:text-slate-300">chậm hơn</strong>.
                     Facebook rất nhạy cảm với automated crawling, hãy ưu tiên safety nếu không muốn mất account.
                   </p>
 
                   {/* Số lượng bài viết */}
                   <div className="mb-4">
                     <label className="block">
-                      <span className="text-xs font-semibold text-slate-600">Số bài viết tối đa</span>
+                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Số bài viết tối đa</span>
                       <p className="text-[10px] text-slate-400 leading-relaxed">
                         Tổng số bài viết Facebook tối đa sẽ thu thập. Đạt ngưỡng này → crawl dừng ngay.<br />
                         <strong>Mặc định:</strong> 50 &nbsp;|&nbsp; <strong>Tối đa:</strong> 500
@@ -910,10 +910,10 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
                   </div>
 
                   {/* ── Scroll timing ── */}
-                  <h5 className="mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-wider">⏱️ Scroll Timing</h5>
+                  <h5 className="mb-2 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">⏱️ Scroll Timing</h5>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-3 mb-4">
                     <label className="block">
-                      <span className="text-xs font-semibold text-slate-600">Scroll delay min (ms)</span>
+                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Scroll delay min (ms)</span>
                       <p className="text-[10px] text-slate-400 leading-relaxed">
                         Thời gian chờ <strong>tối thiểu</strong> sau mỗi lần scroll, chờ GraphQL load bài mới.<br />
                         ⚡ Nhanh: 2000 &nbsp;|&nbsp; 🛡️ An toàn: 12000<br />
@@ -925,7 +925,7 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
                         className={inp} />
                     </label>
                     <label className="block">
-                      <span className="text-xs font-semibold text-slate-600">Scroll delay max (ms)</span>
+                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Scroll delay max (ms)</span>
                       <p className="text-[10px] text-slate-400 leading-relaxed">
                         Thời gian chờ <strong>tối đa</strong> sau mỗi lần scroll. Hệ thống random trong khoảng [min, max].<br />
                         ⚡ Nhanh: 3000 &nbsp;|&nbsp; 🛡️ An toàn: 18000<br />
@@ -937,7 +937,7 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
                         className={inp} />
                     </label>
                     <label className="block">
-                      <span className="text-xs font-semibold text-slate-600">Steps min</span>
+                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Steps min</span>
                       <p className="text-[10px] text-slate-400 leading-relaxed">
                         Số lần nhấn PageDown <strong>tối thiểu</strong> mỗi chu kỳ scroll.<br />
                         Càng nhiều steps → càng kích hoạt nhiều GraphQL request.<br />
@@ -949,7 +949,7 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
                         className={inp} />
                     </label>
                     <label className="block">
-                      <span className="text-xs font-semibold text-slate-600">Steps max</span>
+                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Steps max</span>
                       <p className="text-[10px] text-slate-400 leading-relaxed">
                         Số lần nhấn PageDown <strong>tối đa</strong> mỗi chu kỳ.<br />
                         Hệ thống random steps trong khoảng [min, max].<br />
@@ -961,7 +961,7 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
                         className={inp} />
                     </label>
                     <label className="block">
-                      <span className="text-xs font-semibold text-slate-600">Inter-step delay min (ms)</span>
+                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Inter-step delay min (ms)</span>
                       <p className="text-[10px] text-slate-400 leading-relaxed">
                         Delay <strong>tối thiểu</strong> giữa các lần nhấn PageDown trong cùng chu kỳ.<br />
                         Giả lập người đọc lướt từ từ, không phải bot nhấn liên tục.<br />
@@ -973,7 +973,7 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
                         className={inp} />
                     </label>
                     <label className="block">
-                      <span className="text-xs font-semibold text-slate-600">Inter-step delay max (ms)</span>
+                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Inter-step delay max (ms)</span>
                       <p className="text-[10px] text-slate-400 leading-relaxed">
                         Delay <strong>tối đa</strong> giữa các PageDown.<br />
                         Giá trị cao → hành vi tự nhiên hơn nhưng chậm hơn.<br />
@@ -987,10 +987,10 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
                   </div>
 
                   {/* ── Giới hạn & dừng sớm ── */}
-                  <h5 className="mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-wider">🛑 Giới hạn &amp; Dừng sớm</h5>
+                  <h5 className="mb-2 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">🛑 Giới hạn &amp; Dừng sớm</h5>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-3 mb-4">
                     <label className="block">
-                      <span className="text-xs font-semibold text-slate-600">Max scrolls</span>
+                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Max scrolls</span>
                       <p className="text-[10px] text-slate-400 leading-relaxed">
                         Tổng số chu kỳ scroll tối đa trước khi dừng hẳn.<br />
                         Nếu đã đủ số bài, crawl dừng trước khi hết max_scrolls.<br />
@@ -1002,7 +1002,7 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
                         className={inp} />
                     </label>
                     <label className="block">
-                      <span className="text-xs font-semibold text-slate-600">Stale limit</span>
+                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Stale limit</span>
                       <p className="text-[10px] text-slate-400 leading-relaxed">
                         Số lần scroll liên tiếp <strong>không có bài mới</strong> thì tự động dừng.<br />
                         Tránh lãng phí thời gian khi Facebook không load thêm bài.<br />
@@ -1016,10 +1016,10 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
                   </div>
 
                   {/* ── Human simulation ── */}
-                  <h5 className="mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-wider">🧑 Giả lập hành vi người dùng</h5>
+                  <h5 className="mb-2 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">🧑 Giả lập hành vi người dùng</h5>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-3 mb-3">
                     <label className="block">
-                      <span className="text-xs font-semibold text-slate-600">Human scroll chance (0–1)</span>
+                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Human scroll chance (0–1)</span>
                       <p className="text-[10px] text-slate-400 leading-relaxed">
                         Xác suất crawler nhấn thêm PageDown ngẫu nhiên (hành vi giống người đọc).<br />
                         <strong>0</strong> = tắt &nbsp;|&nbsp; <strong>1</strong> = luôn scroll phụ<br />
@@ -1031,7 +1031,7 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
                         className={inp} />
                     </label>
                     <label className="block">
-                      <span className="text-xs font-semibold text-slate-600">Human scroll up chance (0–1)</span>
+                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Human scroll up chance (0–1)</span>
                       <p className="text-[10px] text-slate-400 leading-relaxed">
                         Xác suất crawler cuộn <strong>lên trên</strong> (giả lập đọc lại bài viết).<br />
                         Hành vi rất tự nhiên, khó bị detect.<br />
@@ -1069,7 +1069,7 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
             </div>
           </div>
         )}
-        <div className="mt-4 border-t border-kolia-line pt-4">
+        <div className="mt-4 border-t border-kolia-line dark:border-slate-800 pt-4">
           <button onClick={save} disabled={pending} className="inline-flex items-center gap-2 rounded-lg bg-kolia-ink px-5 py-2.5 text-sm font-bold text-white hover:bg-slate-800 disabled:opacity-60">
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}Lưu cấu hình
           </button>
@@ -1081,18 +1081,18 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
       <div className="xl:col-span-1">
         <div className="mb-3 flex items-center justify-between gap-2">
           <div>
-            <p className="text-sm font-semibold text-kolia-ink">Quản lý account</p>
-            <p className="text-xs text-slate-500">Chỉ tải khi bạn mở phần này.</p>
+            <p className="text-sm font-semibold text-kolia-ink dark:text-slate-100">Quản lý account</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Chỉ tải khi bạn mở phần này.</p>
           </div>
           <button
             type="button"
             onClick={() => setShowAccountManager((v) => !v)}
-            className="rounded-lg border border-kolia-line bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-kolia-mint"
+            className="rounded-lg border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-kolia-mint"
           >
             {showAccountManager ? "Ẩn" : "Mở"}
           </button>
         </div>
-        {showAccountManager && (platform === "facebook" ? <FacebookAccountManager /> : platform === "tiktok" ? <TikTokAccountManager /> : <div className="rounded-lg border border-kolia-line bg-slate-50 p-4 text-sm text-slate-500">Phần account chỉ áp dụng cho TikTok hoặc Facebook.</div>)}
+        {showAccountManager && (platform === "facebook" ? <FacebookAccountManager /> : platform === "tiktok" ? <TikTokAccountManager /> : <div className="rounded-lg border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 text-sm text-slate-500 dark:text-slate-400">Phần account chỉ áp dụng cho TikTok hoặc Facebook.</div>)}
       </div>
     </div>
     </div>
@@ -1205,7 +1205,7 @@ function CompetitorsTab({ onMsg }: { onMsg: (m: any) => void }) {
     });
   };
 
-  const inp = "mt-1 h-9 w-full rounded-lg border border-kolia-line px-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint";
+  const inp = "mt-1 h-9 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint";
 
   // ─── Pagination helpers ───────────────────────────────────────────
   const safePage = Math.min(page, pagination.totalPages || 1);
@@ -1217,9 +1217,9 @@ function CompetitorsTab({ onMsg }: { onMsg: (m: any) => void }) {
   return (
     <div className="grid gap-6 xl:grid-cols-[1fr_380px]">
       {/* ─── Left: table ──────────────────────────────────────────── */}
-      <div className="rounded-xl border border-kolia-line bg-white overflow-hidden">
+      <div className="rounded-xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
         {/* Sub-tabs */}
-        <div className="flex flex-wrap items-center gap-1 border-b border-kolia-line px-4 pt-3 pb-0">
+        <div className="flex flex-wrap items-center gap-1 border-b border-kolia-line dark:border-slate-800 px-4 pt-3 pb-0">
           {[
             { value: "", label: "Tất cả" },
             { value: "youtube", label: "YouTube" },
@@ -1232,8 +1232,8 @@ function CompetitorsTab({ onMsg }: { onMsg: (m: any) => void }) {
               onClick={() => { setSubTab(tab.value); }}
               className={`rounded-t-lg px-4 py-2 text-sm font-bold transition -mb-px ${
                 subTab === tab.value
-                  ? "bg-white text-kolia-green border border-b-white border-kolia-line"
-                  : "text-slate-500 hover:text-slate-700 border border-transparent"
+                  ? "bg-white dark:bg-slate-900 text-kolia-green border border-b-white border-kolia-line dark:border-slate-800"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-300 border border-transparent"
               }`}
             >
               {tab.label}
@@ -1242,18 +1242,18 @@ function CompetitorsTab({ onMsg }: { onMsg: (m: any) => void }) {
         </div>
 
         {/* Filter row */}
-        <div className="border-b border-kolia-line px-4 py-3">
+        <div className="border-b border-kolia-line dark:border-slate-800 px-4 py-3">
           <div className="grid gap-2 sm:grid-cols-[1fr_160px_auto]">
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="🔍 Tìm theo tên đối thủ…"
-              className="h-9 rounded-lg border border-kolia-line bg-white px-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
+              className="h-9 rounded-lg border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 px-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
             />
             <select
               value={source}
               onChange={(e) => setSource(e.target.value)}
-              className="h-9 rounded-lg border border-kolia-line bg-white px-3 text-sm font-medium outline-none focus:border-kolia-green"
+              className="h-9 rounded-lg border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 px-3 text-sm font-medium outline-none focus:border-kolia-green"
             >
               <option value="">Tất cả nguồn</option>
               <option value="trong_nuoc">Trong nước</option>
@@ -1263,14 +1263,14 @@ function CompetitorsTab({ onMsg }: { onMsg: (m: any) => void }) {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortField)}
-                className="h-9 flex-1 min-w-[100px] rounded-lg border border-kolia-line bg-white px-2 text-sm font-medium outline-none focus:border-kolia-green"
+                className="h-9 flex-1 min-w-[100px] rounded-lg border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 px-2 text-sm font-medium outline-none focus:border-kolia-green"
               >
                 {Object.entries(sortFieldLabels).map(([v, l]) => (<option key={v} value={v}>{l}</option>))}
               </select>
               <button
                 type="button"
                 onClick={() => setSortDir(d => d === "asc" ? "desc" : "asc")}
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-kolia-line bg-white hover:bg-kolia-mint"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-kolia-mint"
                 title={sortDir === "asc" ? "Tăng dần" : "Giảm dần"}
               >
                 {sortDir === "asc" ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
@@ -1282,8 +1282,8 @@ function CompetitorsTab({ onMsg }: { onMsg: (m: any) => void }) {
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="min-w-[700px] w-full divide-y divide-kolia-line text-sm">
-            <thead className="bg-slate-50">
-              <tr className="text-left text-xs font-bold uppercase tracking-[0.08em] text-slate-500">
+            <thead className="bg-slate-50 dark:bg-slate-950">
+              <tr className="text-left text-xs font-bold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
                 <th className="px-4 py-3">Tên</th>
                 <th className="px-4 py-3">Nền tảng</th>
                 <th className="px-4 py-3">Nguồn</th>
@@ -1301,19 +1301,19 @@ function CompetitorsTab({ onMsg }: { onMsg: (m: any) => void }) {
                 competitors.map((c: any) => (
                   <tr key={c.id} className={cn("hover:bg-kolia-mint/35", selectedId === c.id && "bg-kolia-mint/30")}>
                     <td className="px-4 py-3">
-                      <button type="button" onClick={() => select(c.id)} className="font-semibold text-kolia-ink hover:text-kolia-green text-left">
+                      <button type="button" onClick={() => select(c.id)} className="font-semibold text-kolia-ink dark:text-slate-100 hover:text-kolia-green text-left">
                         {c.name}
                       </button>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">
+                      <span className="rounded bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
                         {platformLabels[c.platform as keyof typeof platformLabels] ?? c.platform}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-600 text-xs">
+                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400 text-xs">
                       {sourceLabels[c.source as keyof typeof sourceLabels] ?? c.source}
                     </td>
-                    <td className="px-4 py-3 text-slate-600 text-xs">{categoryLabels[c.category] ?? c.category}</td>
+                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400 text-xs">{categoryLabels[c.category] ?? c.category}</td>
                     <td className="max-w-[180px] truncate px-4 py-3">
                       <a href={c.channelUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-kolia-green hover:underline">
                         {c.channelUrl} <ExternalLink className="h-3 w-3 shrink-0" />
@@ -1321,10 +1321,10 @@ function CompetitorsTab({ onMsg }: { onMsg: (m: any) => void }) {
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="inline-flex gap-1">
-                        <button type="button" onClick={() => select(c.id)} className="rounded p-1 text-slate-500 hover:bg-kolia-mint hover:text-kolia-ink" title="Sửa">
+                        <button type="button" onClick={() => select(c.id)} className="rounded p-1 text-slate-500 dark:text-slate-400 hover:bg-kolia-mint hover:text-kolia-ink dark:text-slate-100" title="Sửa">
                           <Pencil className="h-3.5 w-3.5" />
                         </button>
-                        <button type="button" onClick={() => remove(c.id)} className="rounded p-1 text-slate-500 hover:bg-red-50 hover:text-red-600" title="Xoá">
+                        <button type="button" onClick={() => remove(c.id)} className="rounded p-1 text-slate-500 dark:text-slate-400 hover:bg-red-50 hover:text-red-600" title="Xoá">
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       </div>
@@ -1338,77 +1338,77 @@ function CompetitorsTab({ onMsg }: { onMsg: (m: any) => void }) {
 
         {/* Pagination */}
         {pagination.totalPages > 1 && !loading && (
-          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-kolia-line px-4 py-3">
-            <p className="text-xs text-slate-500">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-kolia-line dark:border-slate-800 px-4 py-3">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               {startItem}–{endItem} / {pagination.total}
             </p>
             <div className="flex items-center gap-1">
               <button disabled={safePage <= 1} onClick={() => goToPage(safePage - 1)}
-                className="rounded border border-kolia-line px-2.5 py-1 text-xs font-semibold text-slate-600 hover:bg-kolia-mint disabled:opacity-40">← Trước</button>
+                className="rounded border border-kolia-line dark:border-slate-800 px-2.5 py-1 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-kolia-mint disabled:opacity-40">← Trước</button>
               {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
                 .filter(p => p === 1 || p === pagination.totalPages || Math.abs(p - safePage) <= 1)
                 .map((p, idx, arr) => (
                   <span key={p} className="flex items-center">
                     {idx > 0 && arr[idx - 1] !== p - 1 && <span className="px-1 text-slate-300">…</span>}
                     <button onClick={() => goToPage(p)}
-                      className={`min-w-[28px] rounded px-1.5 py-1 text-xs font-semibold ${p === safePage ? "bg-kolia-ink text-white" : "text-slate-600 hover:bg-kolia-mint"}`}>{p}</button>
+                      className={`min-w-[28px] rounded px-1.5 py-1 text-xs font-semibold ${p === safePage ? "bg-kolia-ink text-white" : "text-slate-600 dark:text-slate-400 hover:bg-kolia-mint"}`}>{p}</button>
                   </span>
                 ))}
               <button disabled={safePage >= pagination.totalPages} onClick={() => goToPage(safePage + 1)}
-                className="rounded border border-kolia-line px-2.5 py-1 text-xs font-semibold text-slate-600 hover:bg-kolia-mint disabled:opacity-40">Sau →</button>
+                className="rounded border border-kolia-line dark:border-slate-800 px-2.5 py-1 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-kolia-mint disabled:opacity-40">Sau →</button>
             </div>
           </div>
         )}
 
         {/* No-pagination info */}
         {pagination.totalPages <= 1 && !loading && pagination.total > 0 && (
-          <div className="border-t border-kolia-line px-4 py-2 text-xs text-slate-400 text-right">
+          <div className="border-t border-kolia-line dark:border-slate-800 px-4 py-2 text-xs text-slate-400 text-right">
             Tổng: {pagination.total} đối thủ
           </div>
         )}
       </div>
 
       {/* ─── Right: form ──────────────────────────────────────────── */}
-      <div className="rounded-xl border border-kolia-line bg-white p-5" key={formKeyRef.current}>
+      <div className="rounded-xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5" key={formKeyRef.current}>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-bold text-kolia-ink">
+          <h2 className="text-sm font-bold text-kolia-ink dark:text-slate-100">
             {selectedId ? "Sửa đối thủ" : "Thêm đối thủ"}
           </h2>
           {selectedId && (
             <button type="button" onClick={() => select("")}
-              className="text-xs text-slate-500 hover:text-slate-700">Bỏ chọn</button>
+              className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-300">Bỏ chọn</button>
           )}
         </div>
         <div className="space-y-3">
-          <label className="block"><span className="text-xs font-semibold text-slate-600">Tên</span>
+          <label className="block"><span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Tên</span>
             <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inp} />
           </label>
           <div className="grid grid-cols-2 gap-3">
-            <label className="block"><span className="text-xs font-semibold text-slate-600">Nền tảng</span>
+            <label className="block"><span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Nền tảng</span>
               <select value={form.platform} onChange={(e) => setForm({ ...form, platform: e.target.value })} className={inp}>
                 <option value="youtube">YouTube</option><option value="tiktok">TikTok</option><option value="facebook">Facebook</option>
               </select>
             </label>
-            <label className="block"><span className="text-xs font-semibold text-slate-600">Nguồn</span>
+            <label className="block"><span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Nguồn</span>
               <select value={form.source} onChange={(e) => setForm({ ...form, source: e.target.value })} className={inp}>
                 <option value="trong_nuoc">Trong nước</option><option value="nuoc_ngoai">Nước ngoài</option>
               </select>
             </label>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <label className="block"><span className="text-xs font-semibold text-slate-600">Phân khúc</span>
+            <label className="block"><span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Phân khúc</span>
               <input type="text" value={form.segmentation} onChange={(e) => setForm({ ...form, segmentation: e.target.value })} className={inp} placeholder="VD: Bán sách, KOL…" />
             </label>
-            <label className="block"><span className="text-xs font-semibold text-slate-600">Phân loại</span>
+            <label className="block"><span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Phân loại</span>
               <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className={inp}>
                 {Object.entries(categoryLabels).map(([v, l]) => (<option key={v} value={v}>{l}</option>))}
               </select>
             </label>
           </div>
-          <label className="block"><span className="text-xs font-semibold text-slate-600">Channel URL</span>
+          <label className="block"><span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Channel URL</span>
             <input type="text" value={form.channelUrl} onChange={(e) => setForm({ ...form, channelUrl: e.target.value })} className={inp} placeholder="https://…" />
           </label>
-          <label className="block"><span className="text-xs font-semibold text-slate-600">Mô tả chủ đề</span>
+          <label className="block"><span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Mô tả chủ đề</span>
             <input type="text" value={form.topicDescription} onChange={(e) => setForm({ ...form, topicDescription: e.target.value })} className={inp} placeholder="VD: Đầu tư - Tài chính - Kinh tế" />
           </label>
           <div className="flex gap-2 pt-2">
@@ -1606,14 +1606,14 @@ function IntegrationsTab({ onMsg, onNavigateTab }: { onMsg: (m: any) => void; on
     switch (badge) {
       case "connected": return <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-bold text-green-700">Đã kết nối</span>;
       case "disconnected": return <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-bold text-amber-700">Chưa kết nối</span>;
-      default: return <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-bold text-slate-500">Chưa cấu hình</span>;
+      default: return <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 text-xs font-bold text-slate-500 dark:text-slate-400">Chưa cấu hình</span>;
     }
   };
 
   const renderPlatformCard = (platform: PlatformIntegration, state: IntegrationState) => {
     const isYt = platform.id === "youtube";
     return (
-      <div key={platform.id} className="group relative rounded-xl border border-kolia-line bg-white p-5 transition hover:shadow-md hover:border-slate-300">
+      <div key={platform.id} className="group relative rounded-xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 transition hover:shadow-md hover:border-slate-300 dark:border-slate-700">
         {/* Top row: icon + status */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
@@ -1621,8 +1621,8 @@ function IntegrationsTab({ onMsg, onNavigateTab }: { onMsg: (m: any) => void; on
               {platform.icon}
             </div>
             <div>
-              <h3 className="text-base font-bold text-kolia-ink">{platform.name}</h3>
-              <p className="mt-0.5 text-xs text-slate-500">{platform.description}</p>
+              <h3 className="text-base font-bold text-kolia-ink dark:text-slate-100">{platform.name}</h3>
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{platform.description}</p>
             </div>
           </div>
           {state.loading
@@ -1633,17 +1633,17 @@ function IntegrationsTab({ onMsg, onNavigateTab }: { onMsg: (m: any) => void; on
         {/* Capabilities */}
         <div className="mt-4 flex flex-wrap gap-1.5">
           {platform.capabilities.map((cap) => (
-            <span key={cap} className="rounded-md bg-slate-50 px-2 py-1 text-[11px] font-medium text-slate-500 ring-1 ring-slate-200">
+            <span key={cap} className="rounded-md bg-slate-50 dark:bg-slate-950 px-2 py-1 text-[11px] font-medium text-slate-500 dark:text-slate-400 ring-1 ring-slate-200">
               {cap}
             </span>
           ))}
         </div>
 
         {/* Status + action bar */}
-        <div className="mt-4 flex items-center justify-between rounded-lg bg-slate-50 p-3">
+        <div className="mt-4 flex items-center justify-between rounded-lg bg-slate-50 dark:bg-slate-950 p-3">
           <div className="flex items-center gap-2">
             {statusLabel(state.statusBadge)}
-            <span className="text-xs text-slate-500">{state.statusText}</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">{state.statusText}</span>
           </div>
           <div className="flex gap-2">
             {state.statusBadge === "connected" ? (
@@ -1658,7 +1658,7 @@ function IntegrationsTab({ onMsg, onNavigateTab }: { onMsg: (m: any) => void; on
               </button>
             ) : (
               <button onClick={() => onNavigateTab("api-keys")}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-kolia-line px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-kolia-line dark:border-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
               >
                 <Key className="h-3.5 w-3.5" />Cấu hình
               </button>
@@ -1673,7 +1673,7 @@ function IntegrationsTab({ onMsg, onNavigateTab }: { onMsg: (m: any) => void; on
               {ch.name?.charAt(0)}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-kolia-ink truncate">{ch.name}</p>
+              <p className="text-sm font-semibold text-kolia-ink dark:text-slate-100 truncate">{ch.name}</p>
             </div>
             <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />
           </div>
@@ -1685,13 +1685,13 @@ function IntegrationsTab({ onMsg, onNavigateTab }: { onMsg: (m: any) => void; on
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center gap-3 rounded-xl border border-kolia-line bg-white p-5 shadow-sm">
+      <div className="flex items-center gap-3 rounded-xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-kolia-green to-emerald-500 text-white shadow-sm">
           <Plug className="h-5 w-5" />
         </div>
         <div>
-          <h2 className="text-base font-bold text-kolia-ink">Tích hợp nền tảng</h2>
-          <p className="text-xs text-slate-500">
+          <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">Tích hợp nền tảng</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Kết nối tài khoản YouTube, TikTok, Facebook để tự động hoá quy trình đăng bài và quản lý nội dung.
             Thêm API keys trong tab <strong>API Keys</strong> trước khi kết nối.
           </p>

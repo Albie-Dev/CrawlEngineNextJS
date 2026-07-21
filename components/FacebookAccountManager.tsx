@@ -130,13 +130,13 @@ export function FacebookAccountManager() {
   };
 
   return (
-    <div className="rounded-lg border border-kolia-line bg-slate-50 p-4">
+    <div className="rounded-lg border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4">
       <div className="flex items-center justify-between gap-3">
         <div>
           <h3 className="text-sm font-bold uppercase tracking-[0.1em] text-kolia-green">
             📘 Facebook Accounts
           </h3>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
             Quản lý session Facebook để crawl dữ liệu. Account có <strong>IsDefault</strong>{" "}
             sẽ được dùng khi đồng bộ. Thay thế cho cách đăng nhập bằng email/password.
           </p>
@@ -188,10 +188,10 @@ export function FacebookAccountManager() {
             <div
               key={account.id}
               className={cn(
-                "flex items-center justify-between gap-3 rounded border bg-white p-3 text-sm transition",
+                "flex items-center justify-between gap-3 rounded border bg-white dark:bg-slate-900 p-3 text-sm transition",
                 account.isDefault
                   ? "border-kolia-green/50 ring-1 ring-kolia-green/20"
-                  : "border-kolia-line"
+                  : "border-kolia-line dark:border-slate-800"
               )}
             >
               <div className="flex min-w-0 items-center gap-3">
@@ -204,7 +204,7 @@ export function FacebookAccountManager() {
 
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="truncate font-semibold text-kolia-ink">
+                    <span className="truncate font-semibold text-kolia-ink dark:text-slate-100">
                       {account.label}
                     </span>
                     {account.isDefault && (
@@ -216,8 +216,8 @@ export function FacebookAccountManager() {
                       className={cn(
                         "shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold",
                         account.isValid
-                          ? "bg-green-50 text-green-700"
-                          : "bg-red-50 text-red-600"
+                          ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                          : "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400"
                       )}
                     >
                       {account.isValid ? "Valid" : "Invalid"}
@@ -235,7 +235,7 @@ export function FacebookAccountManager() {
                 <button
                   type="button"
                   onClick={() => openEdit(account)}
-                  className="rounded px-2.5 py-1.5 text-xs font-semibold text-kolia-ink hover:bg-slate-100"
+                  className="rounded px-2.5 py-1.5 text-xs font-semibold text-kolia-ink dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
                 >
                   Sửa
                 </button>
@@ -254,28 +254,28 @@ export function FacebookAccountManager() {
 
       {/* Add / Edit form */}
       {showForm && (
-        <div className="mt-4 space-y-4 rounded border border-kolia-line bg-white p-4">
+        <div className="mt-4 space-y-4 rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
           <div>
-            <label className="block text-sm font-semibold text-slate-700">
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
               Tên gợi nhớ
               <input
                 type="text"
                 value={label}
                 onChange={(e) => setLabel(e.target.value)}
                 placeholder="VD: Account Facebook phụ"
-                className="mt-1.5 h-10 w-full rounded border border-kolia-line px-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
+                className="mt-1.5 h-10 w-full rounded border border-kolia-line dark:border-slate-800 px-3 text-sm outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
               />
             </label>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700">
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
               <div className="flex items-center gap-2">
                 <span>Session / Cookies JSON</span>
                 <button
                   type="button"
                   onClick={() => setShowSession(!showSession)}
-                  className="text-slate-400 hover:text-slate-600"
+                  className="text-slate-400 hover:text-slate-600 dark:text-slate-400"
                 >
                   {showSession ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -288,12 +288,12 @@ export function FacebookAccountManager() {
                 onChange={(e) => setSessionJson(e.target.value)}
                 placeholder='[{"name":"c_user","value":"1000...","domain":".facebook.com","path":"/"}, ...]'
                 rows={5}
-                className="mt-1.5 w-full rounded border border-kolia-line px-3 py-2 text-xs font-mono outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
+                className="mt-1.5 w-full rounded border border-kolia-line dark:border-slate-800 px-3 py-2 text-xs font-mono outline-none focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint"
               />
             </label>
           </div>
 
-          <label className="flex items-center gap-3 rounded border border-kolia-line p-3 text-sm font-semibold text-slate-700">
+          <label className="flex items-center gap-3 rounded border border-kolia-line dark:border-slate-800 p-3 text-sm font-semibold text-slate-700 dark:text-slate-300">
             <input
               type="checkbox"
               checked={isDefault}
@@ -309,10 +309,10 @@ export function FacebookAccountManager() {
               className={cn(
                 "rounded px-3 py-2 text-xs font-semibold",
                 status.startsWith("✅")
-                  ? "bg-kolia-mint text-kolia-green"
+                  ? "bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green"
                   : status.startsWith("❌") || status.startsWith("⚠️")
-                    ? "bg-red-50 text-red-700"
-                    : "bg-blue-50 text-blue-700"
+                    ? "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400"
+                    : "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
               )}
             >
               {status}
@@ -332,7 +332,7 @@ export function FacebookAccountManager() {
             <button
               type="button"
               onClick={resetForm}
-              className="rounded border border-kolia-line px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+              className="rounded border border-kolia-line dark:border-slate-800 px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
             >
               Huỷ
             </button>

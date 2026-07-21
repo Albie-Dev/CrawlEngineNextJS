@@ -42,9 +42,9 @@ export function slugify(input: string) {
 }
 
 export function getPlatformBadgeClass(platform: string) {
-  if (platform === "youtube") return "bg-red-50 text-red-700 ring-red-100";
-  if (platform === "tiktok") return "bg-zinc-900 text-white ring-zinc-800";
-  return "bg-blue-50 text-blue-700 ring-blue-100";
+  if (platform === "youtube") return "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 ring-red-100 dark:ring-red-900/50";
+  if (platform === "tiktok") return "bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 ring-zinc-100 dark:ring-zinc-800";
+  return "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 ring-blue-100 dark:ring-blue-900/50";
 }
 
 export function calculateEngagementRate(

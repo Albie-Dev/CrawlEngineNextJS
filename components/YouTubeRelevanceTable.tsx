@@ -87,10 +87,10 @@ function aiScoreBadge(score: number | null, note: string | null) {
   const label = isRelevant ? "liên quan" : isAverage ? "liên quan (trung bình)" : "không liên quan";
 
   const badgeClass = isRelevant
-    ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
+    ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 ring-emerald-200 dark:ring-emerald-800"
     : isAverage
-    ? "bg-amber-50 text-amber-600 ring-amber-200"
-    : "bg-red-50 text-red-600 ring-red-200";
+    ? "bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 ring-amber-200 dark:ring-amber-800"
+    : "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 ring-red-200 dark:ring-red-800";
 
   return (
     <div className="flex items-center gap-2 min-w-max">
@@ -172,19 +172,19 @@ function StatusDropdown({
       value: "relevant",
       label: "Liên quan",
       icon: <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />,
-      cls: "text-emerald-600 border-emerald-500 bg-white hover:bg-emerald-50",
+      cls: "text-emerald-600 border-emerald-500 bg-white dark:bg-slate-900 hover:bg-emerald-50",
     },
     {
       value: "irrelevant",
       label: "Không liên quan",
       icon: <XCircle className="h-3.5 w-3.5 text-red-500" />,
-      cls: "text-red-600 border-red-500 bg-white hover:bg-red-50",
+      cls: "text-red-600 border-red-500 bg-white dark:bg-slate-900 hover:bg-red-50",
     },
     {
       value: "pending",
       label: "Chưa đánh giá",
       icon: <Clock className="h-3.5 w-3.5 text-slate-400" />,
-      cls: "text-slate-600 border-slate-200 bg-white hover:bg-slate-50",
+      cls: "text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800",
     },
   ];
 
@@ -208,7 +208,7 @@ function StatusDropdown({
         <div
           ref={menuRef}
           style={menuStyle}
-          className="overflow-hidden rounded-md border border-slate-200 bg-white shadow-xl"
+          className="overflow-hidden rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl"
         >
           {options.map((opt) => (
             <button
@@ -219,8 +219,8 @@ function StatusDropdown({
               }}
               className={`flex w-full items-center gap-2 px-3 py-2 text-[11px] font-medium transition ${
                 opt.value === current
-                  ? "bg-slate-100 font-semibold"
-                  : "hover:bg-slate-50"
+                  ? "bg-slate-100 dark:bg-slate-800 font-semibold"
+                  : "hover:bg-slate-50 dark:hover:bg-slate-800"
               }`}
             >
               {opt.icon}
@@ -249,9 +249,9 @@ function SummaryCards({ stats, loading }: { stats: Stats | null; loading: boolea
   return (
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5 mb-4">
       {/* Total */}
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
-        <p className="text-[11px] font-semibold text-slate-500">Tổng video đã crawl</p>
-        <p className="mt-1.5 text-2xl font-extrabold text-slate-800">{loading ? "—" : formatNumber(stats.total)}</p>
+      <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
+        <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Tổng video đã crawl</p>
+        <p className="mt-1.5 text-2xl font-extrabold text-slate-800 dark:text-slate-200">{loading ? "—" : formatNumber(stats.total)}</p>
         <p className="mt-2 text-[10px] font-medium flex items-center gap-1 text-emerald-600">
           <TrendingUp className="h-3 w-3" />
           {Math.floor(stats.total * 0.1)} (7 ngày qua)
@@ -259,11 +259,11 @@ function SummaryCards({ stats, loading }: { stats: Stats | null; loading: boolea
       </div>
 
       {/* AI Relevant */}
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
-        <p className="text-[11px] font-semibold text-slate-500">AI gợi ý liên quan</p>
+      <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
+        <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">AI gợi ý liên quan</p>
         <div className="mt-1.5 flex items-center gap-2">
-          <p className="text-2xl font-extrabold text-slate-800">{loading ? "—" : formatNumber(stats.relevant)}</p>
-          <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-600">
+          <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-200">{loading ? "—" : formatNumber(stats.relevant)}</p>
+          <span className="rounded bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
             {relevantPct.toFixed(1)}%
           </span>
         </div>
@@ -274,54 +274,54 @@ function SummaryCards({ stats, loading }: { stats: Stats | null; loading: boolea
       </div>
 
       {/* AI Irrelevant */}
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
-        <p className="text-[11px] font-semibold text-slate-500">AI gợi ý không liên quan</p>
+      <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
+        <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">AI gợi ý không liên quan</p>
         <div className="mt-1.5 flex items-center gap-2">
-          <p className="text-2xl font-extrabold text-slate-800">{loading ? "—" : formatNumber(stats.irrelevant)}</p>
-          <span className="rounded bg-red-50 px-1.5 py-0.5 text-[10px] font-bold text-red-500">
+          <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-200">{loading ? "—" : formatNumber(stats.irrelevant)}</p>
+          <span className="rounded bg-red-50 dark:bg-red-900/30 px-1.5 py-0.5 text-[10px] font-bold text-red-500 dark:text-red-400">
             {irrelevantPct.toFixed(1)}%
           </span>
         </div>
-        <p className="mt-2 text-[10px] font-medium flex items-center gap-1 text-red-500">
+        <p className="mt-2 text-[10px] font-medium flex items-center gap-1 text-red-500 dark:text-red-400">
           <TrendingDown className="h-3 w-3" />
           {Math.floor(stats.irrelevant * 0.1)} (7 ngày qua)
         </p>
       </div>
 
       {/* Pending */}
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
-        <p className="text-[11px] font-semibold text-slate-500">Chưa đánh giá</p>
+      <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-[0_2px_4px_rgba(0,0,0,0.02)]">
+        <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Chưa đánh giá</p>
         <div className="mt-1.5 flex items-center gap-2">
-          <p className="text-2xl font-extrabold text-slate-800">{loading ? "—" : formatNumber(stats.pending)}</p>
-          <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-bold text-amber-500">
+          <p className="text-2xl font-extrabold text-slate-800 dark:text-slate-200">{loading ? "—" : formatNumber(stats.pending)}</p>
+          <span className="rounded bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 text-[10px] font-bold text-amber-500 dark:text-amber-400">
             {pendingPct.toFixed(1)}%
           </span>
         </div>
-        <p className="mt-2 text-[10px] font-medium flex items-center gap-1 text-amber-500">
+        <p className="mt-2 text-[10px] font-medium flex items-center gap-1 text-amber-500 dark:text-amber-400">
           <TrendingDown className="h-3 w-3" />
           {Math.floor(stats.pending * 0.1)} (7 ngày qua)
         </p>
       </div>
 
       {/* Progress ring */}
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_2px_4px_rgba(0,0,0,0.02)] flex items-start justify-between gap-2 overflow-hidden">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-[0_2px_4px_rgba(0,0,0,0.02)] flex items-start justify-between gap-2 overflow-hidden">
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-semibold text-slate-500 truncate">Đang phân tích dựa trên</p>
-          <p className="mt-1.5 text-lg font-extrabold flex items-center gap-1.5 text-slate-800">
+          <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate">Đang phân tích dựa trên</p>
+          <p className="mt-1.5 text-lg font-extrabold flex items-center gap-1.5 text-slate-800 dark:text-slate-200">
             {formatNumber(stats.aiScored)} video
             <Info className="h-3 w-3 shrink-0 text-slate-400" />
           </p>
           <div className="mt-2 flex flex-wrap gap-2 text-[9px] font-medium">
-            <span className="flex items-center gap-1 text-slate-600 whitespace-nowrap"><span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" /> Liên quan: {stats.relevant}</span>
-            <span className="flex items-center gap-1 text-slate-600 whitespace-nowrap"><span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" /> Không l.quan: {stats.irrelevant}</span>
-            <span className="flex items-center gap-1 text-slate-600 whitespace-nowrap"><span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" /> Chưa đánh giá: {stats.pending}</span>
+            <span className="flex items-center gap-1 text-slate-600 dark:text-slate-400 whitespace-nowrap"><span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" /> Liên quan: {stats.relevant}</span>
+            <span className="flex items-center gap-1 text-slate-600 dark:text-slate-400 whitespace-nowrap"><span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" /> Không l.quan: {stats.irrelevant}</span>
+            <span className="flex items-center gap-1 text-slate-600 dark:text-slate-400 whitespace-nowrap"><span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" /> Chưa đánh giá: {stats.pending}</span>
           </div>
         </div>
         <div className="relative h-12 w-12 shrink-0 rounded-full flex items-center justify-center mt-1" 
              style={{ background: `conic-gradient(#10b981 0% ${relevantPct}%, #ef4444 ${relevantPct}% ${relevantPct + irrelevantPct}%, #f59e0b ${relevantPct + irrelevantPct}% 100%)` }}>
-          <div className="absolute inset-0 m-1.5 rounded-full bg-white flex flex-col items-center justify-center">
-             <span className="text-[10px] font-bold text-slate-800 leading-none">{analyzedPct}%</span>
-             <span className="text-[5px] font-medium text-slate-500 mt-0.5">đã xét</span>
+          <div className="absolute inset-0 m-1.5 rounded-full bg-white dark:bg-slate-900 flex flex-col items-center justify-center">
+             <span className="text-[10px] font-bold text-slate-800 dark:text-slate-200 leading-none">{analyzedPct}%</span>
+             <span className="text-[5px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">đã xét</span>
           </div>
         </div>
       </div>
@@ -360,16 +360,16 @@ function CustomSelect({
   const selectedOption = options.find((o) => o.value === value);
 
   return (
-    <div ref={ref} className="relative h-10 min-w-[120px] rounded-lg border border-slate-200 bg-white px-3 py-1 shadow-sm flex flex-col justify-center cursor-pointer select-none" onClick={() => setOpen(!open)}>
-      <span className="text-[9px] font-semibold text-slate-500 leading-tight">{label}</span>
+    <div ref={ref} className="relative h-10 min-w-[120px] rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1 shadow-sm flex flex-col justify-center cursor-pointer select-none" onClick={() => setOpen(!open)}>
+      <span className="text-[9px] font-semibold text-slate-500 dark:text-slate-400 leading-tight">{label}</span>
       <div className="flex items-center justify-between mt-0.5 gap-2">
-        <span className="text-[11px] font-medium text-slate-800 line-clamp-1">{selectedOption ? selectedOption.label : placeholder}</span>
+        <span className="text-[11px] font-medium text-slate-800 dark:text-slate-200 line-clamp-1">{selectedOption ? selectedOption.label : placeholder}</span>
         <ChevronDown className={`h-3.5 w-3.5 shrink-0 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`} />
       </div>
       {open && (
-        <div className="absolute left-0 top-[calc(100%+4px)] z-50 max-h-60 w-full min-w-[150px] overflow-auto rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
+        <div className="absolute left-0 top-[calc(100%+4px)] z-50 max-h-60 w-full min-w-[150px] overflow-auto rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-1 shadow-lg">
           <div
-            className={`px-3 py-2 text-[11px] cursor-pointer transition-colors hover:bg-slate-50 ${value === "" ? "bg-slate-50 font-semibold text-emerald-600" : "text-slate-700"}`}
+            className={`px-3 py-2 text-[11px] cursor-pointer transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 ${value === "" ? "bg-slate-50 dark:bg-slate-950 font-semibold text-emerald-600" : "text-slate-700 dark:text-slate-300"}`}
             onClick={() => onChange("")}
           >
             {placeholder}
@@ -377,7 +377,7 @@ function CustomSelect({
           {options.map((opt) => (
             <div
               key={opt.value}
-              className={`px-3 py-2 text-[11px] cursor-pointer transition-colors hover:bg-slate-50 ${value === opt.value ? "bg-slate-50 font-semibold text-emerald-600" : "text-slate-700"}`}
+              className={`px-3 py-2 text-[11px] cursor-pointer transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 ${value === opt.value ? "bg-slate-50 dark:bg-slate-950 font-semibold text-emerald-600" : "text-slate-700 dark:text-slate-300"}`}
               onClick={() => onChange(opt.value)}
             >
               {opt.label}
@@ -436,28 +436,28 @@ function EngagementRateSelect({
   else if (max) display = `< ${max}%`;
 
   return (
-    <div ref={ref} className="relative h-10 min-w-[140px] rounded-lg border border-slate-200 bg-white px-3 py-1 shadow-sm flex flex-col justify-center cursor-pointer select-none" onClick={() => !open && setOpen(true)}>
-      <span className="text-[9px] font-semibold text-slate-500 leading-tight">Tỷ lệ tương tác</span>
+    <div ref={ref} className="relative h-10 min-w-[140px] rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1 shadow-sm flex flex-col justify-center cursor-pointer select-none" onClick={() => !open && setOpen(true)}>
+      <span className="text-[9px] font-semibold text-slate-500 dark:text-slate-400 leading-tight">Tỷ lệ tương tác</span>
       <div className="flex items-center justify-between mt-0.5 gap-2" onClick={() => open && setOpen(false)}>
-        <span className="text-[11px] font-medium text-slate-800 line-clamp-1">{display}</span>
+        <span className="text-[11px] font-medium text-slate-800 dark:text-slate-200 line-clamp-1">{display}</span>
         <ChevronDown className={`h-3.5 w-3.5 shrink-0 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`} />
       </div>
       {open && (
-        <div className="absolute left-0 top-[calc(100%+4px)] z-50 w-52 rounded-lg border border-slate-200 bg-white p-2 shadow-lg" onClick={(e) => e.stopPropagation()}>
+        <div className="absolute left-0 top-[calc(100%+4px)] z-50 w-52 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 shadow-lg" onClick={(e) => e.stopPropagation()}>
           <div className="space-y-0.5 mb-2">
-            <button onClick={() => setRange("", "")} className={`w-full text-left px-2 py-1.5 text-[11px] rounded transition-colors ${!min && !max ? "bg-slate-50 font-semibold text-emerald-600" : "hover:bg-slate-50 text-slate-700"}`}>Tất cả</button>
-            <button onClick={() => setRange("10", "")} className={`w-full text-left px-2 py-1.5 text-[11px] rounded transition-colors ${min === "10" && !max ? "bg-slate-50 font-semibold text-emerald-600" : "hover:bg-slate-50 text-slate-700"}`}>&gt; 10% (Rất cao)</button>
-            <button onClick={() => setRange("5", "10")} className={`w-full text-left px-2 py-1.5 text-[11px] rounded transition-colors ${min === "5" && max === "10" ? "bg-slate-50 font-semibold text-emerald-600" : "hover:bg-slate-50 text-slate-700"}`}>5% - 10% (Cao)</button>
-            <button onClick={() => setRange("2", "5")} className={`w-full text-left px-2 py-1.5 text-[11px] rounded transition-colors ${min === "2" && max === "5" ? "bg-slate-50 font-semibold text-emerald-600" : "hover:bg-slate-50 text-slate-700"}`}>2% - 5% (Trung bình)</button>
-            <button onClick={() => setRange("", "2")} className={`w-full text-left px-2 py-1.5 text-[11px] rounded transition-colors ${!min && max === "2" ? "bg-slate-50 font-semibold text-emerald-600" : "hover:bg-slate-50 text-slate-700"}`}>&lt; 2% (Thấp)</button>
+            <button onClick={() => setRange("", "")} className={`w-full text-left px-2 py-1.5 text-[11px] rounded transition-colors ${!min && !max ? "bg-slate-50 dark:bg-slate-950 font-semibold text-emerald-600" : "hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"}`}>Tất cả</button>
+            <button onClick={() => setRange("10", "")} className={`w-full text-left px-2 py-1.5 text-[11px] rounded transition-colors ${min === "10" && !max ? "bg-slate-50 dark:bg-slate-950 font-semibold text-emerald-600" : "hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"}`}>&gt; 10% (Rất cao)</button>
+            <button onClick={() => setRange("5", "10")} className={`w-full text-left px-2 py-1.5 text-[11px] rounded transition-colors ${min === "5" && max === "10" ? "bg-slate-50 dark:bg-slate-950 font-semibold text-emerald-600" : "hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"}`}>5% - 10% (Cao)</button>
+            <button onClick={() => setRange("2", "5")} className={`w-full text-left px-2 py-1.5 text-[11px] rounded transition-colors ${min === "2" && max === "5" ? "bg-slate-50 dark:bg-slate-950 font-semibold text-emerald-600" : "hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"}`}>2% - 5% (Trung bình)</button>
+            <button onClick={() => setRange("", "2")} className={`w-full text-left px-2 py-1.5 text-[11px] rounded transition-colors ${!min && max === "2" ? "bg-slate-50 dark:bg-slate-950 font-semibold text-emerald-600" : "hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"}`}>&lt; 2% (Thấp)</button>
           </div>
           
-          <div className="border-t border-slate-100 pt-2 mt-2">
-            <div className="px-1 text-[10px] font-semibold text-slate-500 mb-1.5">Hoặc nhập tùy chỉnh:</div>
+          <div className="border-t border-slate-100 dark:border-slate-800/60 pt-2 mt-2">
+            <div className="px-1 text-[10px] font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Hoặc nhập tùy chỉnh:</div>
             <div className="flex items-center gap-1.5 px-1">
-              <input type="number" value={localMin} onChange={e=>setLocalMin(e.target.value)} className="w-12 h-7 rounded border border-slate-200 bg-white px-1.5 text-center text-[11px] outline-none focus:border-emerald-500" placeholder="Từ" />
+              <input type="number" value={localMin} onChange={e=>setLocalMin(e.target.value)} className="w-12 h-7 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-1.5 text-center text-[11px] outline-none focus:border-emerald-500" placeholder="Từ" />
               <span className="text-slate-400 text-xs">-</span>
-              <input type="number" value={localMax} onChange={e=>setLocalMax(e.target.value)} className="w-12 h-7 rounded border border-slate-200 bg-white px-1.5 text-center text-[11px] outline-none focus:border-emerald-500" placeholder="Đến" />
+              <input type="number" value={localMax} onChange={e=>setLocalMax(e.target.value)} className="w-12 h-7 rounded border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-1.5 text-center text-[11px] outline-none focus:border-emerald-500" placeholder="Đến" />
               <button onClick={handleApply} className="ml-auto h-7 rounded bg-emerald-500 px-2.5 text-[10px] font-bold text-white hover:bg-emerald-600 transition">OK</button>
             </div>
           </div>
@@ -640,14 +640,14 @@ export function YouTubeRelevanceTable() {
         {/* Filters (Left Side) */}
         <div className="flex flex-wrap items-center gap-2 flex-1">
            {/* Search */}
-           <div className="flex items-center gap-2 h-10 w-64 rounded-lg border border-slate-200 bg-white px-3 shadow-sm focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-200">
+           <div className="flex items-center gap-2 h-10 w-64 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 shadow-sm focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-200">
              <Search className="h-4 w-4 text-slate-400" />
              <input
                type="text"
                value={search}
                onChange={(e) => setSearch(e.target.value)}
                placeholder="Tìm kiếm nội dung, tiêu đề, kênh..."
-               className="h-full w-full bg-transparent text-[11px] outline-none placeholder:text-slate-400 text-slate-700 font-medium"
+               className="h-full w-full bg-transparent text-[11px] outline-none placeholder:text-slate-400 text-slate-700 dark:text-slate-300 font-medium"
              />
            </div>
 
@@ -700,7 +700,7 @@ export function YouTubeRelevanceTable() {
            {/* Reset Button */}
            <button
              onClick={resetFilters}
-             className="flex h-10 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 shadow-sm transition hover:bg-slate-50 text-[11px] font-semibold text-slate-700"
+             className="flex h-10 items-center justify-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 shadow-sm transition hover:bg-slate-50 dark:hover:bg-slate-800 text-[11px] font-semibold text-slate-700 dark:text-slate-300"
            >
              <RotateCcw className="h-3.5 w-3.5 text-slate-400" /> Đặt lại
            </button>
@@ -738,17 +738,17 @@ export function YouTubeRelevanceTable() {
 
       {/* Bulk action bar */}
       {someSelected && (
-        <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-2.5 shadow-sm">
+        <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 shadow-sm">
           <div className="flex items-center gap-2">
             <div className="flex h-5 w-5 items-center justify-center rounded bg-emerald-500 text-white cursor-pointer" onClick={toggleAll}>
-              <div className="h-0.5 w-2.5 bg-white rounded-full"></div>
+              <div className="h-0.5 w-2.5 bg-white dark:bg-slate-900 rounded-full"></div>
             </div>
             <div className="flex flex-col ml-1">
-              <span className="text-xs font-bold text-slate-800 leading-tight">Đã chọn {selected.size} video</span>
-              <span className="text-[10px] text-slate-500 leading-tight">Chọn tất cả {stats?.total || videos.length} kết quả</span>
+              <span className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight">Đã chọn {selected.size} video</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">Chọn tất cả {stats?.total || videos.length} kết quả</span>
             </div>
           </div>
-          <div className="ml-4 flex flex-wrap items-center gap-2 border-l border-slate-100 pl-4">
+          <div className="ml-4 flex flex-wrap items-center gap-2 border-l border-slate-100 dark:border-slate-800/60 pl-4">
             {allSelectedIrrelevant ? (
               <button
                 onClick={() => bulkUpdate("pending")}
@@ -776,14 +776,14 @@ export function YouTubeRelevanceTable() {
                 <button
                   onClick={() => bulkUpdate("pending")}
                   disabled={bulkLoading}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1.5 text-[11px] font-medium text-slate-600 dark:text-slate-400 transition hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
                 >
                   <Clock className="h-3.5 w-3.5 text-slate-400" /> Chưa đánh giá
                 </button>
                 <button
                   onClick={() => bulkUpdate("irrelevant")}
                   disabled={bulkLoading}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-medium text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1.5 text-[11px] font-medium text-slate-600 dark:text-slate-400 transition hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
                 >
                   <Trash2 className="h-3.5 w-3.5 text-slate-400" /> Xóa khỏi phân tích
                 </button>
@@ -792,11 +792,11 @@ export function YouTubeRelevanceTable() {
           </div>
           
           <div className="ml-auto flex items-center gap-3">
-             <button className="text-[11px] font-medium text-slate-600 border border-slate-200 rounded-md px-3 py-1.5 bg-white flex items-center gap-2 hover:bg-slate-50">
+             <button className="text-[11px] font-medium text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 rounded-md px-3 py-1.5 bg-white dark:bg-slate-900 flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-800">
                 Áp dụng cho các video tương tự
                 <ChevronDown className="h-3 w-3" />
              </button>
-             <button onClick={() => setSelected(new Set())} className="text-slate-400 hover:text-slate-600">
+             <button onClick={() => setSelected(new Set())} className="text-slate-400 hover:text-slate-600 dark:text-slate-400">
                <X className="h-4 w-4" />
              </button>
           </div>
@@ -804,31 +804,31 @@ export function YouTubeRelevanceTable() {
       )}
 
       {/* Table container */}
-      <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="min-w-[1400px] w-full divide-y divide-kolia-line text-[12px]">
-            <thead className="bg-slate-50">
-              <tr className="text-left text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">
+            <thead className="bg-slate-50 dark:bg-slate-950">
+              <tr className="text-left text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">
                 <th className="w-10 px-3 py-3">
                   <input
                     type="checkbox"
                     checked={allSelected}
                     onChange={toggleAll}
-                    className="h-3.5 w-3.5 rounded border-slate-300 accent-kolia-green"
+                    className="h-3.5 w-3.5 rounded border-slate-300 dark:border-slate-700 accent-kolia-green"
                   />
                 </th>
                 <th className="px-4 py-3 min-w-[200px]">Bài/Video</th>
                 <th className="px-4 py-3 min-w-[140px]">Đối thủ</th>
                 <th className="px-4 py-3 min-w-[160px]">Phân loại</th>
-                <th className="px-4 py-3 min-w-[140px] text-left text-[10px] font-bold text-slate-500">HOOK/TONE</th>
-                <th className="px-4 py-3 min-w-[140px] text-left text-[10px] font-bold text-slate-500">
+                <th className="px-4 py-3 min-w-[140px] text-left text-[10px] font-bold text-slate-500 dark:text-slate-400">HOOK/TONE</th>
+                <th className="px-4 py-3 min-w-[140px] text-left text-[10px] font-bold text-slate-500 dark:text-slate-400">
                    <div className="flex items-center gap-1">
                       AI GỢI Ý
                       <Info className="h-3 w-3 text-slate-400" />
                    </div>
                 </th>
-                <th className="px-4 py-3 min-w-[130px] text-left text-[10px] font-bold text-slate-500">TRẠNG THÁI</th>
+                <th className="px-4 py-3 min-w-[130px] text-left text-[10px] font-bold text-slate-500 dark:text-slate-400">TRẠNG THÁI</th>
                 <th className="w-24 px-4 py-3 text-right">Lượt xem</th>
                 <th className="w-16 px-4 py-3 text-right">Like</th>
                 <th className="w-20 px-4 py-3 text-right">Comment</th>
@@ -858,7 +858,7 @@ export function YouTubeRelevanceTable() {
                   return (
                     <tr
                       key={video.id}
-                      className={`align-middle transition ${isSel ? "bg-kolia-mint/20" : "hover:bg-slate-50/60"} ${isIrrelevant ? "opacity-55" : ""}`}
+                      className={`align-middle transition ${isSel ? "bg-kolia-mint/20" : "hover:bg-slate-50 dark:hover:bg-slate-800/60"} ${isIrrelevant ? "opacity-55" : ""}`}
                     >
                       {/* Checkbox */}
                       <td className="px-3 py-3">
@@ -866,14 +866,14 @@ export function YouTubeRelevanceTable() {
                           type="checkbox"
                           checked={isSel}
                           onChange={() => toggleOne(video.id)}
-                          className="h-3.5 w-3.5 rounded border-slate-300 accent-kolia-green"
+                          className="h-3.5 w-3.5 rounded border-slate-300 dark:border-slate-700 accent-kolia-green"
                         />
                       </td>
 
                       {/* Thumbnail + Title */}
                       <td className="max-w-[280px] px-4 py-3">
                         <div className="flex gap-3 items-start">
-                          <div className="relative h-[52px] w-[80px] shrink-0 overflow-hidden rounded-md bg-slate-100">
+                          <div className="relative h-[52px] w-[80px] shrink-0 overflow-hidden rounded-md bg-slate-100 dark:bg-slate-800">
                             {video.thumbnailUrl ? (
                               <img src={video.thumbnailUrl} alt={video.title} className="h-full w-full object-cover" />
                             ) : (
@@ -892,12 +892,12 @@ export function YouTubeRelevanceTable() {
                               href={video.postUrl}
                               target="_blank"
                               rel="noreferrer"
-                              className="line-clamp-2 text-[11px] font-semibold leading-[1.35] text-kolia-ink hover:text-kolia-green transition"
+                              className="line-clamp-2 text-[11px] font-semibold leading-[1.35] text-kolia-ink dark:text-slate-100 hover:text-kolia-green transition"
                             >
                               {video.title}
                             </a>
                             <p className="mt-0.5 line-clamp-1 text-[9px] text-slate-400">{video.caption}</p>
-                            <span className="mt-1 inline-block rounded bg-slate-100 px-1.5 py-0.5 text-[9px] font-medium text-slate-500">
+                            <span className="mt-1 inline-block rounded bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[9px] font-medium text-slate-500 dark:text-slate-400">
                               {formatLabels[video.format] ?? video.format}
                             </span>
                           </div>
@@ -906,7 +906,7 @@ export function YouTubeRelevanceTable() {
 
                       {/* Competitor */}
                       <td className="px-4 py-3">
-                        <p className="font-semibold text-slate-800 truncate max-w-[148px]">{video.competitor.name}</p>
+                        <p className="font-semibold text-slate-800 dark:text-slate-200 truncate max-w-[148px]">{video.competitor.name}</p>
                         <span className="mt-1 inline-flex rounded bg-red-50 px-1.5 py-0.5 text-[9px] font-bold text-red-600 ring-1 ring-red-200">
                           YouTube
                         </span>
@@ -914,14 +914,14 @@ export function YouTubeRelevanceTable() {
 
                       {/* Phân loại */}
                       <td className="px-4 py-3">
-                        <p className="font-medium text-slate-800 truncate max-w-[200px]">{video.contentPillar}</p>
-                        <p className="mt-0.5 text-[9px] text-slate-500">{video.promotionType}</p>
+                        <p className="font-medium text-slate-800 dark:text-slate-200 truncate max-w-[200px]">{video.contentPillar}</p>
+                        <p className="mt-0.5 text-[9px] text-slate-500 dark:text-slate-400">{video.promotionType}</p>
                         <p className="mt-0.5 text-[9px] text-kolia-green font-medium truncate max-w-[200px]">{video.mainTopic}</p>
                       </td>
 
                       {/* Hook/Tone */}
                       <td className="px-4 py-3">
-                        <p className="font-medium text-slate-700">{video.hookType}</p>
+                        <p className="font-medium text-slate-700 dark:text-slate-300">{video.hookType}</p>
                         <p className="mt-0.5 text-[9px] text-slate-400">{video.toneOfVoice}</p>
                       </td>
 
@@ -940,17 +940,17 @@ export function YouTubeRelevanceTable() {
                       </td>
 
                       {/* Views */}
-                      <td className="px-4 py-3 text-right font-medium text-slate-700">
+                      <td className="px-4 py-3 text-right font-medium text-slate-700 dark:text-slate-300">
                         {formatNumber(video.views)}
                       </td>
 
                       {/* Like */}
-                      <td className="px-4 py-3 text-right text-slate-600">
+                      <td className="px-4 py-3 text-right text-slate-600 dark:text-slate-400">
                         {formatNumber(video.likes)}
                       </td>
 
                       {/* Comment */}
-                      <td className="px-4 py-3 text-right text-slate-600">
+                      <td className="px-4 py-3 text-right text-slate-600 dark:text-slate-400">
                         {formatNumber(video.comments)}
                       </td>
 
@@ -960,7 +960,7 @@ export function YouTubeRelevanceTable() {
                       </td>
 
                       {/* Date */}
-                      <td className="px-4 py-3 text-slate-500">
+                      <td className="px-4 py-3 text-slate-500 dark:text-slate-400">
                         {formatDate(video.publishedAt)}
                       </td>
 
@@ -1014,17 +1014,17 @@ export function YouTubeRelevanceTable() {
         </div>
 
         {/* Pagination footer */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-kolia-line bg-slate-50/50 px-4 py-3 text-[11px] text-slate-500">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-4 py-3 text-[11px] text-slate-500 dark:text-slate-400">
           <span>
             Hiển thị {pagination.total > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0}–
             {Math.min(pagination.page * pagination.limit, pagination.total)} trong{" "}
-            <span className="font-semibold text-kolia-ink">{pagination.total}</span> kết quả
+            <span className="font-semibold text-kolia-ink dark:text-slate-100">{pagination.total}</span> kết quả
           </span>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="flex h-6 w-6 items-center justify-center rounded border border-kolia-line hover:bg-slate-100 disabled:opacity-30 transition"
+              className="flex h-6 w-6 items-center justify-center rounded border border-kolia-line dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800 disabled:opacity-30 transition"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
             </button>
@@ -1041,7 +1041,7 @@ export function YouTubeRelevanceTable() {
                   key={pageNum}
                   onClick={() => setPage(pageNum)}
                   className={`flex h-6 min-w-[24px] items-center justify-center rounded px-1 text-[11px] font-semibold transition ${
-                    pageNum === page ? "bg-kolia-green text-white" : "border border-kolia-line hover:bg-slate-100"
+                    pageNum === page ? "bg-kolia-green text-white" : "border border-kolia-line dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
                   }`}
                 >
                   {pageNum}
@@ -1051,7 +1051,7 @@ export function YouTubeRelevanceTable() {
             <button
               onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
               disabled={page >= pagination.totalPages || pagination.totalPages === 0}
-              className="flex h-6 w-6 items-center justify-center rounded border border-kolia-line hover:bg-slate-100 disabled:opacity-30 transition"
+              className="flex h-6 w-6 items-center justify-center rounded border border-kolia-line dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800 disabled:opacity-30 transition"
             >
               <ChevronRight className="h-3.5 w-3.5" />
             </button>

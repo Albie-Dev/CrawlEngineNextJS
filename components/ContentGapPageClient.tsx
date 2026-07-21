@@ -47,13 +47,13 @@ function GapLoadingProgress() {
 
   return (
     <div className="mx-auto max-w-lg py-16">
-      <div className="rounded-2xl border border-kolia-line bg-white p-8 shadow-sm">
+      <div className="rounded-2xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-sm">
         <div className="mb-8 flex justify-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-kolia-mint">
             <ScanSearch className="h-8 w-8 text-kolia-green animate-pulse" />
           </div>
         </div>
-        <p className="text-center text-sm font-semibold text-kolia-ink mb-6">
+        <p className="text-center text-sm font-semibold text-kolia-ink dark:text-slate-100 mb-6">
           Đang tổng hợp phân tích lần đầu...
         </p>
         <div className="space-y-4">
@@ -71,10 +71,10 @@ function GapLoadingProgress() {
                 <div
                   className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 ${
                     isDone
-                      ? "border-green-500 bg-green-50 text-green-600"
+                      ? "border-green-500 dark:border-green-700 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400"
                       : isActive
-                      ? "border-kolia-green bg-kolia-mint text-kolia-green"
-                      : "border-slate-200 bg-slate-50 text-slate-400"
+                      ? "border-kolia-green bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green"
+                      : "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-400"
                   }`}
                 >
                   {isDone ? (
@@ -85,7 +85,7 @@ function GapLoadingProgress() {
                     <Icon className={`h-4 w-4 ${isActive ? "animate-bounce" : ""}`} />
                   )}
                 </div>
-                <p className={`text-sm font-medium ${isDone ? "text-green-700" : isActive ? "text-kolia-ink" : "text-slate-400"}`}>
+                <p className={`text-sm font-medium ${isDone ? "text-green-700" : isActive ? "text-kolia-ink dark:text-slate-100" : "text-slate-400"}`}>
                   {step.label}
                 </p>
                 {isActive && <Loader2 className="ml-auto h-4 w-4 animate-spin text-kolia-green" />}
@@ -125,11 +125,11 @@ function AutoRefreshSettings({
   }
 
   return (
-    <div className="rounded-2xl border border-kolia-line bg-white p-4">
+    <div className="rounded-2xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-kolia-ink">Tự động cập nhật phân tích</p>
-          <p className="mt-1 text-xs text-slate-500 leading-relaxed">
+          <p className="text-sm font-semibold text-kolia-ink dark:text-slate-100">Tự động cập nhật phân tích</p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
             {autoRefresh ? (
               <>
                 <span className="inline-flex items-center gap-1 font-medium text-kolia-green">
@@ -142,7 +142,7 @@ function AutoRefreshSettings({
               </>
             ) : (
               <>
-                <span className="font-medium text-slate-500">Đang tắt</span>
+                <span className="font-medium text-slate-500 dark:text-slate-400">Đang tắt</span>
                 {" "}— Phân tích sẽ không tự động cập nhật sau Sync. Bạn có thể bấm{" "}
                 <span className="font-medium text-kolia-green">"Phân tích thủ công"</span> bên dưới
                 để tạo snapshot mới bất kỳ lúc nào.
@@ -150,9 +150,9 @@ function AutoRefreshSettings({
             )}
           </p>
           {autoRefresh && (
-            <div className="mt-2 rounded-xl bg-slate-50 border border-kolia-line px-3 py-2">
+            <div className="mt-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-kolia-line dark:border-slate-800 px-3 py-2">
               <p className="text-[11px] text-slate-400 leading-relaxed">
-                <span className="font-semibold text-slate-500">Lịch hoạt động:</span> Hook tự động
+                <span className="font-semibold text-slate-500 dark:text-slate-400">Lịch hoạt động:</span> Hook tự động
                 chạy sau mỗi lần bấm{" "}
                 <span className="font-semibold">Sync dữ liệu</span> trong bất kỳ trang nào. Để
                 thiết lập sync tự động theo lịch (cron), vui lòng cấu hình trong môi trường server
@@ -258,14 +258,14 @@ export function ContentGapPageClient() {
     <div className="space-y-5">
       {/* ── Page header ── */}
       <div>
-        <h1 className="text-xl font-bold text-kolia-ink">Content gap đối thủ trong nước</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="text-xl font-bold text-kolia-ink dark:text-slate-100">Content gap đối thủ trong nước</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Tìm cơ hội nội dung bằng cách phân tích các chủ đề top view từ kênh Việt Nam.
         </p>
         {generatedAt && (
           <p className="mt-1 text-xs text-slate-400">
             Cập nhật lần cuối:{" "}
-            <span className="font-medium text-slate-500">{formatAge(generatedAt)}</span>
+            <span className="font-medium text-slate-500 dark:text-slate-400">{formatAge(generatedAt)}</span>
           </p>
         )}
       </div>
@@ -281,12 +281,12 @@ export function ContentGapPageClient() {
       )}
 
       {noData && (
-        <div className="rounded-2xl border border-kolia-line bg-white p-8 text-center">
+        <div className="rounded-2xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-8 text-center">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-kolia-mint">
             <ScanSearch className="h-7 w-7 text-kolia-green" />
           </div>
-          <p className="text-sm font-semibold text-kolia-ink">Chưa có snapshot phân tích</p>
-          <p className="mt-1 text-xs text-slate-500 max-w-sm mx-auto">
+          <p className="text-sm font-semibold text-kolia-ink dark:text-slate-100">Chưa có snapshot phân tích</p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
             Hệ thống đang tổng hợp dữ liệu lần đầu, hoặc bạn có thể bấm Phân tích thủ công để
             tạo ngay.
           </p>
@@ -307,19 +307,19 @@ export function ContentGapPageClient() {
 
       {/* ── Main content panel ── */}
       {domestic && (
-        <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-slate-100 dark:border-slate-800/60 bg-white dark:bg-slate-900 p-6 shadow-sm">
           <ContentGapPanel domestic={domestic} />
         </div>
       )}
 
       {/* ── Manual refresh button (when data exists) ── */}
       {domestic && (
-        <div className="flex items-center justify-between rounded-2xl border border-kolia-line bg-slate-50 px-4 py-3">
-          <p className="text-xs text-slate-500">{domestic.stats.dataNote}</p>
+        <div className="flex items-center justify-between rounded-2xl border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-4 py-3">
+          <p className="text-xs text-slate-500 dark:text-slate-400">{domestic.stats.dataNote}</p>
           <button
             onClick={handleManualGenerate}
             disabled={isGenerating}
-            className="ml-4 shrink-0 inline-flex items-center gap-1.5 rounded-xl border border-kolia-line bg-white px-3 py-1.5 text-xs font-semibold text-kolia-green hover:bg-kolia-mint transition-colors disabled:opacity-60"
+            className="ml-4 shrink-0 inline-flex items-center gap-1.5 rounded-xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-semibold text-kolia-green hover:bg-kolia-mint transition-colors disabled:opacity-60"
           >
             {isGenerating ? (
               <Loader2 className="h-3 w-3 animate-spin" />

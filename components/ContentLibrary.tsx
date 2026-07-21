@@ -44,11 +44,11 @@ const platformColors: Record<string, string> = {
 };
 
 const statusBadge: Record<string, { label: string; className: string }> = {
-  draft: { label: "Bản nháp", className: "bg-slate-100 text-slate-600" },
+  draft: { label: "Bản nháp", className: "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400" },
   approved: { label: "Đã duyệt", className: "bg-green-100 text-green-700" },
   scheduled: { label: "Đã lên lịch", className: "bg-blue-100 text-blue-700" },
-  published: { label: "Đã đăng", className: "bg-kolia-mint text-kolia-green" },
-  archived: { label: "Lưu trữ", className: "bg-kolia-amber text-slate-600" },
+  published: { label: "Đã đăng", className: "bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green" },
+  archived: { label: "Lưu trữ", className: "bg-kolia-amber text-slate-600 dark:text-slate-400" },
 };
 
 // ─── Toast ─────────────────────────────────────────────────────────────────
@@ -66,16 +66,16 @@ function ToastBar({ toast, onClose }: { toast: Toast; onClose: () => void }) {
   return (
     <div className={`fixed bottom-6 right-6 z-50 max-w-sm rounded-xl border px-5 py-4 shadow-2xl backdrop-blur transition-all ${
       toast.type === "success"
-        ? "border-green-200 bg-white/95"
-        : "border-red-200 bg-white/95"
+        ? "border-green-200 bg-white dark:bg-slate-900/95"
+        : "border-red-200 bg-white dark:bg-slate-900/95"
     }`}>
       <div className="flex items-start gap-3">
         <span className="text-xl">{toast.type === "success" ? "✅" : "❌"}</span>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-bold text-kolia-ink">{toast.title}</p>
-          <p className="mt-1 whitespace-pre-wrap text-xs leading-5 text-slate-600">{toast.message}</p>
+          <p className="text-sm font-bold text-kolia-ink dark:text-slate-100">{toast.title}</p>
+          <p className="mt-1 whitespace-pre-wrap text-xs leading-5 text-slate-600 dark:text-slate-400">{toast.message}</p>
         </div>
-        <button onClick={onClose} className="shrink-0 text-slate-400 hover:text-slate-600">
+        <button onClick={onClose} className="shrink-0 text-slate-400 hover:text-slate-600 dark:text-slate-400">
           <X className="h-4 w-4" />
         </button>
       </div>
@@ -520,11 +520,11 @@ export function ContentLibrary() {
   return (
     <div className="space-y-4">
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3 rounded border border-kolia-line bg-white p-4 shadow-sm">
+      <div className="flex flex-wrap items-center gap-3 rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
         <select
           value={filterPlatform}
           onChange={(e) => setFilterPlatform(e.target.value)}
-          className="rounded border border-kolia-line px-3 py-2 text-sm"
+          className="rounded border border-kolia-line dark:border-slate-800 px-3 py-2 text-sm"
         >
           <option value="all">📱 Tất cả nền tảng</option>
           <option value="youtube">▶️ YouTube</option>
@@ -534,7 +534,7 @@ export function ContentLibrary() {
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="rounded border border-kolia-line px-3 py-2 text-sm"
+          className="rounded border border-kolia-line dark:border-slate-800 px-3 py-2 text-sm"
         >
           <option value="all">📋 Tất cả trạng thái</option>
           <option value="draft">📝 Bản nháp</option>
@@ -543,7 +543,7 @@ export function ContentLibrary() {
           <option value="published">🚀 Đã đăng</option>
           <option value="archived">🗄️ Lưu trữ</option>
         </select>
-        <div className="ml-auto text-sm text-slate-500">
+        <div className="ml-auto text-sm text-slate-500 dark:text-slate-400">
           {total} nội dung
         </div>
       </div>
@@ -554,9 +554,9 @@ export function ContentLibrary() {
           <Loader2 className="h-8 w-8 animate-spin text-kolia-green" />
         </div>
       ) : items.length === 0 ? (
-        <div className="rounded border border-kolia-line bg-white p-12 text-center shadow-sm">
+        <div className="rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-12 text-center shadow-sm">
           <FileText className="mx-auto h-12 w-12 text-slate-300" />
-          <p className="mt-4 text-lg font-semibold text-slate-500">Chưa có nội dung nào</p>
+          <p className="mt-4 text-lg font-semibold text-slate-500 dark:text-slate-400">Chưa có nội dung nào</p>
           <p className="mt-2 text-sm text-slate-400">
             Chạy đồng bộ dữ liệu để AI tự động tạo kịch bản YouTube, TikTok và Facebook.
           </p>
@@ -565,14 +565,14 @@ export function ContentLibrary() {
         <div className="space-y-3">
           {items.map((item) => {
             const Icon = platformIcon[item.platform] ?? FileText;
-            const color = platformColors[item.platform] ?? "text-slate-500";
+            const color = platformColors[item.platform] ?? "text-slate-500 dark:text-slate-400";
             const badge = statusBadge[item.status] ?? statusBadge.draft;
             const expanded = expandedId === item.id;
 
             return (
               <div
                 key={item.id}
-                className="rounded border border-kolia-line bg-white shadow-sm transition hover:shadow-md"
+                className="rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition hover:shadow-md"
               >
                 {/* Header */}
                 <button
@@ -582,8 +582,8 @@ export function ContentLibrary() {
                 >
                   <Icon className={`h-5 w-5 shrink-0 ${color}`} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-semibold text-kolia-ink">{item.title}</p>
-                    <p className="mt-0.5 text-sm text-slate-500">
+                    <p className="truncate font-semibold text-kolia-ink dark:text-slate-100">{item.title}</p>
+                    <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
                       {item.mainTopic} · {item.contentType} · {item.toneOfVoice}
                     </p>
                   </div>
@@ -597,62 +597,62 @@ export function ContentLibrary() {
 
                 {/* Expanded Detail */}
                 {expanded && (
-                  <div className="border-t border-kolia-line px-5 py-4">
+                  <div className="border-t border-kolia-line dark:border-slate-800 px-5 py-4">
                     {editingItem?.id === item.id ? (
                       <>
                         {/* Title */}
                         <div className="mb-3">
-                          <label className="text-xs font-semibold text-slate-500">Tiêu đề</label>
+                          <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Tiêu đề</label>
                           <input
                             value={editingItem.title}
                             onChange={(e) => setEditingItem({ ...editingItem, title: e.target.value })}
-                            className="mt-1 w-full rounded border border-kolia-line px-3 py-2 text-sm"
+                            className="mt-1 w-full rounded border border-kolia-line dark:border-slate-800 px-3 py-2 text-sm"
                           />
                         </div>
                         {/* Script */}
                         <div className="mb-3">
-                          <label className="text-xs font-semibold text-slate-500">Kịch bản</label>
+                          <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">Kịch bản</label>
                           <textarea
                             value={editingItem.script}
                             onChange={(e) => setEditingItem({ ...editingItem, script: e.target.value })}
                             rows={12}
-                            className="mt-1 w-full rounded border border-kolia-line px-3 py-2 font-mono text-sm leading-6"
+                            className="mt-1 w-full rounded border border-kolia-line dark:border-slate-800 px-3 py-2 font-mono text-sm leading-6"
                           />
                         </div>
                         {/* Thumbnail Idea */}
                         <div className="mb-3">
-                          <label className="text-xs font-semibold text-slate-500">🖼️ Ý tưởng thumbnail</label>
+                          <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">🖼️ Ý tưởng thumbnail</label>
                           <textarea
                             value={editingItem.thumbnailIdea}
                             onChange={(e) => setEditingItem({ ...editingItem, thumbnailIdea: e.target.value })}
                             rows={3}
-                            className="mt-1 w-full rounded border border-kolia-line px-3 py-2 text-sm"
+                            className="mt-1 w-full rounded border border-kolia-line dark:border-slate-800 px-3 py-2 text-sm"
                           />
                         </div>
                         {/* CTA */}
                         <div className="mb-3">
-                          <label className="text-xs font-semibold text-slate-500">🎯 CTA</label>
+                          <label className="text-xs font-semibold text-slate-500 dark:text-slate-400">🎯 CTA</label>
                           <input
                             value={editingItem.cta}
                             onChange={(e) => setEditingItem({ ...editingItem, cta: e.target.value })}
-                            className="mt-1 w-full rounded border border-kolia-line px-3 py-2 text-sm"
+                            className="mt-1 w-full rounded border border-kolia-line dark:border-slate-800 px-3 py-2 text-sm"
                           />
                         </div>
                       </>
                     ) : (
                       <>
-                        <div className="max-h-96 overflow-y-auto whitespace-pre-wrap rounded bg-slate-50 p-4 font-mono text-sm leading-6 text-slate-700">
+                        <div className="max-h-96 overflow-y-auto whitespace-pre-wrap rounded bg-slate-50 dark:bg-slate-950 p-4 font-mono text-sm leading-6 text-slate-700 dark:text-slate-300">
                           {item.script}
                         </div>
 
                         {item.thumbnailIdea && (
-                          <div className="mt-3 rounded bg-kolia-amber p-3 text-sm leading-6 text-slate-700">
+                          <div className="mt-3 rounded bg-kolia-amber p-3 text-sm leading-6 text-slate-700 dark:text-slate-300">
                             <strong>🖼️ Ý tưởng thumbnail:</strong> {item.thumbnailIdea}
                           </div>
                         )}
 
                         {item.cta && (
-                          <div className="mt-2 rounded bg-kolia-mint p-3 text-sm leading-6 text-slate-700">
+                          <div className="mt-2 rounded bg-kolia-mint p-3 text-sm leading-6 text-slate-700 dark:text-slate-300">
                             <strong>🎯 CTA:</strong> {item.cta}
                           </div>
                         )}
@@ -665,7 +665,7 @@ export function ContentLibrary() {
                         <input
                           type="datetime-local"
                           id={`schedule-${item.id}`}
-                          className="rounded border border-kolia-line px-3 py-1.5 text-sm"
+                          className="rounded border border-kolia-line dark:border-slate-800 px-3 py-1.5 text-sm"
                         />
                         <button
                           type="button"
@@ -744,7 +744,7 @@ export function ContentLibrary() {
                             <button
                               type="button"
                               onClick={cancelEdit}
-                              className="flex items-center gap-1.5 rounded border border-slate-300 px-3 py-1.5 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+                              className="flex items-center gap-1.5 rounded border border-slate-300 dark:border-slate-700 px-3 py-1.5 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
                             >
                               <X className="h-4 w-4" /> Huỷ
                             </button>
@@ -753,7 +753,7 @@ export function ContentLibrary() {
                           <button
                             type="button"
                             onClick={() => startEdit(item)}
-                            className="flex items-center gap-1.5 rounded border border-kolia-line px-3 py-1.5 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+                            className="flex items-center gap-1.5 rounded border border-kolia-line dark:border-slate-800 px-3 py-1.5 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
                           >
                             <FileText className="h-4 w-4" /> Sửa
                           </button>
@@ -761,7 +761,7 @@ export function ContentLibrary() {
                       <button
                         type="button"
                         onClick={() => copyScript(item.script)}
-                        className="flex items-center gap-1.5 rounded border border-kolia-line px-3 py-1.5 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+                        className="flex items-center gap-1.5 rounded border border-kolia-line dark:border-slate-800 px-3 py-1.5 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
                       >
                         <FileText className="h-4 w-4" /> Copy script
                       </button>
@@ -770,7 +770,7 @@ export function ContentLibrary() {
                           href={item.thumbnailIdea}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center gap-1.5 rounded border border-kolia-line px-3 py-1.5 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+                          className="flex items-center gap-1.5 rounded border border-kolia-line dark:border-slate-800 px-3 py-1.5 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
                         >
                           <ExternalLink className="h-4 w-4" /> Xem trên YouTube
                         </a>
@@ -811,15 +811,15 @@ export function ContentLibrary() {
                                   ) : s.output && !s.output.includes("✅") ? (
                                     <Loader2 className="h-4 w-4 animate-spin text-amber-600" />
                                   ) : (
-                                    <div className="h-5 w-5 rounded-full border-2 border-slate-300" />
+                                    <div className="h-5 w-5 rounded-full border-2 border-slate-300 dark:border-slate-700" />
                                   )}
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                  <p className={`text-sm font-semibold ${s.done ? "text-green-700" : "text-slate-700"}`}>
+                                  <p className={`text-sm font-semibold ${s.done ? "text-green-700" : "text-slate-700 dark:text-slate-300"}`}>
                                     {s.stepName}
                                   </p>
                                   {s.output && (
-                                    <p className="mt-0.5 whitespace-pre-wrap text-xs text-slate-500">{s.output}</p>
+                                    <p className="mt-0.5 whitespace-pre-wrap text-xs text-slate-500 dark:text-slate-400">{s.output}</p>
                                   )}
                                 </div>
                               </div>
@@ -856,7 +856,7 @@ export function ContentLibrary() {
                               <button
                                 type="button"
                                 onClick={() => { setFeedbackState(null); setOptimizeSteps([]); }}
-                                className="rounded border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+                                className="rounded border border-slate-300 dark:border-slate-700 px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
                               >
                                 Huỷ
                               </button>
@@ -876,12 +876,12 @@ export function ContentLibrary() {
       {/* Publish Dialog */}
       {publishDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => !publishDialog || publishDialog.step === "uploading" ? null : setPublishDialog(null)}>
-          <div className="mx-4 flex max-h-[85vh] w-full max-w-2xl flex-col rounded-xl bg-white shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="mx-4 flex max-h-[85vh] w-full max-w-2xl flex-col rounded-xl bg-white dark:bg-slate-900 shadow-2xl" onClick={e => e.stopPropagation()}>
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-kolia-line px-6 py-4">
-              <h2 className="text-lg font-bold text-kolia-ink">🎬 Đăng lên YouTube</h2>
+            <div className="flex items-center justify-between border-b border-kolia-line dark:border-slate-800 px-6 py-4">
+              <h2 className="text-lg font-bold text-kolia-ink dark:text-slate-100">🎬 Đăng lên YouTube</h2>
               {publishDialog.step !== "uploading" && (
-                <button onClick={() => setPublishDialog(null)} className="text-slate-400 hover:text-slate-600"><X className="h-5 w-5" /></button>
+                <button onClick={() => setPublishDialog(null)} className="text-slate-400 hover:text-slate-600 dark:text-slate-400"><X className="h-5 w-5" /></button>
               )}
             </div>
 
@@ -889,22 +889,22 @@ export function ContentLibrary() {
               <div className="flex-1 overflow-y-auto space-y-5 p-6">
                 {/* Video file */}
                 <div>
-                  <label className="text-sm font-semibold text-kolia-ink">File video</label>
+                  <label className="text-sm font-semibold text-kolia-ink dark:text-slate-100">File video</label>
                   {publishDialog.file ? (
                     <div className="mt-1.5 flex items-center justify-between rounded-lg border border-green-200 bg-green-50 p-3">
                       <div className="flex items-center gap-3">
                         <Youtube className="h-5 w-5 text-red-500" />
                         <div>
-                          <p className="text-sm font-semibold text-kolia-ink">{publishDialog.file.name}</p>
-                          <p className="text-xs text-slate-500">{(publishDialog.file.size / 1024 / 1024).toFixed(1)}MB</p>
+                          <p className="text-sm font-semibold text-kolia-ink dark:text-slate-100">{publishDialog.file.name}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{(publishDialog.file.size / 1024 / 1024).toFixed(1)}MB</p>
                         </div>
                       </div>
                       <button onClick={() => setPublishDialog({ ...publishDialog, file: null })} className="text-xs text-red-600 hover:text-red-800">Đổi file</button>
                     </div>
                   ) : (
-                    <label className="mt-1.5 flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed border-kolia-line p-6 hover:border-red-300 hover:bg-red-50/30">
+                    <label className="mt-1.5 flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed border-kolia-line dark:border-slate-800 p-6 hover:border-red-300 hover:bg-red-50/30">
                       <Youtube className="h-8 w-8 text-slate-300" />
-                      <p className="text-sm font-semibold text-slate-500">Nhấn để chọn file video</p>
+                      <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Nhấn để chọn file video</p>
                       <p className="text-xs text-slate-400">MP4, AVI, MOV, MKV, WebM (tối đa 256MB)</p>
                       <input
                         type="file"
@@ -921,11 +921,11 @@ export function ContentLibrary() {
 
                 {/* Title */}
                 <div>
-                  <label className="text-sm font-semibold text-kolia-ink">Tiêu đề</label>
+                  <label className="text-sm font-semibold text-kolia-ink dark:text-slate-100">Tiêu đề</label>
                   <input
                     value={publishDialog.title}
                     onChange={e => setPublishDialog({ ...publishDialog, title: e.target.value })}
-                    className="mt-1.5 w-full rounded-lg border border-kolia-line px-3 py-2.5 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                    className="mt-1.5 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 py-2.5 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
                     maxLength={100}
                   />
                   <p className="mt-1 text-right text-xs text-slate-400">{publishDialog.title.length}/100</p>
@@ -933,12 +933,12 @@ export function ContentLibrary() {
 
                 {/* Description */}
                 <div>
-                  <label className="text-sm font-semibold text-kolia-ink">Mô tả</label>
+                  <label className="text-sm font-semibold text-kolia-ink dark:text-slate-100">Mô tả</label>
                   <textarea
                     value={publishDialog.description}
                     onChange={e => setPublishDialog({ ...publishDialog, description: e.target.value })}
                     rows={8}
-                    className="mt-1.5 w-full rounded-lg border border-kolia-line px-3 py-2.5 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                    className="mt-1.5 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 py-2.5 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
                     maxLength={5000}
                   />
                   <p className="mt-1 text-right text-xs text-slate-400">{publishDialog.description.length}/5000</p>
@@ -947,11 +947,11 @@ export function ContentLibrary() {
                 {/* Options */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-semibold text-kolia-ink">Chế độ hiển thị</label>
+                    <label className="text-sm font-semibold text-kolia-ink dark:text-slate-100">Chế độ hiển thị</label>
                     <select
                       value={publishDialog.privacy}
                       onChange={e => setPublishDialog({ ...publishDialog, privacy: e.target.value as any })}
-                      className="mt-1.5 w-full rounded-lg border border-kolia-line px-3 py-2.5 text-sm"
+                      className="mt-1.5 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 py-2.5 text-sm"
                     >
                       <option value="public">Công khai (Public)</option>
                       <option value="unlisted">Không công khai (Unlisted)</option>
@@ -959,12 +959,12 @@ export function ContentLibrary() {
                     </select>
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-kolia-ink">Hẹn giờ (tuỳ chọn)</label>
+                    <label className="text-sm font-semibold text-kolia-ink dark:text-slate-100">Hẹn giờ (tuỳ chọn)</label>
                     <input
                       type="datetime-local"
                       value={publishDialog.scheduledAt}
                       onChange={e => setPublishDialog({ ...publishDialog, scheduledAt: e.target.value })}
-                      className="mt-1.5 w-full rounded-lg border border-kolia-line px-3 py-2.5 text-sm"
+                      className="mt-1.5 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 py-2.5 text-sm"
                     />
                   </div>
                 </div>
@@ -974,18 +974,18 @@ export function ContentLibrary() {
             {publishDialog.step === "uploading" && (
               <div className="flex flex-col items-center gap-4 px-6 py-16">
                 <Loader2 className="h-10 w-10 animate-spin text-red-600" />
-                <p className="text-base font-semibold text-kolia-ink">Đang upload video lên YouTube...</p>
-                <div className="h-3 w-full max-w-xs overflow-hidden rounded-full bg-slate-100">
+                <p className="text-base font-semibold text-kolia-ink dark:text-slate-100">Đang upload video lên YouTube...</p>
+                <div className="h-3 w-full max-w-xs overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                   <div className="h-full rounded-full bg-red-600 transition-all duration-300" style={{ width: `${publishDialog.progress}%` }} />
                 </div>
-                <p className="text-sm text-slate-500">{publishDialog.progress}%</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{publishDialog.progress}%</p>
               </div>
             )}
 
             {/* Footer */}
             {publishDialog.step === "select" && (
-              <div className="flex items-center justify-between border-t border-kolia-line px-6 py-4">
-                <button onClick={() => setPublishDialog(null)} className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100">
+              <div className="flex items-center justify-between border-t border-kolia-line dark:border-slate-800 px-6 py-4">
+                <button onClick={() => setPublishDialog(null)} className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800">
                   Huỷ
                 </button>
                 <button

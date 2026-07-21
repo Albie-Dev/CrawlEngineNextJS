@@ -35,9 +35,9 @@ type CrawlerStatus = {
 };
 
 const platformOptions: { value: Platform; label: string; color: string }[] = [
-  { value: "youtube", label: "YouTube", color: "bg-red-50 text-red-700 ring-red-100" },
-  { value: "tiktok", label: "TikTok", color: "bg-zinc-900 text-white ring-zinc-800" },
-  { value: "facebook", label: "Facebook", color: "bg-blue-50 text-blue-700 ring-blue-100" }
+  { value: "youtube", label: "YouTube", color: "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 ring-red-100 dark:ring-red-900/50" },
+  { value: "tiktok", label: "TikTok", color: "bg-zinc-900 dark:bg-zinc-700 text-white ring-zinc-800 dark:ring-zinc-700" },
+  { value: "facebook", label: "Facebook", color: "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 ring-blue-100 dark:ring-blue-900/50" }
 ];
 
 const vietnamDateFormatter = new Intl.DateTimeFormat("en-US", {
@@ -347,22 +347,22 @@ export function SyncPanel({ open, onClose }: SyncPanelProps) {
     <div className="fixed inset-0 z-[100] flex items-start justify-center bg-black/40 pt-8 backdrop-blur-sm">
       <div
         ref={panelRef}
-        className="mx-4 flex w-full max-w-3xl max-h-[90vh] flex-col rounded-xl border border-kolia-line bg-white shadow-soft"
+        className="mx-4 flex w-full max-w-3xl max-h-[90vh] flex-col rounded-xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 shadow-soft"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-kolia-line px-6 py-4">
+        <div className="flex items-center justify-between border-b border-kolia-line dark:border-slate-800 px-6 py-4">
           <div className="flex items-center gap-3">
             <Database className="h-5 w-5 text-kolia-green" />
             <div>
-              <h2 className="text-lg font-bold text-kolia-ink">Sync Data - Tùy chỉnh đồng bộ</h2>
-              <p className="text-xs text-slate-500">Chọn nền tảng, khoảng thời gian và đối thủ cần đồng bộ</p>
+              <h2 className="text-lg font-bold text-kolia-ink dark:text-slate-100">Sync Data - Tùy chỉnh đồng bộ</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Chọn nền tảng, khoảng thời gian và đối thủ cần đồng bộ</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
             disabled={syncing}
-            className="flex h-8 w-8 items-center justify-center rounded text-slate-400 hover:bg-slate-100 hover:text-slate-700 disabled:opacity-30"
+            className="flex h-8 w-8 items-center justify-center rounded text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800 hover:text-slate-700 dark:text-slate-300 disabled:opacity-30"
           >
             <X className="h-5 w-5" />
           </button>
@@ -384,8 +384,8 @@ export function SyncPanel({ open, onClose }: SyncPanelProps) {
                     className={cn(
                       "inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-semibold transition",
                       active
-                        ? "border-kolia-green bg-kolia-mint text-kolia-green shadow-sm"
-                        : "border-kolia-line bg-white text-slate-600 hover:border-slate-300",
+                        ? "border-kolia-green bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green shadow-sm"
+                        : "border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:border-slate-700",
                       syncing && "pointer-events-none opacity-60"
                     )}
                   >
@@ -403,7 +403,7 @@ export function SyncPanel({ open, onClose }: SyncPanelProps) {
           {/* ── 2. Date range ──────────────────────────────────────── */}
           <section>
             <h3 className="mb-3 text-sm font-bold uppercase tracking-[0.1em] text-kolia-green">2. Khoảng thời gian</h3>
-            <div className="rounded-lg border border-kolia-line bg-slate-50 p-4">
+            <div className="rounded-lg border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4">
               <DateRangePicker
                 value={dateRange}
                 onChange={(value) => {
@@ -440,8 +440,8 @@ export function SyncPanel({ open, onClose }: SyncPanelProps) {
           {/* ── 3. Max Posts ──────────────────────────────────────── */}
           <section>
             <h3 className="mb-3 text-sm font-bold uppercase tracking-[0.1em] text-kolia-green">3. Giới hạn bài viết</h3>
-            <div className="rounded-lg border border-kolia-line bg-slate-50 p-4">
-              <label className="block text-sm font-semibold text-slate-700">
+            <div className="rounded-lg border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Số bài tối đa cho mỗi đối thủ
                 <div className="mt-1.5 flex items-center gap-3">
                   <input
@@ -454,7 +454,7 @@ export function SyncPanel({ open, onClose }: SyncPanelProps) {
                     disabled={syncing}
                     className="flex-1 accent-kolia-green"
                   />
-                  <span className="min-w-[4rem] rounded bg-white px-3 py-1.5 text-center text-sm font-bold text-kolia-ink border border-kolia-line">
+                  <span className="min-w-[4rem] rounded bg-white dark:bg-slate-900 px-3 py-1.5 text-center text-sm font-bold text-kolia-ink dark:text-slate-100 border border-kolia-line dark:border-slate-800">
                     {facebookMaxPosts}
                   </span>
                 </div>
@@ -481,7 +481,7 @@ export function SyncPanel({ open, onClose }: SyncPanelProps) {
                     key={platform}
                     className={cn(
                       "rounded-lg border transition",
-                      isPlatformSelected ? "border-kolia-line bg-white" : "border-dashed border-slate-200 bg-slate-50 opacity-50"
+                      isPlatformSelected ? "border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900" : "border-dashed border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 opacity-50"
                     )}
                   >
                     <button
@@ -496,7 +496,7 @@ export function SyncPanel({ open, onClose }: SyncPanelProps) {
                         ) : (
                           <span className="w-4" />
                         )}
-                        <span className="text-sm font-bold text-kolia-ink">{label}</span>
+                        <span className="text-sm font-bold text-kolia-ink dark:text-slate-100">{label}</span>
                         <span className="text-xs text-slate-400">({platformCompetitors.length} đối thủ)</span>
                       </div>
                       {isPlatformSelected && (
@@ -507,7 +507,7 @@ export function SyncPanel({ open, onClose }: SyncPanelProps) {
                             tabIndex={0}
                             onClick={(e) => { e.stopPropagation(); toggleSelectAllForPlatform(platform, !allSelected); }}
                             onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.stopPropagation(); toggleSelectAllForPlatform(platform, !allSelected); } }}
-                            className="cursor-pointer rounded bg-slate-100 px-2 py-1 text-[11px] font-semibold text-slate-600 hover:bg-slate-200"
+                            className="cursor-pointer rounded bg-slate-100 dark:bg-slate-800 px-2 py-1 text-[11px] font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-200"
                           >
                             {allSelected ? "Bỏ hết" : "Chọn hết"}
                           </span>
@@ -515,21 +515,21 @@ export function SyncPanel({ open, onClose }: SyncPanelProps) {
                       )}
                     </button>
                     {isExpanded && isPlatformSelected && (
-                      <div className="space-y-1 border-t border-kolia-line px-4 py-3">
+                      <div className="space-y-1 border-t border-kolia-line dark:border-slate-800 px-4 py-3">
                         {platformCompetitors.length === 0 && (
                           <p className="py-2 text-xs text-slate-400">Chưa có đối thủ nào cho nền tảng này.</p>
                         )}
                         {platformCompetitors.map((c) => {
                           const checked = selectedCompetitorIds.includes(c.id);
                           return (
-                            <label key={c.id} className="flex cursor-pointer items-center gap-3 rounded px-2 py-1.5 hover:bg-slate-50">
+                            <label key={c.id} className="flex cursor-pointer items-center gap-3 rounded px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-800">
                               <input
                                 type="checkbox"
                                 checked={checked}
                                 onChange={() => toggleCompetitor(c.id)}
-                                className="h-4 w-4 rounded border-slate-300 text-kolia-green focus:ring-kolia-green"
+                                className="h-4 w-4 rounded border-slate-300 dark:border-slate-700 text-kolia-green focus:ring-kolia-green"
                               />
-                              <span className="text-sm font-medium text-slate-800">{c.name}</span>
+                              <span className="text-sm font-medium text-slate-800 dark:text-slate-200">{c.name}</span>
                               <span className="ml-auto text-xs text-slate-400">{c.source === "trong_nuoc" ? "🇻🇳" : "🌍"}</span>
                             </label>
                           );
@@ -545,7 +545,7 @@ export function SyncPanel({ open, onClose }: SyncPanelProps) {
 
         {/* ── Progress bar + Log ──────────────────────────────────── */}
         {(syncing || progress > 0 || syncResult) && (
-          <div className="border-t border-kolia-line bg-slate-50 px-6 py-4">
+          <div className="border-t border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-6 py-4">
             {/* Progress bar */}
             <div className="flex items-center gap-3">
               <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-200">
@@ -557,16 +557,16 @@ export function SyncPanel({ open, onClose }: SyncPanelProps) {
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <span className="min-w-[3rem] text-right text-xs font-bold text-kolia-ink">{progress}%</span>
+              <span className="min-w-[3rem] text-right text-xs font-bold text-kolia-ink dark:text-slate-100">{progress}%</span>
             </div>
 
             {/* Live log */}
-            <div className="mt-3 max-h-[160px] overflow-y-auto rounded-lg border border-kolia-line bg-white p-3 font-mono text-xs leading-6">
+            <div className="mt-3 max-h-[160px] overflow-y-auto rounded-lg border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-3 font-mono text-xs leading-6">
               {logs.length === 0 && syncing && (
                 <p className="text-slate-400 italic">Đang khởi tạo...</p>
               )}
               {logs.map((log) => (
-                <p key={log.id} className="text-slate-700">
+                <p key={log.id} className="text-slate-700 dark:text-slate-300">
                   <span className="text-slate-400">[{log.time}]</span> {log.message}
                 </p>
               ))}
@@ -575,7 +575,7 @@ export function SyncPanel({ open, onClose }: SyncPanelProps) {
 
             {/* Result / Actions */}
             {syncResult && !syncing && (
-              <p className={cn("mt-3 rounded px-3 py-2 text-sm font-semibold", syncResult.type === "success" ? "bg-kolia-mint text-kolia-green" : "bg-red-50 text-red-700")}>
+              <p className={cn("mt-3 rounded px-3 py-2 text-sm font-semibold", syncResult.type === "success" ? "bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green" : "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400")}>
                 {syncResult.message}
               </p>
             )}
@@ -584,7 +584,7 @@ export function SyncPanel({ open, onClose }: SyncPanelProps) {
 
         {/* ── Queue waiting banner ─────────────────────────────── */}
         {serverStatus?.state === "running" && (
-          <div className="flex items-center gap-2 border-t border-kolia-line px-6 py-3">
+          <div className="flex items-center gap-2 border-t border-kolia-line dark:border-slate-800 px-6 py-3">
             <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs text-amber-800 w-full">
               <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0 text-amber-600" />
               <span>
@@ -598,12 +598,12 @@ export function SyncPanel({ open, onClose }: SyncPanelProps) {
         )}
 
         {/* ── Action buttons ──────────────────────────────────────── */}
-        <div className="flex items-center justify-end gap-3 border-t border-kolia-line px-6 py-4">
+        <div className="flex items-center justify-end gap-3 border-t border-kolia-line dark:border-slate-800 px-6 py-4">
           {syncing ? (
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex items-center gap-2 rounded border border-slate-200 bg-slate-50 px-5 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100"
+              className="inline-flex items-center gap-2 rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-5 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
             >
               <Loader2 className="h-4 w-4 animate-spin" />
               Đang đồng bộ... (click để ẩn)
@@ -613,7 +613,7 @@ export function SyncPanel({ open, onClose }: SyncPanelProps) {
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded border border-kolia-line px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+                className="rounded border border-kolia-line dark:border-slate-800 px-5 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 Đóng
               </button>

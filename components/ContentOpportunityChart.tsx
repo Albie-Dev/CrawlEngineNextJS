@@ -228,14 +228,14 @@ function BubbleTooltip({
 
   return (
     <div
-      className="pointer-events-none absolute z-50 min-w-[216px] rounded-2xl border border-slate-200/70 bg-white/95 p-4 shadow-[0_12px_32px_-8px_rgba(15,23,42,0.18)] backdrop-blur-sm"
+      className="pointer-events-none absolute z-50 min-w-[216px] rounded-2xl border border-slate-200 dark:border-slate-800/70 bg-white dark:bg-slate-900/95 p-4 shadow-[0_12px_32px_-8px_rgba(15,23,42,0.18)] backdrop-blur-sm"
       style={{
         top: Math.max(0, chartY - 10),
         left: flipLeft ? chartX - 226 : chartX + 16,
       }}
     >
       <div className="flex items-center justify-between gap-2 mb-2.5">
-        <p className="font-bold text-slate-900 text-[13px] leading-snug">{topic.name}</p>
+        <p className="font-bold text-slate-900 dark:text-slate-100 text-[13px] leading-snug">{topic.name}</p>
         <span
           className="shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-bold"
           style={{ background: gi.color + "18", color: gi.color }}
@@ -243,7 +243,7 @@ function BubbleTooltip({
           {gi.numStr}
         </span>
       </div>
-      <div className="space-y-1.5 text-[11px] text-slate-500">
+      <div className="space-y-1.5 text-[11px] text-slate-500 dark:text-slate-400">
         {[
           ["Số video", topic.videoCount],
           ["Số kênh", topic.channelCount],
@@ -254,11 +254,11 @@ function BubbleTooltip({
         ].map(([k, v]) => (
           <div key={String(k)} className="flex justify-between gap-4 tabular-nums">
             <span>{k}</span>
-            <span className="font-semibold text-slate-800">{v}</span>
+            <span className="font-semibold text-slate-800 dark:text-slate-200">{v}</span>
           </div>
         ))}
       </div>
-      <p className="mt-2.5 pt-2 border-t border-slate-100 text-[10px] text-slate-400">
+      <p className="mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800/60 text-[10px] text-slate-400">
         Click để xem danh sách video
       </p>
     </div>
@@ -279,27 +279,27 @@ function VideoRow({ video, index, onClick }: { video: TopicVideo; index: number;
   return (
     <div
       onClick={onClick}
-      className="flex items-center gap-2.5 rounded-xl hover:bg-slate-50 px-1.5 py-1.5 transition-colors group cursor-pointer"
+      className="flex items-center gap-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 px-1.5 py-1.5 transition-colors group cursor-pointer"
     >
       <span className="text-[10px] font-semibold text-slate-300 w-4 shrink-0 text-center tabular-nums">
         {index}
       </span>
       {video.thumbnailUrl ? (
-        <div className="relative shrink-0 rounded-lg overflow-hidden w-12 h-8 bg-slate-100 ring-1 ring-slate-100">
+        <div className="relative shrink-0 rounded-lg overflow-hidden w-12 h-8 bg-slate-100 dark:bg-slate-800 ring-1 ring-slate-100">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={video.thumbnailUrl} alt={video.title} className="w-full h-full object-cover" />
         </div>
       ) : (
-        <div className="shrink-0 rounded-lg w-12 h-8 bg-slate-100 flex items-center justify-center">
+        <div className="shrink-0 rounded-lg w-12 h-8 bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
           <Play className="h-3 w-3 text-slate-300" />
         </div>
       )}
       <div className="flex-1 min-w-0">
-        <p className="text-[11px] font-medium text-slate-700 truncate leading-tight">{video.title}</p>
+        <p className="text-[11px] font-medium text-slate-700 dark:text-slate-300 truncate leading-tight">{video.title}</p>
         <p className="text-[10px] text-slate-400 truncate">{video.channelName}</p>
       </div>
       <div className="shrink-0 text-right tabular-nums">
-        <p className="text-[11px] font-semibold text-slate-700">{fv(video.views)}</p>
+        <p className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">{fv(video.views)}</p>
         <p className="text-[10px] text-slate-400">{pct(video.engagementRate)}</p>
       </div>
       {video.youtubeId && (
@@ -307,7 +307,7 @@ function VideoRow({ video, index, onClick }: { video: TopicVideo; index: number;
           href={`https://youtube.com/watch?v=${video.youtubeId}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="shrink-0 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-slate-600 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kolia-green/40 rounded"
+          className="shrink-0 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-slate-600 dark:text-slate-400 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kolia-green/40 rounded"
           onClick={(e) => e.stopPropagation()}
         >
           <ExternalLink className="h-3 w-3" />
@@ -352,18 +352,18 @@ function TopicDetailSidebar({
         </span>
         <button
           onClick={onClose}
-          className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kolia-green/40"
+          className="p-1 text-slate-400 hover:text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kolia-green/40"
           aria-label="Đóng chi tiết"
         >
           <X className="h-4 w-4" />
         </button>
       </div>
 
-      <h3 className="text-[15px] font-bold text-slate-900 mb-3.5 shrink-0 leading-snug tracking-tight">
+      <h3 className="text-[15px] font-bold text-slate-900 dark:text-slate-100 mb-3.5 shrink-0 leading-snug tracking-tight">
         {topic.name}
       </h3>
 
-      <div className="shrink-0 mb-3.5 rounded-2xl border border-slate-100 bg-slate-50/60 p-3.5 space-y-2">
+      <div className="shrink-0 mb-3.5 rounded-2xl border border-slate-100 dark:border-slate-800/60 bg-slate-50 dark:bg-slate-950/60 p-3.5 space-y-2">
         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
           Chỉ số chủ đề
         </p>
@@ -378,25 +378,25 @@ function TopicDetailSidebar({
           ] as [string, string | number][]
         ).map(([k, v]) => (
           <div key={k} className="flex justify-between text-[12px] tabular-nums">
-            <span className="text-slate-500">{k}</span>
-            <span className="font-semibold text-slate-800">{v}</span>
+            <span className="text-slate-500 dark:text-slate-400">{k}</span>
+            <span className="font-semibold text-slate-800 dark:text-slate-200">{v}</span>
           </div>
         ))}
         <div className="flex justify-between text-[12px]">
-          <span className="text-slate-500">Xu hướng 30 ngày</span>
+          <span className="text-slate-500 dark:text-slate-400">Xu hướng 30 ngày</span>
           <span className="font-semibold flex items-center gap-1 tabular-nums" style={{ color: gi.color }}>
             <GrowthIcon icon={gi.icon} />
             {gi.numStr}
           </span>
         </div>
-        <div className="flex justify-between text-[12px] pt-2 border-t border-slate-200/70">
-          <span className="text-slate-500">Mức phù hợp với kênh</span>
+        <div className="flex justify-between text-[12px] pt-2 border-t border-slate-200 dark:border-slate-800/70">
+          <span className="text-slate-500 dark:text-slate-400">Mức phù hợp với kênh</span>
           <span className="font-bold text-kolia-green">
             {topic.priority === "Cao" ? "Cao" : topic.priority === "Trung bình" ? "Trung bình" : "Thấp"}
           </span>
         </div>
         <div className="flex justify-between text-[12px]">
-          <span className="text-slate-500">Độ tin cậy</span>
+          <span className="text-slate-500 dark:text-slate-400">Độ tin cậy</span>
           <span className="font-bold" style={{ color: reliabilityColor }}>
             {reliabilityLabel}
           </span>
@@ -404,10 +404,10 @@ function TopicDetailSidebar({
       </div>
 
       <div className="flex items-center justify-between mb-2 shrink-0">
-        <p className="text-[11.5px] font-bold text-slate-700">Video nguồn tạo nên chủ đề</p>
+        <p className="text-[11.5px] font-bold text-slate-700 dark:text-slate-300">Video nguồn tạo nên chủ đề</p>
         <p className="text-[10px] font-medium text-slate-400 tabular-nums">{videos.length} video</p>
       </div>
-      <div className="shrink-0 grid grid-cols-[20px_1fr_auto] gap-1 px-1.5 pb-2 border-b border-slate-100">
+      <div className="shrink-0 grid grid-cols-[20px_1fr_auto] gap-1 px-1.5 pb-2 border-b border-slate-100 dark:border-slate-800/60">
         <span className="text-[9.5px] font-semibold text-slate-400 uppercase tracking-wide">#</span>
         <span className="text-[9.5px] font-semibold text-slate-400 uppercase tracking-wide">Video</span>
         <span className="text-[9.5px] font-semibold text-slate-400 uppercase tracking-wide text-right">
@@ -430,7 +430,7 @@ function TopicDetailSidebar({
       {videos.length > 0 && (
         <button
           onClick={onOpenVideoModal}
-          className="mt-3 shrink-0 w-full flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white py-2.5 text-[12px] font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kolia-green/40"
+          className="mt-3 shrink-0 w-full flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-2.5 text-[12px] font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:border-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kolia-green/40"
         >
           Xem tất cả video gốc
           <ChevronRight className="h-3.5 w-3.5" />
@@ -458,10 +458,10 @@ function TopicDetailSidebar({
 
 function HowToReadPanel() {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 h-full flex flex-col shadow-sm">
+    <div className="rounded-2xl border border-borderColor bg-bgSecondary p-4 h-full flex flex-col">
       <div className="flex items-center gap-1.5 mb-3.5 shrink-0">
         <Info className="h-3.5 w-3.5 text-slate-400" />
-        <p className="text-[12px] font-bold text-slate-700">Cách đọc biểu đồ</p>
+        <p className="text-[12px] font-bold text-slate-700 dark:text-slate-300">Cách đọc biểu đồ</p>
       </div>
 
       <div className="mb-4 shrink-0">
@@ -494,14 +494,14 @@ function HowToReadPanel() {
           ].map(({ color, label, sub }) => (
             <div key={label} className="flex items-center gap-2">
               <div className="h-3 w-3 rounded-full shrink-0" style={{ background: color }} />
-              <span className="text-[11px] text-slate-700 font-medium">{label}</span>
+              <span className="text-[11px] text-slate-700 dark:text-slate-300 font-medium">{label}</span>
               <span className="text-[10px] text-slate-400">{sub}</span>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="flex-1 border-t border-slate-100 pt-3.5">
+      <div className="flex-1 border-t border-slate-100 dark:border-slate-800/60 pt-3.5">
         <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2.5">
           Gợi ý đọc nhanh
         </p>
@@ -641,27 +641,27 @@ export function ContentOpportunityChart({ topics, data }: Props) {
   const containerW = containerRef.current?.clientWidth ?? 600;
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] overflow-hidden">
+    <section className="rounded-2xl border border-borderColor bg-bgSecondary overflow-hidden">
       {/* ── Header / Toolbar ───────────────────────────────────────────── */}
-      <div className="border-b border-slate-100 bg-white">
+      <div className="border-b border-slate-100 dark:border-slate-800/60 bg-white dark:bg-slate-900">
         <div className="flex flex-col gap-5 p-5 lg:p-6">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between rounded-xl border border-slate-100 bg-slate-50/50 px-4 py-3.5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between rounded-xl border border-slate-100 dark:border-slate-800/60 bg-slate-50 dark:bg-slate-950 px-4 py-3.5">
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-kolia-mint text-kolia-green">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green">
                   <LayoutGrid className="h-3.5 w-3.5" />
                 </span>
-                <h2 className="text-lg lg:text-xl font-bold text-slate-900 tracking-tight">
+                <h2 className="text-lg lg:text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
                   Ma trận cơ hội nội dung
                 </h2>
               </div>
-              <p className="mt-1.5 text-[12.5px] text-slate-500 max-w-md leading-relaxed">
+              <p className="mt-1.5 text-[12.5px] text-slate-500 dark:text-slate-400 max-w-md leading-relaxed">
                 So sánh nhu cầu khán giả và mức độ cạnh tranh giữa các chủ đề để tìm khoảng trống nội dung.
               </p>
             </div>
 
-            <div className="flex items-stretch shrink-0 rounded-xl border border-slate-200 bg-white overflow-hidden self-start lg:self-auto">
-              <div className="flex flex-col justify-center gap-0.5 px-4 py-2 bg-kolia-mint/50">
+            <div className="flex items-stretch shrink-0 rounded-xl border border-borderColor bg-bgSecondary overflow-hidden self-start lg:self-auto">
+              <div className="flex flex-col justify-center gap-0.5 px-4 py-2 bg-kolia-mint/50 dark:bg-emerald-900/30">
                 <p className="text-[9.5px] font-semibold text-kolia-green/80 uppercase tracking-wider whitespace-nowrap">
                   Cơ hội ưu tiên
                 </p>
@@ -669,12 +669,12 @@ export function ContentOpportunityChart({ topics, data }: Props) {
                   {opportunityCount}
                 </p>
               </div>
-              <div className="w-px bg-slate-200" />
+              <div className="w-px bg-borderColor" />
               <div className="flex flex-col justify-center gap-0.5 px-4 py-2">
-                <p className="text-[9.5px] font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap">
+                <p className="text-[9.5px] font-semibold text-textMuted uppercase tracking-wider whitespace-nowrap">
                   Tổng chủ đề
                 </p>
-                <p className="text-[17px] font-extrabold text-slate-700 leading-tight tabular-nums">
+                <p className="text-[17px] font-extrabold text-textPrimary leading-tight tabular-nums">
                   {filtered.length}
                 </p>
               </div>
@@ -683,35 +683,35 @@ export function ContentOpportunityChart({ topics, data }: Props) {
 
           {/* Axis legend chips + Controls */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-2 text-[11.5px] text-slate-600">
-              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
-                <span className="font-semibold text-slate-700">Trục X</span>
-                <span className="text-slate-300">·</span>
+            <div className="flex flex-wrap items-center gap-2 text-[11.5px] text-textSecondary">
+              <div className="flex items-center gap-1.5 bg-bgTertiary border border-borderColor rounded-lg px-2.5 py-1.5">
+                <span className="font-semibold text-textPrimary">Trục X</span>
+                <span className="text-textMuted">·</span>
                 <span>Mức cạnh tranh</span>
               </div>
-              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
-                <span className="font-semibold text-slate-700">Trục Y</span>
-                <span className="text-slate-300">·</span>
+              <div className="flex items-center gap-1.5 bg-bgTertiary border border-borderColor rounded-lg px-2.5 py-1.5">
+                <span className="font-semibold text-textPrimary">Trục Y</span>
+                <span className="text-textMuted">·</span>
                 <span>Hiệu suất</span>
               </div>
-              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+              <div className="flex items-center gap-1.5 bg-bgTertiary border border-borderColor rounded-lg px-2.5 py-1.5">
                 <div className="flex items-center gap-0.5 opacity-70">
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />
                   <div className="w-2.5 h-2.5 rounded-full bg-slate-500" />
                 </div>
-                <span className="font-semibold text-slate-700">Kích thước</span>
-                <span className="text-slate-300">·</span>
+                <span className="font-semibold text-textPrimary">Kích thước</span>
+                <span className="text-textMuted">·</span>
                 <span>Tổng lượt xem</span>
               </div>
-              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+              <div className="flex items-center gap-1.5 bg-bgTertiary border border-borderColor rounded-lg px-2.5 py-1.5">
                 <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-tr from-rose-500 via-amber-400 to-emerald-500" />
-                <span className="font-semibold text-slate-700">Màu sắc</span>
-                <span className="text-slate-300">·</span>
+                <span className="font-semibold text-textPrimary">Màu sắc</span>
+                <span className="text-textMuted">·</span>
                 <span>Độ tăng trưởng</span>
               </div>
               <button
                 onClick={() => setMobileLegendOpen((v) => !v)}
-                className="xl:hidden ml-auto flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1.5 font-semibold text-slate-600 hover:bg-slate-50"
+                className="xl:hidden ml-auto flex items-center gap-1 rounded-lg border border-borderColor px-2.5 py-1.5 font-semibold text-textSecondary hover:bg-bgTertiary"
               >
                 Chú giải
                 <ChevronDown className={`h-3.5 w-3.5 transition-transform ${mobileLegendOpen ? "rotate-180" : ""}`} />
@@ -720,30 +720,30 @@ export function ContentOpportunityChart({ topics, data }: Props) {
 
             {/* Controls */}
             <div className="flex flex-wrap items-center gap-2.5">
-              <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-xs">
+              <div className="flex items-center gap-1 rounded-xl border border-borderColor bg-bgSecondary p-1">
                 <div className="flex items-center gap-1 px-2">
-                  <span className="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider">Y</span>
+                  <span className="text-[9.5px] font-bold text-textMuted uppercase tracking-wider">Y</span>
                   {(["outlierRate", "medianViews"] as YMetric[]).map((key) => (
                     <button
                       key={key}
                       onClick={() => setYMetric(key)}
                       className={`rounded-lg px-2.5 py-1.5 text-[11px] font-semibold transition whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kolia-green/40 ${
-                        yMetric === key ? "bg-kolia-ink text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
+                        yMetric === key ? "bg-kolia-ink text-white shadow-sm" : "text-textSecondary hover:text-textPrimary"
                       }`}
                     >
                       {key === "outlierRate" ? "Tỷ lệ outlier" : "Trung vị views"}
                     </button>
                   ))}
                 </div>
-                <div className="w-px h-6 bg-slate-200" />
+                <div className="w-px h-6 bg-borderColor" />
                 <div className="flex items-center gap-1 px-2">
-                  <span className="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider">X</span>
+                  <span className="text-[9.5px] font-bold text-textMuted uppercase tracking-wider">X</span>
                   {(["competitionScore", "videoCount"] as XMetric[]).map((key) => (
                     <button
                       key={key}
                       onClick={() => setXMetric(key)}
                       className={`rounded-lg px-2.5 py-1.5 text-[11px] font-semibold transition whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kolia-green/40 ${
-                        xMetric === key ? "bg-kolia-ink text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
+                        xMetric === key ? "bg-kolia-ink text-white shadow-sm" : "text-textSecondary hover:text-textPrimary"
                       }`}
                     >
                       {key === "competitionScore" ? "Cạnh tranh" : "Số video"}
@@ -752,13 +752,13 @@ export function ContentOpportunityChart({ topics, data }: Props) {
                 </div>
               </div>
 
-              <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-xs">
+              <div className="flex items-center gap-1 rounded-xl border border-borderColor bg-bgSecondary p-1">
                 {["30", "60", "90"].map((days) => (
                   <button
                     key={days}
                     onClick={() => setTimeframe(days)}
                     className={`rounded-lg px-3 py-1.5 text-[11px] font-semibold transition whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kolia-green/40 ${
-                      timeframe === days ? "bg-kolia-ink text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
+                      timeframe === days ? "bg-kolia-ink text-white shadow-sm" : "text-textSecondary hover:text-textPrimary"
                     }`}
                   >
                     {days} ngày
@@ -769,8 +769,8 @@ export function ContentOpportunityChart({ topics, data }: Props) {
               <label
                 className={`flex items-center gap-2 rounded-xl border px-3 py-1.5 cursor-pointer select-none transition ${
                   filterEnabled
-                    ? "border-kolia-green bg-kolia-mint text-kolia-green"
-                    : "border-slate-200 bg-white text-slate-500 hover:border-slate-300"
+                    ? "border-kolia-green bg-kolia-mint dark:bg-emerald-900/40 text-kolia-green"
+                    : "border-borderColor bg-bgSecondary text-textSecondary hover:border-slate-400"
                 }`}
                 title="Chỉ hiển thị chủ đề có ít nhất 5 video từ ít nhất 3 kênh"
               >
@@ -783,7 +783,7 @@ export function ContentOpportunityChart({ topics, data }: Props) {
                 <SlidersHorizontal className="h-3.5 w-3.5" />
                 <div
                   className={`h-4 w-7 rounded-full relative transition-colors ${
-                    filterEnabled ? "bg-kolia-green" : "bg-slate-300"
+                    filterEnabled ? "bg-kolia-green" : "bg-slate-500"
                   }`}
                 >
                   <div
@@ -792,7 +792,7 @@ export function ContentOpportunityChart({ topics, data }: Props) {
                     }`}
                   />
                 </div>
-                <span className="text-[11px] font-semibold whitespace-nowrap">Lọc chủ đề nhỏ</span>
+                <span className="text-[11px] font-semibold whitespace-nowrap text-textSecondary">Lọc chủ đề nhỏ</span>
               </label>
             </div>
           </div>
@@ -800,16 +800,16 @@ export function ContentOpportunityChart({ topics, data }: Props) {
 
         {/* mobile legend drawer */}
         {mobileLegendOpen && (
-          <div className="xl:hidden border-t border-slate-100 p-4">
+          <div className="xl:hidden border-t border-slate-100 dark:border-slate-800/60 p-4">
             <HowToReadPanel />
           </div>
         )}
       </div>
 
       {/* ── Body grid ───────────────────────────────────────────────────── */}
-      <div className="grid gap-5 xl:grid-cols-[1fr_240px_280px] p-5 bg-slate-50/40">
+      <div className="grid gap-5 xl:grid-cols-[1fr_240px_280px] p-5 bg-bgTertiary">
         {/* Chart */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm order-1">
+        <div className="rounded-2xl border border-borderColor bg-bgSecondary p-4 order-1">
           <div className="relative h-[400px] sm:h-[440px]">
             {/* Top quadrant badges — sit above the plot, never over the bubbles */}
             <div className="flex items-start justify-between gap-3 px-0.5 pb-2">
@@ -841,31 +841,34 @@ export function ContentOpportunityChart({ topics, data }: Props) {
               )}
               <ResponsiveContainer width="100%" height="100%">
                 <ScatterChart margin={{ top: 24, right: 40, bottom: 36, left: 16 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
                   <XAxis
                     type="number"
                     dataKey="x"
                     name={xLabel}
                     scale="log"
                     domain={["auto", "auto"]}
-                    tick={{ fontSize: 9, fill: "#94A3B8" }}
+                    ticks={[0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]}
+                    tick={{ fontSize: 9, fill: "var(--text-muted)" }}
                     tickLine={false}
-                    axisLine={{ stroke: "#E2E8F0" }}
+                    axisLine={{ stroke: "var(--border-color)" }}
                     label={{
                       value: xLabel,
                       position: "insideBottom",
                       offset: -20,
                       fontSize: 9,
-                      fill: "#94A3B8",
+                      fill: "var(--text-muted)",
                     }}
                   />
                   <YAxis
                     type="number"
                     dataKey="y"
                     name={yLabel}
-                    tick={{ fontSize: 9, fill: "#94A3B8" }}
+                    tickCount={5}
+                    ticks={[1, 5, 10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000]}
+                    tick={{ fontSize: 9, fill: "var(--text-muted)" }}
                     tickLine={false}
-                    axisLine={{ stroke: "#E2E8F0" }}
+                    axisLine={{ stroke: "var(--border-color)" }}
                     tickFormatter={(v: number) => (yMetric === "outlierRate" ? `${v}%` : fv(v))}
                     label={{
                       value: yLabel,
@@ -873,13 +876,13 @@ export function ContentOpportunityChart({ topics, data }: Props) {
                       position: "insideLeft",
                       offset: 10,
                       fontSize: 9,
-                      fill: "#94A3B8",
+                      fill: "var(--text-muted)",
                       style: { textAnchor: "middle" },
                     }}
                   />
                   <ZAxis type="number" dataKey="z" range={[1, 1]} />
-                  <ReferenceLine x={midX} stroke="#E2E8F0" strokeDasharray="5 4" strokeWidth={1.5} />
-                  <ReferenceLine y={midY} stroke="#E2E8F0" strokeDasharray="5 4" strokeWidth={1.5} />
+                  <ReferenceLine x={midX} stroke="var(--border-color)" strokeDasharray="5 4" strokeWidth={1.5} />
+                  <ReferenceLine y={midY} stroke="var(--border-color)" strokeDasharray="5 4" strokeWidth={1.5} />
                   <Scatter
                     data={points}
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -899,8 +902,8 @@ export function ContentOpportunityChart({ topics, data }: Props) {
             </div>
 
             <div className="flex items-end justify-between gap-3 px-0.5 pt-2">
-              <div className="inline-flex flex-col gap-0.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5">
-                <span className="text-[10px] font-bold text-slate-500 leading-none">Theo dõi thêm</span>
+              <div className="inline-flex flex-col gap-0.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-2.5 py-1.5">
+                <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 leading-none">Theo dõi thêm</span>
                 <span className="text-[8.5px] font-medium text-slate-400 leading-none">
                   Nhu cầu thấp · Cạnh tranh thấp
                 </span>
@@ -936,7 +939,7 @@ export function ContentOpportunityChart({ topics, data }: Props) {
         </div>
 
         {/* Detail panel */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 min-h-[420px] order-3 shadow-sm">
+        <div className="rounded-2xl border border-borderColor bg-bgSecondary p-4 min-h-[420px] order-3">
           {selectedTopic ? (
             <TopicDetailSidebar
               topic={selectedTopic}
@@ -949,11 +952,11 @@ export function ContentOpportunityChart({ topics, data }: Props) {
             />
           ) : (
             <div className="flex flex-col items-center justify-center h-full py-10 text-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center">
+              <div className="h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                 <TrendingUp className="h-5 w-5 text-slate-400" />
               </div>
               <div>
-                <p className="text-[13px] font-semibold text-slate-600">Chi tiết chủ đề đang chọn</p>
+                <p className="text-[13px] font-semibold text-slate-600 dark:text-slate-400">Chi tiết chủ đề đang chọn</p>
                 <p className="mt-1 text-[11px] text-slate-400 max-w-[180px] mx-auto leading-relaxed">
                   Click vào một bong bóng để xem chi tiết và danh sách video
                 </p>
@@ -973,7 +976,7 @@ export function ContentOpportunityChart({ topics, data }: Props) {
           }}
         >
           <div
-            className="bg-white sm:rounded-2xl shadow-2xl w-full h-full sm:h-[82vh] sm:max-w-6xl flex flex-col lg:flex-row overflow-hidden"
+            className="bg-white dark:bg-slate-900 sm:rounded-2xl shadow-2xl w-full h-full sm:h-[82vh] sm:max-w-6xl flex flex-col lg:flex-row overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Player */}
@@ -1035,11 +1038,11 @@ export function ContentOpportunityChart({ topics, data }: Props) {
             </div>
 
             {/* Playlist */}
-            <div className="lg:w-1/4 border-t lg:border-t-0 lg:border-l border-slate-200 flex flex-col min-h-0">
-              <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50 shrink-0">
+            <div className="lg:w-1/4 border-t lg:border-t-0 lg:border-l border-slate-200 dark:border-slate-800 flex flex-col min-h-0">
+              <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 shrink-0">
                 <div className="min-w-0">
-                  <h3 className="text-[14px] font-bold text-slate-800 truncate">{selectedTopic.name}</h3>
-                  <p className="text-[10px] text-slate-500 mt-0.5 tabular-nums">
+                  <h3 className="text-[14px] font-bold text-slate-800 dark:text-slate-200 truncate">{selectedTopic.name}</h3>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 tabular-nums">
                     {safeArr<TopicVideo>(selectedTopic.sampleVideos).length} video
                   </p>
                 </div>
@@ -1051,7 +1054,7 @@ export function ContentOpportunityChart({ topics, data }: Props) {
                   className="p-2 hover:bg-slate-200 rounded-lg transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kolia-green/40"
                   aria-label="Đóng"
                 >
-                  <X className="h-5 w-5 text-slate-500" />
+                  <X className="h-5 w-5 text-slate-500 dark:text-slate-400" />
                 </button>
               </div>
 
@@ -1061,7 +1064,7 @@ export function ContentOpportunityChart({ topics, data }: Props) {
                     key={video.id}
                     onClick={() => setSelectedVideo(video)}
                     className={`flex gap-2.5 rounded-xl p-2 cursor-pointer transition-colors ${
-                      selectedVideo?.id === video.id ? "bg-kolia-ink text-white" : "hover:bg-slate-100"
+                      selectedVideo?.id === video.id ? "bg-kolia-ink text-white" : "hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800"
                     }`}
                   >
                     <span
@@ -1072,19 +1075,19 @@ export function ContentOpportunityChart({ topics, data }: Props) {
                       {index + 1}
                     </span>
                     {video.thumbnailUrl ? (
-                      <div className="relative shrink-0 rounded-lg overflow-hidden w-16 h-10 bg-slate-100">
+                      <div className="relative shrink-0 rounded-lg overflow-hidden w-16 h-10 bg-slate-100 dark:bg-slate-800">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={video.thumbnailUrl} alt={video.title} className="w-full h-full object-cover" />
                       </div>
                     ) : (
-                      <div className="shrink-0 rounded-lg w-16 h-10 bg-slate-100 flex items-center justify-center">
+                      <div className="shrink-0 rounded-lg w-16 h-10 bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                         <Play className="h-3 w-3 text-slate-400" />
                       </div>
                     )}
                     <div className="min-w-0 flex-1">
                       <p
                         className={`text-[10.5px] font-medium truncate leading-tight ${
-                          selectedVideo?.id === video.id ? "text-white" : "text-slate-700"
+                          selectedVideo?.id === video.id ? "text-white" : "text-slate-700 dark:text-slate-300"
                         }`}
                       >
                         {video.title}
@@ -1098,7 +1101,7 @@ export function ContentOpportunityChart({ topics, data }: Props) {
                       </p>
                       <p
                         className={`text-[9.5px] font-semibold mt-0.5 tabular-nums ${
-                          selectedVideo?.id === video.id ? "text-white" : "text-slate-600"
+                          selectedVideo?.id === video.id ? "text-white" : "text-slate-600 dark:text-slate-400"
                         }`}
                       >
                         {fv(video.views)}

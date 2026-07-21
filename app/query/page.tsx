@@ -7,8 +7,8 @@ export default function QueryPage() {
     <div className="space-y-6">
       <div>
         <p className="text-sm font-bold uppercase tracking-[0.16em] text-kolia-green">AI Data Assistant</p>
-        <h1 className="mt-2 text-3xl font-bold text-kolia-ink">Hỏi đáp dữ liệu thông minh</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+        <h1 className="mt-2 text-3xl font-bold text-kolia-ink dark:text-slate-100">Hỏi đáp dữ liệu thông minh</h1>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-400">
           Hỏi bất cứ điều gì bằng tiếng Việt về dữ liệu crawl đối thủ — AI sẽ phân tích và trả lời
           ngay lập tức. Hỗ trợ các câu hỏi về đối thủ, content gap, hiệu quả nền tảng, và nhiều hơn nữa.
         </p>
@@ -16,9 +16,9 @@ export default function QueryPage() {
       <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
         <NLQueryPanel />
         <aside className="space-y-4">
-          <div className="rounded border border-kolia-line bg-white p-5 shadow-sm">
-            <h2 className="font-bold text-kolia-ink">📊 Có thể hỏi</h2>
-            <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600">
+          <div className="rounded border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+            <h2 className="font-bold text-kolia-ink dark:text-slate-100">📊 Có thể hỏi</h2>
+            <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
               <li>• Đối thủ & số lượng</li>
               <li>• Bài viết hiệu quả nhất</li>
               <li>• Trụ cột nội dung</li>
@@ -29,9 +29,9 @@ export default function QueryPage() {
               <li>• Câu hỏi phức tạp (AI)</li>
             </ul>
           </div>
-          <div className="rounded border border-kolia-line bg-kolia-amber p-5 shadow-sm">
-            <h2 className="font-bold text-kolia-ink">💡 Mẹo</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
+          <div className="rounded border border-kolia-line dark:border-slate-800 bg-kolia-amber p-5 shadow-sm">
+            <h2 className="font-bold text-kolia-ink dark:text-slate-100">💡 Mẹo</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
               Câu hỏi càng cụ thể, câu trả lời càng chính xác.
               VD: "Top 3 bài TikTok có engagement cao nhất 30 ngày qua?"
             </p>

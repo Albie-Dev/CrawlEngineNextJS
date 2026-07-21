@@ -99,8 +99,8 @@ function ProviderCard({
       onClick={onClick}
       className={`relative flex flex-col gap-2 rounded-xl border-2 p-4 text-left transition-all duration-200 ${
         isActive
-          ? "border-kolia-green bg-gradient-to-br from-kolia-mint/40 to-white shadow-md"
-          : "border-kolia-line bg-white hover:border-kolia-green/50 hover:shadow-sm"
+          ? "border-kolia-green bg-gradient-to-br from-kolia-mint/40 to-white dark:to-slate-900 shadow-md"
+          : "border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-kolia-green/50 hover:shadow-sm"
       }`}
     >
       {/* Active indicator */}
@@ -119,15 +119,15 @@ function ProviderCard({
 
       <div
         className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-          isActive ? "bg-kolia-green text-white" : "bg-slate-100 text-slate-500"
+          isActive ? "bg-kolia-green text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
         }`}
       >
         {icon}
       </div>
 
       <div>
-        <p className="text-sm font-bold text-kolia-ink">{title}</p>
-        <p className="mt-0.5 text-xs leading-5 text-slate-500">{description}</p>
+        <p className="text-sm font-bold text-kolia-ink dark:text-slate-100">{title}</p>
+        <p className="mt-0.5 text-xs leading-5 text-slate-500 dark:text-slate-400">{description}</p>
       </div>
 
       {/* Config status */}
@@ -150,7 +150,7 @@ function ProviderCard({
 
 function SectionCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <section className={`rounded-xl border border-kolia-line bg-white p-5 shadow-sm ${className}`}>
+    <section className={`rounded-xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm ${className}`}>
       {children}
     </section>
   );
@@ -159,7 +159,7 @@ function SectionCard({ children, className = "" }: { children: React.ReactNode; 
 // ─── Input field ───────────────────────────────────────────────────────────
 
 const inputClass =
-  "mt-1.5 h-10 w-full rounded-lg border border-kolia-line px-3 text-sm outline-none transition focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint";
+  "mt-1.5 h-10 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 text-sm outline-none transition focus:border-kolia-green focus:ring-2 focus:ring-kolia-mint";
 
 function Field({
   label,
@@ -178,7 +178,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="text-sm font-semibold text-slate-700">{label}</span>
+      <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{label}</span>
       {hint && <span className="ml-2 text-xs text-slate-400">{hint}</span>}
       <input
         type={type}
@@ -255,7 +255,7 @@ function PlaywrightConfigPanel({
   return (
     <div className="space-y-4">
       <label className="block">
-        <span className="text-sm font-semibold text-slate-700">Trình duyệt</span>
+        <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Trình duyệt</span>
         <select
           value={config.browserEngine}
           onChange={(e) =>
@@ -274,7 +274,7 @@ function PlaywrightConfigPanel({
         </select>
       </label>
 
-      <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-kolia-line bg-slate-50 p-3">
+      <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3">
         <input
           type="checkbox"
           checked={config.headless}
@@ -282,14 +282,14 @@ function PlaywrightConfigPanel({
           className="h-4 w-4 accent-kolia-green"
         />
         <div>
-          <p className="text-sm font-semibold text-slate-700">Chạy ẩn (headless)</p>
+          <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Chạy ẩn (headless)</p>
           <p className="text-xs text-slate-400">Không hiện cửa sổ trình duyệt khi crawl</p>
         </div>
       </label>
 
       {/* Scroll speed */}
-      <div className="rounded-xl border border-kolia-line bg-slate-50 p-4">
-        <h4 className="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">
+      <div className="rounded-xl border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4">
+        <h4 className="text-xs font-bold uppercase tracking-[0.1em] text-slate-500 dark:text-slate-400">
           Tốc độ scroll
         </h4>
         <p className="mt-1 text-xs text-slate-400">
@@ -297,7 +297,7 @@ function PlaywrightConfigPanel({
         </p>
         <div className="mt-3 grid grid-cols-2 gap-3">
           <label className="block">
-            <span className="text-xs font-semibold text-slate-600">Tối thiểu (ms)</span>
+            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Tối thiểu (ms)</span>
             <input
               type="number"
               min={400}
@@ -305,11 +305,11 @@ function PlaywrightConfigPanel({
               step={100}
               value={config.scrollDelayMin}
               onChange={(e) => onChange({ ...config, scrollDelayMin: Number(e.target.value) })}
-              className="mt-1 h-9 w-full rounded-lg border border-kolia-line px-3 text-sm outline-none focus:border-kolia-green"
+              className="mt-1 h-9 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 text-sm outline-none focus:border-kolia-green"
             />
           </label>
           <label className="block">
-            <span className="text-xs font-semibold text-slate-600">Tối đa (ms)</span>
+            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Tối đa (ms)</span>
             <input
               type="number"
               min={400}
@@ -317,7 +317,7 @@ function PlaywrightConfigPanel({
               step={100}
               value={config.scrollDelayMax}
               onChange={(e) => onChange({ ...config, scrollDelayMax: Number(e.target.value) })}
-              className="mt-1 h-9 w-full rounded-lg border border-kolia-line px-3 text-sm outline-none focus:border-kolia-green"
+              className="mt-1 h-9 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 text-sm outline-none focus:border-kolia-green"
             />
           </label>
         </div>
@@ -384,7 +384,7 @@ function ApifyConfigPanel({
 
       {/* API Token */}
       <label className="block">
-        <span className="text-sm font-semibold text-slate-700">Apify API Token</span>
+        <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Apify API Token</span>
         <input
           type="password"
           value={config.apiToken}
@@ -396,7 +396,7 @@ function ApifyConfigPanel({
 
       {/* Actor ID — Profile */}
       <label className="block">
-        <span className="text-sm font-semibold text-slate-700">Actor ID (Profile/Page)</span>
+        <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Actor ID (Profile/Page)</span>
         <span className="ml-2 text-xs text-slate-400">
           — từ{" "}
           <a
@@ -420,7 +420,7 @@ function ApifyConfigPanel({
       {/* Actor ID — Group (chỉ Facebook) */}
       {platform === "facebook" && (
         <label className="block">
-          <span className="text-sm font-semibold text-slate-700">Actor ID (Group)</span>
+          <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Actor ID (Group)</span>
           <span className="ml-2 text-xs text-slate-400">
             — dùng riêng cho Group Facebook
           </span>
@@ -438,24 +438,24 @@ function ApifyConfigPanel({
       )}
 
       {/* Advanced settings */}
-      <div className="rounded-xl border border-kolia-line bg-slate-50 p-4">
-        <h4 className="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">
+      <div className="rounded-xl border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4">
+        <h4 className="text-xs font-bold uppercase tracking-[0.1em] text-slate-500 dark:text-slate-400">
           Cấu hình nâng cao
         </h4>
         <div className="mt-3 grid grid-cols-3 gap-3">
           <label className="block">
-            <span className="text-xs font-semibold text-slate-600">Max items</span>
+            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Max items</span>
             <input
               type="number"
               min={1}
               max={1000}
               value={config.maxItems}
               onChange={(e) => onChange({ ...config, maxItems: Number(e.target.value) })}
-              className="mt-1 h-9 w-full rounded-lg border border-kolia-line px-3 text-sm outline-none focus:border-kolia-green"
+              className="mt-1 h-9 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 text-sm outline-none focus:border-kolia-green"
             />
           </label>
           <label className="block">
-            <span className="text-xs font-semibold text-slate-600">Timeout (s)</span>
+            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Timeout (s)</span>
             <input
               type="number"
               min={30}
@@ -463,11 +463,11 @@ function ApifyConfigPanel({
               step={30}
               value={config.timeoutSecs}
               onChange={(e) => onChange({ ...config, timeoutSecs: Number(e.target.value) })}
-              className="mt-1 h-9 w-full rounded-lg border border-kolia-line px-3 text-sm outline-none focus:border-kolia-green"
+              className="mt-1 h-9 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 text-sm outline-none focus:border-kolia-green"
             />
           </label>
           <label className="block">
-            <span className="text-xs font-semibold text-slate-600">Memory (MB)</span>
+            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Memory (MB)</span>
             <input
               type="number"
               min={128}
@@ -475,7 +475,7 @@ function ApifyConfigPanel({
               step={128}
               value={config.memoryMbytes}
               onChange={(e) => onChange({ ...config, memoryMbytes: Number(e.target.value) })}
-              className="mt-1 h-9 w-full rounded-lg border border-kolia-line px-3 text-sm outline-none focus:border-kolia-green"
+              className="mt-1 h-9 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 text-sm outline-none focus:border-kolia-green"
             />
           </label>
         </div>
@@ -523,7 +523,7 @@ function SocialCrawlerConfigPanel({
 
       {/* API URL */}
       <label className="block">
-        <span className="text-sm font-semibold text-slate-700">API Base URL</span>
+        <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">API Base URL</span>
         <input
           type="text"
           value={config.apiUrl}
@@ -538,7 +538,7 @@ function SocialCrawlerConfigPanel({
 
       {/* API Key */}
       <label className="block">
-        <span className="text-sm font-semibold text-slate-700">API Key</span>
+        <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">API Key</span>
         <input
           type="password"
           value={config.apiKey}
@@ -552,24 +552,24 @@ function SocialCrawlerConfigPanel({
       </label>
 
       {/* Advanced settings */}
-      <div className="rounded-xl border border-kolia-line bg-slate-50 p-4">
-        <h4 className="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">
+      <div className="rounded-xl border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4">
+        <h4 className="text-xs font-bold uppercase tracking-[0.1em] text-slate-500 dark:text-slate-400">
           Cấu hình nâng cao
         </h4>
         <div className="mt-3 grid grid-cols-2 gap-3">
           <label className="block">
-            <span className="text-xs font-semibold text-slate-600">Max items</span>
+            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Max items</span>
             <input
               type="number"
               min={1}
               max={1000}
               value={config.maxItems}
               onChange={(e) => onChange({ ...config, maxItems: Number(e.target.value) })}
-              className="mt-1 h-9 w-full rounded-lg border border-kolia-line px-3 text-sm outline-none focus:border-kolia-green"
+              className="mt-1 h-9 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 text-sm outline-none focus:border-kolia-green"
             />
           </label>
           <label className="block">
-            <span className="text-xs font-semibold text-slate-600">Timeout (s)</span>
+            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Timeout (s)</span>
             <input
               type="number"
               min={30}
@@ -577,7 +577,7 @@ function SocialCrawlerConfigPanel({
               step={10}
               value={config.timeoutSecs}
               onChange={(e) => onChange({ ...config, timeoutSecs: Number(e.target.value) })}
-              className="mt-1 h-9 w-full rounded-lg border border-kolia-line px-3 text-sm outline-none focus:border-kolia-green"
+              className="mt-1 h-9 w-full rounded-lg border border-kolia-line dark:border-slate-800 px-3 text-sm outline-none focus:border-kolia-green"
             />
           </label>
         </div>
@@ -628,9 +628,9 @@ function PlatformProviderTab({
         <SectionCard>
           <div className="flex items-center gap-2 mb-4">
             <Settings2 className="h-5 w-5 text-kolia-green" />
-            <h2 className="text-base font-bold text-kolia-ink">Chọn Provider Crawl</h2>
+            <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">Chọn Provider Crawl</h2>
           </div>
-          <p className="text-xs text-slate-500 mb-4">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
             Mỗi provider có cách crawl khác nhau. Chỉ một provider được active tại một thời điểm.
           </p>
           <div className="grid grid-cols-2 gap-3">
@@ -678,18 +678,18 @@ function PlatformProviderTab({
           <div className="flex items-center gap-2 mb-4">
             {localConfig.activeProvider === "playwright" ? (
               <>
-                <Monitor className="h-5 w-5 text-slate-500" />
-                <h2 className="text-base font-bold text-kolia-ink">Cấu hình Playwright</h2>
+                <Monitor className="h-5 w-5 text-slate-500 dark:text-slate-400" />
+                <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">Cấu hình Playwright</h2>
               </>
             ) : localConfig.activeProvider === "apify" ? (
               <>
                 <Cloud className="h-5 w-5 text-blue-500" />
-                <h2 className="text-base font-bold text-kolia-ink">Cấu hình Apify</h2>
+                <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">Cấu hình Apify</h2>
               </>
             ) : (
               <>
                 <Globe className="h-5 w-5 text-purple-500" />
-                <h2 className="text-base font-bold text-kolia-ink">Cấu hình Social Crawler</h2>
+                <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">Cấu hình Social Crawler</h2>
               </>
             )}
             <ChevronRight className="h-4 w-4 text-slate-300" />
@@ -719,7 +719,7 @@ function PlatformProviderTab({
             />
           )}
 
-          <div className="mt-5 flex items-center gap-3 pt-3 border-t border-kolia-line">
+          <div className="mt-5 flex items-center gap-3 pt-3 border-t border-kolia-line dark:border-slate-800">
             <SaveButton onClick={handleSave} isPending={isPending}>
               Lưu cấu hình
             </SaveButton>
@@ -784,7 +784,7 @@ export function SettingsDataSourceForm({
     `inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-bold transition ${
       activeTab === id
         ? "bg-kolia-green text-white shadow-sm"
-        : "bg-white text-slate-600 hover:bg-slate-100 border border-kolia-line"
+        : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 dark:bg-slate-800 border border-kolia-line dark:border-slate-800"
     }`;
 
   const grouped = useMemo(
@@ -914,15 +914,15 @@ export function SettingsDataSourceForm({
           <SectionCard>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-lg font-bold text-kolia-ink">Danh sách đối thủ đang theo dõi</h2>
-                <p className="text-sm text-slate-500">
+                <h2 className="text-lg font-bold text-kolia-ink dark:text-slate-100">Danh sách đối thủ đang theo dõi</h2>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   Seed sẵn theo YouTube, TikTok, Facebook; có thể thêm/sửa/xóa.
                 </p>
               </div>
               <select
                 value={selectedId}
                 onChange={(e) => selectCompetitor(e.target.value)}
-                className="h-10 rounded-lg border border-kolia-line px-3 text-sm"
+                className="h-10 rounded-lg border border-kolia-line dark:border-slate-800 px-3 text-sm"
               >
                 <option value="">Thêm đối thủ mới</option>
                 {competitors.map((c) => (
@@ -934,18 +934,18 @@ export function SettingsDataSourceForm({
             </div>
             <div className="mt-5 grid gap-5 lg:grid-cols-3">
               {Object.entries(grouped).map(([platform, rows]) => (
-                <div key={platform} className="rounded-xl border border-kolia-line bg-slate-50 p-4">
-                  <h3 className="font-bold capitalize text-kolia-ink">{platform}</h3>
+                <div key={platform} className="rounded-xl border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4">
+                  <h3 className="font-bold capitalize text-kolia-ink dark:text-slate-100">{platform}</h3>
                   <div className="mt-3 space-y-2">
                     {rows.map((c) => (
                       <button
                         type="button"
                         key={c.id}
                         onClick={() => selectCompetitor(c.id ?? "")}
-                        className="block w-full rounded-lg border border-transparent bg-white p-3 text-left text-sm hover:border-kolia-green transition"
+                        className="block w-full rounded-lg border border-transparent bg-white dark:bg-slate-900 p-3 text-left text-sm hover:border-kolia-green transition"
                       >
-                        <span className="font-semibold text-kolia-ink">{c.name}</span>
-                        <span className="mt-1 block text-xs text-slate-500">
+                        <span className="font-semibold text-kolia-ink dark:text-slate-100">{c.name}</span>
+                        <span className="mt-1 block text-xs text-slate-500 dark:text-slate-400">
                           {c.source} · {c.category}
                         </span>
                       </button>
@@ -957,7 +957,7 @@ export function SettingsDataSourceForm({
           </SectionCard>
 
           <SectionCard>
-            <h2 className="text-lg font-bold text-kolia-ink">
+            <h2 className="text-lg font-bold text-kolia-ink dark:text-slate-100">
               {form.id ? "Sửa đối thủ" : "Thêm đối thủ"}
             </h2>
             <div className="mt-4 space-y-4">
@@ -968,7 +968,7 @@ export function SettingsDataSourceForm({
               />
               <div className="grid grid-cols-2 gap-3">
                 <label className="block">
-                  <span className="text-sm font-semibold text-slate-700">Nền tảng</span>
+                  <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Nền tảng</span>
                   <select
                     value={form.platform}
                     onChange={(e) => setForm({ ...form, platform: e.target.value })}
@@ -980,7 +980,7 @@ export function SettingsDataSourceForm({
                   </select>
                 </label>
                 <label className="block">
-                  <span className="text-sm font-semibold text-slate-700">Nguồn</span>
+                  <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Nguồn</span>
                   <select
                     value={form.source}
                     onChange={(e) => setForm({ ...form, source: e.target.value })}
@@ -1044,9 +1044,9 @@ export function SettingsDataSourceForm({
         <SectionCard>
           <div className="flex items-center gap-2 mb-1">
             <Play className="h-5 w-5 text-red-500" />
-            <h2 className="text-lg font-bold text-kolia-ink">YouTube Configuration</h2>
+            <h2 className="text-lg font-bold text-kolia-ink dark:text-slate-100">YouTube Configuration</h2>
           </div>
-          <p className="text-sm text-slate-500">API key và endpoint URL cho YouTube Data API v3.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">API key và endpoint URL cho YouTube Data API v3.</p>
           <div className="mt-6 max-w-lg space-y-4">
             <Field
               label="YouTube API Key"
@@ -1095,12 +1095,12 @@ export function SettingsDataSourceForm({
           <SectionCard>
             <div className="flex items-center gap-2 mb-1">
               <BarChart3 className="h-5 w-5 text-blue-500" />
-              <h2 className="text-base font-bold text-kolia-ink">Thông tin đăng nhập</h2>
-              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
+              <h2 className="text-base font-bold text-kolia-ink dark:text-slate-100">Thông tin đăng nhập</h2>
+              <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-slate-500 dark:text-slate-400">
                 Dùng cho Playwright
               </span>
             </div>
-            <p className="text-xs text-slate-500 mb-4">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
               Email/password cho Playwright. Nên dùng tài khoản phụ để tránh rủi ro khoá tài khoản chính.
             </p>
             <div className="max-w-lg space-y-4">
@@ -1142,9 +1142,9 @@ export function SettingsDataSourceForm({
         <SectionCard>
           <div className="flex items-center gap-2 mb-1">
             <Globe className="h-5 w-5 text-kolia-green" />
-            <h2 className="text-lg font-bold text-kolia-ink">Cấu hình chung</h2>
+            <h2 className="text-lg font-bold text-kolia-ink dark:text-slate-100">Cấu hình chung</h2>
           </div>
-          <p className="text-sm text-slate-500">Token và cấu hình dùng chung cho toàn hệ thống.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Token và cấu hình dùng chung cho toàn hệ thống.</p>
           <div className="mt-6 max-w-lg space-y-4">
             <Field
               label="Meta Graph API Token"
@@ -1162,7 +1162,7 @@ export function SettingsDataSourceForm({
               type="button"
               onClick={testConnection}
               disabled={isPending}
-              className="inline-flex items-center gap-2 rounded-lg border border-kolia-line px-5 py-2.5 text-sm font-bold text-kolia-ink transition hover:bg-slate-50"
+              className="inline-flex items-center gap-2 rounded-lg border border-kolia-line dark:border-slate-800 px-5 py-2.5 text-sm font-bold text-kolia-ink dark:text-slate-100 transition hover:bg-slate-50 dark:hover:bg-slate-800"
             >
               <PlugZap className="h-4 w-4" /> Test Connection
             </button>

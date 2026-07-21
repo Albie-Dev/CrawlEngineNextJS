@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,6 +10,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        bgPrimary: "var(--bg-primary)",
+        bgSecondary: "var(--bg-secondary)",
+        bgTertiary: "var(--bg-tertiary)",
+        textPrimary: "var(--text-primary)",
+        textSecondary: "var(--text-secondary)",
+        textMuted: "var(--text-muted)",
+        borderColor: "var(--border-color)",
         kolia: {
           ink: "#102033",
           midnight: "#0A1422",
@@ -20,7 +28,7 @@ const config: Config = {
         }
       },
       boxShadow: {
-        soft: "0 18px 55px rgba(16, 32, 51, 0.10)"
+        soft: "0 18px 55px rgba(16, 32, 51, 0.05)"
       }
     }
   },
