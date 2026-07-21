@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { clearNLQueryContextCache } from "@/lib/nlQueryAnalytics";
 
 // ── GET: Danh sách video YouTube kèm relevance info ──────────────────────────
 export async function GET(request: Request) {
@@ -59,7 +60,7 @@ export async function GET(request: Request) {
       take: limit,
     }),
     prisma.post.count({ where }),
-    // Stats for summary cards
+    // Stats for summary cards — đếm tất cả các trạng thái để hiển thị dashboard
     prisma.post.groupBy({
       by: ["relevanceStatus"],
       where: { platform: "youtube" },
@@ -82,7 +83,7 @@ export async function GET(request: Request) {
   const pendingCount = stats.find((s) => s.relevanceStatus === "pending")?._count._all ?? 0;
   const relevantCount = stats.find((s) => s.relevanceStatus === "relevant")?._count._all ?? 0;
   const irrelevantCount = stats.find((s) => s.relevanceStatus === "irrelevant")?._count._all ?? 0;
-  const aiScoredCount = relevantCount + irrelevantCount; // pending means not yet scored
+  const aiScoredCount = relevantCount + irrelevantCount;
 
   // ── Unique dropdowns ───────────────────────────────────────────────────
   const uniqueChannels = [
@@ -118,7 +119,17 @@ export async function GET(request: Request) {
   });
 }
 
-// ── PATCH: Cập nhật relevanceStatus (bulk) ───────────────────────────────────
+// ── PATCH: Cập nhật relevanceStatus (soft delete) ────────────────────────────
+//
+// Cơ chế hoạt động:
+//   - Video luôn được GIỮ trong DB, chỉ đổi relevanceStatus.
+//   - getLatestSnapshot() live-filter theo relevanceStatus mỗi lần đọc snapshot:
+//       · irrelevant → bị loại khỏi Bubble chart / sampleVideos / mọi analytics
+//       · pending / relevant → xuất hiện bình thường
+//   - Kết quả:
+//       · Mark "Không liên quan"  → biến mất khỏi Bubble chart ngay khi reload ✓
+//       · Restore về pending/relevant → tự hiện lại trong Bubble chart ngay khi reload ✓
+//       · Không gọi AI, không xóa snapshot, không tốn quota
 export async function PATCH(request: Request) {
   try {
     const body = await request.json();
@@ -138,6 +149,9 @@ export async function PATCH(request: Request) {
       where: { id: { in: ids } },
       data: { relevanceStatus: status },
     });
+
+    // Xóa NL Query cache để thống kê bài viết & tương tác theo đối thủ làm mới ngay
+    clearNLQueryContextCache();
 
     return NextResponse.json({ success: true, updated: ids.length });
   } catch (err: any) {

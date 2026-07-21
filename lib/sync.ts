@@ -138,8 +138,12 @@ export async function syncCompetitorData(platform?: Platform, syncFilters?: Sync
           competitorId: competitor.id,
           postUrl: enriched.postUrl
         },
-        select: { id: true }
+        select: { id: true, relevanceStatus: true }
       });
+
+      if (existingPost?.relevanceStatus === "irrelevant") {
+        continue;
+      }
       const baseData = {
         competitorId: competitor.id,
         platform: enriched.platform,
@@ -379,8 +383,16 @@ export async function syncCompetitorDataStream(
 
             const existingPost = await prisma.post.findFirst({
               where: { competitorId: competitor.id, postUrl: enriched.postUrl },
-              select: { id: true },
+              select: { id: true, relevanceStatus: true },
             });
+
+            if (existingPost?.relevanceStatus === "irrelevant") {
+              send("log", {
+                message: `⏭️ ${competitor.name}: Bỏ qua bài đã đánh dấu không liên quan — ${enriched.postUrl}`,
+                competitor: competitor.name,
+              });
+              continue;
+            }
 
             const baseData2 = {
               competitorId: competitor.id, platform: enriched.platform,
@@ -608,8 +620,15 @@ export function startBackgroundSync(
 
             const existingPost = await prisma.post.findFirst({
               where: { competitorId: competitor.id, postUrl: enriched.postUrl },
-              select: { id: true },
+              select: { id: true, relevanceStatus: true },
             });
+
+            if (existingPost?.relevanceStatus === "irrelevant") {
+              send("log", {
+                message: `⏭️ ${competitor.name}: Bỏ qua bài đã đánh dấu không liên quan — ${enriched.postUrl}`,
+              });
+              continue;
+            }
 
             const baseData3 = {
               competitorId: competitor.id, platform: enriched.platform,

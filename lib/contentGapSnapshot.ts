@@ -643,11 +643,72 @@ export async function getLatestSnapshot(
 
   try {
     const snapshot = JSON.parse(row.data) as DomesticGapSnapshot;
+
+    // ── Live-filter: loại bỏ các video hiện đang irrelevant khỏi sampleVideos ──
+    // Đảm bảo Bubble chart luôn chính xác dù snapshot được tạo trước khi video bị lọc.
+    // Chỉ query ID nên rất nhanh (< 5ms), không tốn AI quota.
+    const irrelevantPosts = await prisma.post.findMany({
+      where: { platform, relevanceStatus: "irrelevant" },
+      select: { id: true },
+    });
+    const irrelevantIds = new Set(irrelevantPosts.map((p) => p.id));
+
+    if (irrelevantIds.size > 0) {
+      const categories: (keyof Omit<DomesticGapSnapshot, "stats">)[] = [
+        "commonTopics",
+        "repeatedTopics",
+        "underusedHighEngagement",
+        "gaps",
+      ];
+      for (const cat of categories) {
+        snapshot[cat] = (snapshot[cat] ?? [])
+          .map((topic) => {
+            const remaining = (topic.sampleVideos ?? []).filter(
+              (v) => !irrelevantIds.has(v.id)
+            );
+            if (remaining.length === 0) return null;
+
+            const views = remaining.map((v) => v.views);
+            const totalViews = views.reduce((s, v) => s + v, 0);
+            const avgEng = remaining.length
+              ? remaining.reduce((s, v) => s + v.engagementRate, 0) / remaining.length
+              : 0;
+            const channelCount = new Set(remaining.map((v) => v.channelName)).size;
+            const videoCount = remaining.length;
+            const competitionScore =
+              channelCount > 0
+                ? Math.round((videoCount / channelCount) * 10) / 10
+                : videoCount;
+
+            // median helper inline
+            const sorted = [...views].sort((a, b) => a - b);
+            const mid = Math.floor(sorted.length / 2);
+            const med =
+              sorted.length % 2 === 0
+                ? Math.round((sorted[mid - 1] + sorted[mid]) / 2)
+                : sorted[mid];
+
+            return {
+              ...topic,
+              sampleVideos: remaining,
+              videoCount,
+              channelCount,
+              totalViews,
+              medianViews: med,
+              avgEngagement: avgEng,
+              competitionScore,
+            };
+          })
+          .filter(Boolean) as typeof snapshot[typeof cat];
+      }
+    }
+
     return { snapshot, generatedAt: row.generatedAt, id: row.id };
   } catch {
     return null;
   }
 }
+
 
 // ─── Deep analyze per topic ────────────────────────────────────────────────────
 
@@ -773,3 +834,76 @@ Trả về JSON TIẾNG VIỆT (chỉ JSON, tối đa 400 từ):
 
   return deepDetail;
 }
+
+/**
+ * Fast in-place update of latest snapshot when posts are deleted/filtered out.
+ * Recalculates metrics (views, engagement, video count) arithmetic-only without calling OpenAI AI.
+ */
+export async function updateContentGapSnapshotWithDeletedPostIds(
+  deletedIds: string[],
+  platform = "youtube",
+  source = "trong_nuoc"
+): Promise<void> {
+  if (!deletedIds || deletedIds.length === 0) return;
+
+  const result = await getLatestSnapshot(platform, source);
+  if (!result) return;
+
+  const deletedSet = new Set(deletedIds);
+  const { snapshot, id } = result;
+
+  const categories: (keyof Omit<DomesticGapSnapshot, "stats">)[] = [
+    "commonTopics",
+    "repeatedTopics",
+    "underusedHighEngagement",
+    "gaps",
+  ];
+
+  const updatedSnapshot: DomesticGapSnapshot = {
+    ...snapshot,
+    stats: {
+      ...snapshot.stats,
+      updatedAt: new Date().toISOString(),
+    },
+  };
+
+  for (const cat of categories) {
+    const topicRows = snapshot[cat] ?? [];
+    const newTopicRows: TopicRow[] = [];
+
+    for (const topic of topicRows) {
+      const remainingVideos = (topic.sampleVideos ?? []).filter((v) => !deletedSet.has(v.id));
+      if (remainingVideos.length === 0) continue;
+
+      const channelNames = new Set(remainingVideos.map((v) => v.channelName));
+      const channelCount = channelNames.size;
+      const videoCount = remainingVideos.length;
+      const views = remainingVideos.map((v) => v.views);
+      const totalViews = views.reduce((s, v) => s + v, 0);
+      const avgEng = remainingVideos.length
+        ? remainingVideos.reduce((s, v) => s + v.engagementRate, 0) / remainingVideos.length
+        : 0;
+
+      const competitionScore = channelCount > 0 ? Math.round((videoCount / channelCount) * 10) / 10 : videoCount;
+
+      newTopicRows.push({
+        ...topic,
+        videoCount,
+        channelCount,
+        medianViews: median(views),
+        totalViews,
+        avgEngagement: avgEng,
+        competitionScore,
+        sampleVideos: remainingVideos,
+      });
+    }
+
+    updatedSnapshot[cat] = newTopicRows;
+  }
+
+  await prisma.contentGapSnapshot.update({
+    where: { id },
+    data: { data: JSON.stringify(updatedSnapshot) },
+  });
+}
+

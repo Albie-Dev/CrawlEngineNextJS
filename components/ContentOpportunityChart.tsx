@@ -458,7 +458,7 @@ function TopicDetailSidebar({
 
 function HowToReadPanel() {
   return (
-    <div className="rounded-2xl border border-slate-100 bg-white p-4 h-full flex flex-col">
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 h-full flex flex-col shadow-sm">
       <div className="flex items-center gap-1.5 mb-3.5 shrink-0">
         <Info className="h-3.5 w-3.5 text-slate-400" />
         <p className="text-[12px] font-bold text-slate-700">Cách đọc biểu đồ</p>
@@ -809,7 +809,7 @@ export function ContentOpportunityChart({ topics, data }: Props) {
       {/* ── Body grid ───────────────────────────────────────────────────── */}
       <div className="grid gap-5 xl:grid-cols-[1fr_240px_280px] p-5 bg-slate-50/40">
         {/* Chart */}
-        <div className="rounded-2xl border border-slate-100 bg-white p-4 order-1">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm order-1">
           <div className="relative h-[400px] sm:h-[440px]">
             {/* Top quadrant badges — sit above the plot, never over the bubbles */}
             <div className="flex items-start justify-between gap-3 px-0.5 pb-2">
@@ -936,7 +936,7 @@ export function ContentOpportunityChart({ topics, data }: Props) {
         </div>
 
         {/* Detail panel */}
-        <div className="rounded-2xl border border-slate-100 bg-white p-4 min-h-[420px] order-3">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 min-h-[420px] order-3 shadow-sm">
           {selectedTopic ? (
             <TopicDetailSidebar
               topic={selectedTopic}

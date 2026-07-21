@@ -71,6 +71,7 @@ export async function detectViralPatterns(days = 90): Promise<{
   const posts = await prisma.post.findMany({
     where: {
       publishedAt: { gte: new Date(Date.now() - days * 24 * 60 * 60 * 1000) },
+      NOT: { relevanceStatus: "irrelevant" },
     },
     select: {
       id: true,

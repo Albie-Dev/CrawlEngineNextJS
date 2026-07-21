@@ -84,6 +84,7 @@ export async function getTrendIntelligence(platform?: Platform): Promise<TrendIn
     where: {
       publishedAt: { gte: sevenDaysAgo },
       ...platformFilter,
+      NOT: { relevanceStatus: "irrelevant" },
     },
     select: {
       mainTopic: true,

@@ -135,7 +135,10 @@ export async function getNLQueryContext(days = 30): Promise<NLQueryContext> {
   // Single parallel query: posts (lightweight select) + competitors
   const [posts, competitors] = await Promise.all([
     prisma.post.findMany({
-      where: { publishedAt: { gte: startDate } },
+      where: {
+        publishedAt: { gte: startDate },
+        NOT: { relevanceStatus: "irrelevant" },
+      },
       select: {
         title: true,
         platform: true,

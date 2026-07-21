@@ -54,7 +54,11 @@ export async function GET(request: Request) {
     prisma.post.count({ where }),
     // Fetch ALL foreign youtube posts for outlier score + unique dropdowns
     prisma.post.findMany({
-      where: { platform: "youtube", competitor: { source: "nuoc_ngoai" } },
+      where: {
+        platform: "youtube",
+        competitor: { source: "nuoc_ngoai" },
+        NOT: { relevanceStatus: "irrelevant" },
+      },
       select: {
         id: true,
         views: true,
