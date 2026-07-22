@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
+  const logs: string[] = [];
   try {
     const { postId } = await request.json();
     if (!postId) {
@@ -26,7 +27,9 @@ export async function POST(request: Request) {
 
     // Fetch transcript
     const { fetchAndFormatTranscript } = await import("@/lib/youtube/youtubeTranscript");
-    const transcript = await fetchAndFormatTranscript(videoId);
+    const transcript = await fetchAndFormatTranscript(videoId, {
+      onLog: (msg: string) => logs.push(msg),
+    });
 
     if (!transcript) {
       return NextResponse.json({ error: "Could not fetch transcript for this video" }, { status: 404 });
@@ -38,11 +41,11 @@ export async function POST(request: Request) {
       data: { transcript },
     });
 
-    return NextResponse.json({ ok: true, transcript });
+    return NextResponse.json({ ok: true, transcript, logs });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error("[fetch-transcript] Error:", message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("[fetch-transcript] Error:", message, logs);
+    return NextResponse.json({ error: message, logs }, { status: 500 });
   }
 }
 
