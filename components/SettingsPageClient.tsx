@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { platformLabels, sourceLabels } from "@/lib/constants";
 import { TikTokAccountManager } from "@/components/TikTokAccountManager";
 import { FacebookAccountManager } from "@/components/FacebookAccountManager";
+import { YoutubeKeyList } from "@/components/YoutubeKeyManager";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -197,6 +198,8 @@ function ApiKeysTab({ onMsg }: { onMsg: (m: any) => void }) {
     for (const c of items) {
       // Filter: nếu là config riêng của provider không được chọn thì bỏ qua
       if (allProviderKeys.includes(c.key) && !activeProviderKeys.includes(c.key)) continue;
+      // YouTube API key đã có UI riêng ở tab Crawl Provider
+      if (c.key === "youtube_api_key") continue;
       if (!g[c.category]) g[c.category] = [];
       g[c.category].push(c);
     }
@@ -695,22 +698,9 @@ function CrawlTab({ onMsg }: { onMsg: (m: any) => void }) {
         <div className="rounded-xl border border-kolia-line dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
           <div className="flex items-center gap-3 mb-4">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400"><Youtube className="h-5 w-5" /></div>
-            <div><h3 className="text-sm font-bold text-kolia-ink dark:text-slate-100">YouTube Data API v3</h3><p className="text-xs text-slate-500 dark:text-slate-400">YouTube chỉ sử dụng YouTube Data API — không có provider crawl khác</p></div>
+            <div><h3 className="text-sm font-bold text-kolia-ink dark:text-slate-100">YouTube Data API v3</h3><p className="text-xs text-slate-500 dark:text-slate-400">Cấu hình key ở tab <strong>API Keys</strong> để crawler hoạt động</p></div>
           </div>
-          <div className="rounded-lg border border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-semibold text-kolia-ink dark:text-slate-100">YouTube API Key</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">API Key từ Google Cloud Console</p>
-              </div>
-              <span className={cn("rounded px-2 py-1 text-xs font-bold", youtubeStatus?.hasValue ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700")}>
-                {youtubeStatus?.hasValue ? "✅ Đã cấu hình" : "⚠️ Chưa có"}
-              </span>
-            </div>
-            <p className="mt-2 text-sm font-mono text-slate-500 dark:text-slate-400">
-              {youtubeStatus?.hasValue ? "••••••••••••" : <span className="italic">Chưa cấu hình — vào tab API Keys để thêm</span>}
-            </p>
-          </div>
+          <YoutubeKeyList />
         </div>
       </div>
     );

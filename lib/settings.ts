@@ -375,6 +375,12 @@ export async function getPublicSettings(): Promise<PublicSettings> {
 }
 
 export async function getServerYoutubeApiKey() {
+  // Use key manager for round-robin across multiple keys
+  const { getAvailableApiKey } = await import("@/lib/youtubeKeyManager");
+  const key = await getAvailableApiKey();
+  if (key) return key;
+
+  // Fallback: single key từ config/setting cũ
   const configKey = await getConfig("youtube_api_key");
   if (configKey) return configKey;
   const row = await prisma.setting.findUnique({ where: { key: "youtubeApiKey" } });

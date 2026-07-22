@@ -102,16 +102,22 @@ async function tryYoutubeDataApi(
   videoId: string
 ): Promise<TranscriptResponse[] | null> {
   try {
-    const { getConfig } = await import("@/lib/config");
-    const apiKey = await getConfig("youtube_api_key");
+    const { getAvailableApiKey, logQuotaUsage, markKeyExhausted } = await import("@/lib/youtubeKeyManager");
+    const apiKey = await getAvailableApiKey();
     if (!apiKey) return null;
+    logQuotaUsage(apiKey);
 
-    // Step 1: List caption tracks
+    // List caption tracks
     const listRes = await fetch(
       `https://youtube.googleapis.com/youtube/v3/captions?part=snippet&videoId=${videoId}&key=${apiKey}`,
       { signal: AbortSignal.timeout(8000) }
     );
-    if (!listRes.ok) return null;
+    if (!listRes.ok) {
+      if (listRes.status === 403 || listRes.status === 429) {
+        await markKeyExhausted(apiKey);
+      }
+      return null;
+    }
     const listData = await listRes.json();
     const items = listData?.items;
     if (!items || items.length === 0) return null;

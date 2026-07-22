@@ -9,7 +9,7 @@ export async function PUT(request: Request) {
   const body = await request.json();
   // Accept any setting key from body — allows adding new settings without changing API route
   const knownKeys: Record<string, string | boolean | undefined> = {
-    youtubeApiKey: body.youtubeApiKey,
+    youtubeApiKeys: body.youtubeApiKeys,
     youtubeApiBaseUrl: body.youtubeApiBaseUrl,
     tiktokProviderUrl: body.tiktokProviderUrl,
     tiktokProviderToken: body.tiktokProviderToken,

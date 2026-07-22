@@ -176,10 +176,10 @@ function YouTubeAnalysis({ analytics, platform, filters }: { analytics: Awaited<
       <details className="group rounded-lg border border-borderColor bg-bgSecondary" open>
         <summary className="flex cursor-pointer items-center justify-between gap-2 px-5 py-4 select-none hover:bg-bgTertiary transition">
           <div>
-            <h2 className="text-xl font-extrabold text-textPrimary">Content gap đối thủ trong nước</h2>
+            <h2 className="text-base font-bold text-textPrimary">Content gap đối thủ trong nước</h2>
             <p className="text-sm text-textMuted">Tìm cơ hội nội dung bằng cách phân tích các chủ đề top view từ kênh Việt Nam</p>
           </div>
-          <svg className="h-5 w-5 shrink-0 text-textMuted transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="h-4 w-4 shrink-0 text-textMuted transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="6 9 12 15 18 9" />
           </svg>
         </summary>
@@ -192,10 +192,10 @@ function YouTubeAnalysis({ analytics, platform, filters }: { analytics: Awaited<
       <details id="phan-tich-video" className="group rounded-lg border border-borderColor bg-bgSecondary" open={isVideoFilter ? true : undefined}>
         <summary className="flex cursor-pointer items-center justify-between gap-2 px-5 py-4 select-none hover:bg-bgTertiary transition">
           <div>
-            <h2 className="text-xl font-extrabold text-textPrimary">Phân tích video nước ngoài</h2>
+            <h2 className="text-base font-bold text-textPrimary">Phân tích video nước ngoài</h2>
             <p className="text-sm text-textMuted">Tìm video viral từ kênh quốc tế và trích xuất format để tái tạo tại Việt Nam</p>
           </div>
-          <svg className="h-5 w-5 shrink-0 text-textMuted transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="h-4 w-4 shrink-0 text-textMuted transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="6 9 12 15 18 9" />
           </svg>
         </summary>
@@ -208,10 +208,10 @@ function YouTubeAnalysis({ analytics, platform, filters }: { analytics: Awaited<
       <details className="group rounded-lg border border-borderColor bg-bgSecondary" open={isVideoFilter ? true : undefined}>
         <summary className="flex cursor-pointer items-center justify-between gap-2 px-5 py-4 select-none hover:bg-bgTertiary transition">
           <div>
-            <h2 className="text-xl font-extrabold text-textPrimary">Phân tích video trong nước</h2>
+            <h2 className="text-base font-bold text-textPrimary">Phân tích video trong nước</h2>
             <p className="text-sm text-textMuted">Phân tích cấu trúc, format và hiệu suất video từ kênh YouTube Việt Nam</p>
           </div>
-          <svg className="h-5 w-5 shrink-0 text-textMuted transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="h-4 w-4 shrink-0 text-textMuted transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="6 9 12 15 18 9" />
           </svg>
         </summary>

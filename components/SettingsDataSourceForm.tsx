@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { TikTokAccountManager } from "@/components/TikTokAccountManager";
 import { FacebookAccountManager } from "@/components/FacebookAccountManager";
+import { YoutubeKeyList } from "@/components/YoutubeKeyManager";
 import type {
   CrawlProvider,
   PlaywrightProviderConfig,
@@ -760,7 +761,6 @@ export function SettingsDataSourceForm({
 
   // Legacy settings form (YouTube, general)
   const [legacyForm, setLegacyForm] = useState({
-    youtubeApiKey: "",
     youtubeApiBaseUrl: settings.youtubeApiBaseUrl ?? "",
     metaGraphToken: "",
     facebookEmail: settings.facebookEmail ?? "",
@@ -1046,15 +1046,14 @@ export function SettingsDataSourceForm({
             <Play className="h-5 w-5 text-red-500" />
             <h2 className="text-lg font-bold text-kolia-ink dark:text-slate-100">YouTube Configuration</h2>
           </div>
-          <p className="text-sm text-slate-500 dark:text-slate-400">API key và endpoint URL cho YouTube Data API v3.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Quản lý nhiều YouTube Data API key để phân bổ tải và fallback khi key bị rate-limit.
+          </p>
+
           <div className="mt-6 max-w-lg space-y-4">
-            <Field
-              label="YouTube API Key"
-              type="password"
-              value={legacyForm.youtubeApiKey}
-              onChange={(v) => setLegacyForm({ ...legacyForm, youtubeApiKey: v })}
-              placeholder={settings.hasYoutubeApiKey ? "Đã lưu key" : "Chưa cấu hình"}
-            />
+            {/* Danh sách key */}
+            <YoutubeKeyList />
+
             <Field
               label="YouTube API Base URL"
               value={legacyForm.youtubeApiBaseUrl}
