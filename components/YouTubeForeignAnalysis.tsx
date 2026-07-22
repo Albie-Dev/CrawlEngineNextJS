@@ -137,16 +137,64 @@ function formatDuration(p: any): string {
 
 
 
-function TranscriptTabContent({ transcript }: { transcript: string }) {
+function TranscriptTabContent({ transcript, postId, onTranscriptUpdate }: { transcript: string; postId?: string; onTranscriptUpdate?: (newTranscript: string) => void }) {
   const [isBilingual, setIsBilingual] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [translations, setTranslations] = useState<Record<number, string>>({});
   const [copied, setCopied] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   if (!transcript || transcript.trim() === "") {
     return (
-      <div className="flex h-32 items-center justify-center rounded-lg border border-slate-150 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 p-5 text-sm font-medium text-slate-500 dark:text-slate-400">
-        Không có dữ liệu transcript cho video này.
+      <div className="flex flex-col items-center justify-center gap-3 h-32 rounded-lg border border-slate-150 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 p-5 text-sm font-medium text-slate-500 dark:text-slate-400">
+        <span>Không có dữ liệu transcript cho video này.</span>
+        {postId && (
+          <button
+            onClick={async () => {
+              setIsFetching(true);
+              setFetchError(null);
+              try {
+                const res = await fetch("/api/youtube/fetch-transcript", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ postId }),
+                });
+                const data = await res.json();
+                if (data.ok && data.transcript) {
+                  onTranscriptUpdate?.(data.transcript);
+                } else {
+                  setFetchError(data.error || "Không thể lấy transcript.");
+                }
+              } catch {
+                setFetchError("Lỗi kết nối đến server.");
+              } finally {
+                setIsFetching(false);
+              }
+            }}
+            disabled={isFetching}
+            className="inline-flex items-center gap-1.5 rounded bg-kolia-green px-3 py-1.5 text-xs font-semibold text-white hover:bg-kolia-green/90 disabled:opacity-60 transition-colors"
+          >
+            {isFetching ? (
+              <>
+                <Loader2 className="h-3 w-3 animate-spin" />
+                Đang lấy...
+              </>
+            ) : (
+              <>
+                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                Lấy lại transcript
+              </>
+            )}
+          </button>
+        )}
+        {fetchError && (
+          <p className="text-[11px] text-red-500 dark:text-red-400">{fetchError}</p>
+        )}
       </div>
     );
   }
@@ -205,8 +253,7 @@ function TranscriptTabContent({ transcript }: { transcript: string }) {
     if (nextState && Object.keys(translations).length === 0) {
       setIsTranslating(true);
       try {
-        // Chỉ dịch 15 đoạn đầu để tối ưu tốc độ và token
-        const textsToTranslate = parsedLines.slice(0, 15).map(l => l.text).filter(t => t.trim().length > 0);
+        const textsToTranslate = parsedLines.map(l => l.text).filter(t => t.trim().length > 0);
         
         if (textsToTranslate.length > 0) {
           const res = await fetch("/api/translate", {
@@ -219,8 +266,7 @@ function TranscriptTabContent({ transcript }: { transcript: string }) {
             if (data.translated && Array.isArray(data.translated)) {
               const newTrans: Record<number, string> = {};
               let translateIdx = 0;
-              // Map lại kết quả dịch dựa trên index của parsedLines hợp lệ
-              parsedLines.slice(0, 15).forEach((line, idx) => {
+              parsedLines.forEach((line, idx) => {
                 if (line.text.trim().length > 0 && data.translated[translateIdx]) {
                   newTrans[idx] = data.translated[translateIdx];
                   translateIdx++;
@@ -328,7 +374,7 @@ function TranscriptTabContent({ transcript }: { transcript: string }) {
                 </p>
                 {isBilingual && line.text.trim().length > 0 && (
                   <p className="text-slate-500 dark:text-slate-400 leading-relaxed mt-0.5 text-[13px] underline decoration-dotted decoration-slate-400/70 underline-offset-[3px]">
-                    {viText || (isTranslating ? "..." : (index >= 15 ? "(Bản dịch bị giới hạn ở 15 dòng đầu)" : ""))}
+                    {viText || (isTranslating ? "..." : "")}
                   </p>
                 )}
               </div>
@@ -701,6 +747,8 @@ export function YouTubeForeignAnalysis({ domesticPosts = [], variant = "foreign"
   const [showMoreVietnamVideos, setShowMoreVietnamVideos] = useState(false);
   const [vietnamVideosFullData, setVietnamVideosFullData] = useState<any>(null);
   const [selectedVietnamVideoIdx, setSelectedVietnamVideoIdx] = useState(0);
+  const [isFetchingTranscript, setIsFetchingTranscript] = useState(false);
+  const [transcriptError, setTranscriptError] = useState<string | null>(null);
 
   // ── Fetch from API when search/filter/page changes ────────────────
   useEffect(() => {
@@ -1221,7 +1269,7 @@ export function YouTubeForeignAnalysis({ domesticPosts = [], variant = "foreign"
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex border-b border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-4 shrink-0">
+            <div className="flex items-center border-b border-kolia-line dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-4 shrink-0">
               {[
                 { id: "overview", label: "Tổng quan" },
                 { id: "transcript", label: "Transcript AI" },
@@ -1244,6 +1292,51 @@ export function YouTubeForeignAnalysis({ domesticPosts = [], variant = "foreign"
                   </button>
                 );
               })}
+              {/* Re-fetch transcript button — chỉ hiện ở tab transcript khi chưa có transcript */}
+              {activeTab === "transcript" && selectedVideo && (!selectedVideo.transcript || selectedVideo.transcript === "Chưa có bản dịch cho video này.") && (
+                <div className="ml-auto flex items-center gap-2">
+                  {transcriptError && (
+                    <span className="text-[9px] text-red-500 dark:text-red-400 max-w-[160px] text-right leading-tight">{transcriptError}</span>
+                  )}
+                  <button
+                    onClick={async () => {
+                      setIsFetchingTranscript(true);
+                      setTranscriptError(null);
+                      try {
+                        const res = await fetch("/api/youtube/fetch-transcript", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ postId: selectedVideo.id }),
+                        });
+                        const data = await res.json();
+                        if (data.ok && data.transcript) {
+                          setSelectedVideo((prev) => prev ? { ...prev, transcript: data.transcript } : null);
+                          setTranscriptError(null);
+                        } else {
+                          setTranscriptError(data.error || "Không thể lấy transcript.");
+                        }
+                      } catch {
+                        setTranscriptError("Lỗi kết nối đến server.");
+                      } finally {
+                        setIsFetchingTranscript(false);
+                      }
+                    }}
+                    disabled={isFetchingTranscript}
+                    className="inline-flex items-center gap-1 rounded bg-kolia-green px-2.5 py-1.5 text-[10px] font-semibold text-white hover:bg-kolia-green/90 disabled:opacity-60 transition-colors"
+                  >
+                    {isFetchingTranscript ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                      </svg>
+                    )}
+                    {isFetchingTranscript ? "Đang lấy..." : "Lấy transcript"}
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Tab Contents (Scrollable Container) */}
@@ -1541,7 +1634,11 @@ export function YouTubeForeignAnalysis({ domesticPosts = [], variant = "foreign"
                   )}
                 </div>
               ) : activeTab === "transcript" ? (
-                <TranscriptTabContent transcript={selectedVideo.transcript} />
+                <TranscriptTabContent
+                  transcript={selectedVideo.transcript}
+                  postId={selectedVideo.id}
+                  onTranscriptUpdate={(t) => setSelectedVideo((prev) => prev ? { ...prev, transcript: t } : null)}
+                />
               ) : activeTab === "highlights" && selectedVideo.highlights ? (
                 <HighlightsTabContent summary={selectedVideo.summary} highlights={selectedVideo.highlights} />
               ) : activeTab === "tags" && selectedVideo.tags ? (
